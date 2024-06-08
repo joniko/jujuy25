@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import io, { Socket } from 'socket.io-client'; // Importa los tipos
+import io, { Socket } from 'socket.io-client';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import FullScreenModal from '../components/FullScreenModal'; // Asegúrate de ajustar la ruta según tu estructura de archivos
+import FullScreenModal from '../components/FullScreenModal';
 
 dayjs.extend(customParseFormat);
 
-let socket: Socket; // Declara el tipo de `socket`
+let socket: Socket;
 
 interface User {
   name: string;
