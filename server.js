@@ -1,57 +1,63 @@
-// server.js
-const { createServer } = require('http');
-const { parse } = require('url');
-const next = require('next');
-const socketio = require('socket.io');
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const { appendUserData } = require('./googleSheets'); // Si estás utilizando Google Sheets
 
-const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev });
-const handle = app.getRequestHandler();
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
-app.prepare().then(() => {
-    const server = createServer((req, res) => {
-        const parsedUrl = parse(req.url, true);
-        handle(req, res, parsedUrl);
-    });
+let onlineUsers = 0;
+let userList = [];
 
-    const io = socketio(server);
+io.on('connection', (socket) => {
+    onlineUsers++;
+    const newUser = {
+        id: socket.id,
+        name: 'Anónimo',
+        age: 'N/A',
+        church: 'N/A'
+    };
+    userList.push(newUser);
+    io.emit('onlineUsers', { count: onlineUsers, users: userList });
+    console.log('User connected', newUser);
+    console.log('Online Users:', onlineUsers, userList);
 
-    let onlineUsers = 0;
-    let userList = [];
-
-    io.on('connection', (socket) => {
-        onlineUsers++;
-        const newUser = {
-            id: socket.id,
-            name: 'Anónimo',
-            age: 'N/A',
-            church: 'N/A'
-        };
-        userList.push(newUser);
+    socket.on('disconnect', () => {
+        onlineUsers--;
+        userList = userList.filter(user => user.id !== socket.id);
         io.emit('onlineUsers', { count: onlineUsers, users: userList });
+        console.log('User disconnected', socket.id);
+        console.log('Online Users:', onlineUsers, userList);
+    });
 
-        socket.on('disconnect', () => {
-            onlineUsers--;
-            userList = userList.filter(user => user.id !== socket.id);
+    socket.on('newUser', async ({ name, age, church }) => {
+        const userIndex = userList.findIndex(user => user.id === socket.id);
+        if (userIndex !== -1) {
+            userList[userIndex] = {
+                id: socket.id,
+                name: name || 'Anónimo',
+                age: age || 'N/A',
+                church: church || 'N/A'
+            };
             io.emit('onlineUsers', { count: onlineUsers, users: userList });
-        });
 
-        socket.on('newUser', ({ name, age, church }) => {
-            const userIndex = userList.findIndex(user => user.id === socket.id);
-            if (userIndex !== -1) {
-                userList[userIndex] = {
-                    id: socket.id,
-                    name: name || 'Anónimo',
-                    age: age || 'N/A',
-                    church: church || 'N/A'
-                };
-                io.emit('onlineUsers', { count: onlineUsers, users: userList });
+            // Registrar usuario en Google Sheets
+            try {
+                await appendUserData({ name, age, church });
+            } catch (error) {
+                console.error('Error al guardar los datos en Google Sheets:', error);
             }
-        });
+        }
     });
+});
 
-    server.listen(3000, (err) => {
-        if (err) throw err;
-        console.log('> Ready on http://localhost:3000');
-    });
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });

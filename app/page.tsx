@@ -32,7 +32,7 @@ export default function Home() {
   const [userData, setUserData] = useState<User>({ name: '', age: '', church: '' });
 
   useEffect(() => {
-    socket = io();
+    socket = io('https://oremosapp.fly.dev'); // URL de tu servidor de Socket.IO en Fly.io
 
     socket.on('connect', () => {
       console.log('connected');

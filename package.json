@@ -30,6 +30,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.7",
     "@types/socket.io-client": "^3.0.0"
   }
 }
