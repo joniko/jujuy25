@@ -8,7 +8,8 @@ const app = express();
 
 const allowedOrigins = [
     'http://localhost:3000', // Origen local para desarrollo
-    'https://oremos.vercel.app' // Reemplaza con tu dominio de producción en Vercel
+    'https://oremos.vercel.app', // Reemplaza con tu dominio de producción en Vercel
+    'https://oremos.app' // Reemplaza con tu dominio de producción en Vercel
 ];
 
 const corsOptions = {
