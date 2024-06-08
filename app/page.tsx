@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client'; // Importa los tipos
 import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -9,15 +9,21 @@ import FullScreenModal from '../components/FullScreenModal'; // Asegúrate de aj
 
 dayjs.extend(customParseFormat);
 
-let socket;
+let socket: Socket; // Declara el tipo de `socket`
+
+interface User {
+  name: string;
+  age: string;
+  church: string;
+}
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState(0);
-  const [userList, setUserList] = useState([]);
+  const [userList, setUserList] = useState<User[]>([]);
   const [message, setMessage] = useState({ title: '', body: '' });
-  const [userData, setUserData] = useState({ name: '', age: '', church: '' });
+  const [userData, setUserData] = useState<User>({ name: '', age: '', church: '' });
 
   useEffect(() => {
     socket = io();
@@ -76,7 +82,7 @@ export default function Home() {
     fetchMessages();
   }, []);
 
-  const handleJoin = ({ name, age, church }) => {
+  const handleJoin = ({ name, age, church }: User) => {
     if (socket) {
       socket.emit('newUser', {
         name: name.trim() || 'Anónimo',

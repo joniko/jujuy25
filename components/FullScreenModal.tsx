@@ -1,6 +1,12 @@
 import React from 'react';
 
-const FullScreenModal = ({ isOpen, onClose, onJoin }) => {
+interface FullScreenModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onJoin: ({ name, age, church }: { name: string; age: string; church: string }) => void;
+}
+
+const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJoin }) => {
   const [name, setName] = React.useState('');
   const [age, setAge] = React.useState('');
   const [church, setChurch] = React.useState('');
