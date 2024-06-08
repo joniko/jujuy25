@@ -17,6 +17,12 @@ interface User {
   church: string;
 }
 
+interface Message {
+  hour: string;
+  title: string;
+  body: string;
+}
+
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
@@ -53,7 +59,7 @@ export default function Home() {
       try {
         const response = await axios.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vQxc0yhrKG5AFZlAf9z8I3ufr3zleyrN-F3bxui3MZuhnGIkQliKCVXXRSG5pnqn9xOao9TDDRgVrt5/pub?output=csv');
         const rows = response.data.split('\n').slice(1); // Remove header
-        const messages = rows.map(row => {
+        const messages: Message[] = rows.map((row: string) => {
           const [hour, title, body] = row.split(',').map(item => item.trim().replace(/"/g, ''));
           return { hour, title, body };
         });
@@ -64,7 +70,7 @@ export default function Home() {
         console.log('Current Time:', currentHour);
         console.log('Messages:', messages);
 
-        const currentMessage = messages.find(message => {
+        const currentMessage = messages.find((message: Message) => {
           const messageTime = dayjs(message.hour, 'h:mm A');
           return currentHour === messageTime.format('h A');
         });
