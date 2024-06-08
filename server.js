@@ -1,15 +1,33 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const cors = require('cors');
 const { appendUserData } = require('./googleSheets'); // Si estás utilizando Google Sheets
 
 const app = express();
+
+const allowedOrigins = [
+    'http://localhost:3000', // Origen local para desarrollo
+    'https://oremos.vercel.app' // Reemplaza con tu dominio de producción en Vercel
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"]
+};
+
+app.use(cors(corsOptions)); // Habilita CORS con opciones
+
 const server = http.createServer(app);
 const io = socketIo(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
+    cors: corsOptions
 });
 
 let onlineUsers = 0;
