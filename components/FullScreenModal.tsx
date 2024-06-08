@@ -20,7 +20,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-      <div className="bg-zinc-900 p-6 rounded-lg w-full h-full flex flex-col justify-center">
+      <div className="bg-zinc-900 p-6 rounded-lg w-full max-w-4xl h-full flex flex-col justify-center">
         <h2 className="text-2xl font-bold mb-4">Ingresa tus datos</h2>
         <input
           type="text"
