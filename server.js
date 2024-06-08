@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
-const { appendUserData } = require('./googleSheets'); // Si estás utilizando Google Sheets
+// const { appendUserData } = require('./googleSheets'); // Comentar o eliminar esta línea si no es necesaria
 
 const app = express();
 
@@ -65,12 +65,12 @@ io.on('connection', (socket) => {
             };
             io.emit('onlineUsers', { count: onlineUsers, users: userList });
 
-            // Registrar usuario en Google Sheets
-            try {
-                await appendUserData({ name, age, church });
-            } catch (error) {
-                console.error('Error al guardar los datos en Google Sheets:', error);
-            }
+            // Registrar usuario en Google Sheets, si es necesario
+            // try {
+            //   await appendUserData({ name, age, church });
+            // } catch (error) {
+            //   console.error('Error al guardar los datos en Google Sheets:', error);
+            // }
         }
     });
 });
