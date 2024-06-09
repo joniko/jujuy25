@@ -6,6 +6,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import FullScreenModal from '../components/FullScreenModal';
+import Papa from 'papaparse';
 
 dayjs.extend(customParseFormat);
 
@@ -58,11 +59,13 @@ export default function Home() {
     const fetchMessages = async () => {
       try {
         const response = await axios.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vQxc0yhrKG5AFZlAf9z8I3ufr3zleyrN-F3bxui3MZuhnGIkQliKCVXXRSG5pnqn9xOao9TDDRgVrt5/pub?output=csv');
-        const rows = response.data.split('\n').slice(1); // Remove header
-        const messages: Message[] = rows.map((row: string) => {
-          const [hour, title, body] = row.split(',').map(item => item.trim().replace(/"/g, ''));
-          return { hour, title, body };
-        });
+        const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
+
+        const messages: Message[] = parsedData.data.map((row: any) => ({
+          hour: row.hora,
+          title: row.titutlo,
+          body: row.bajada
+        }));
 
         const currentTime = dayjs();
         const currentHour = currentTime.format('h A');
