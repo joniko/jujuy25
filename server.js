@@ -2,14 +2,13 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
-// const { appendUserData } = require('./googleSheets'); // Comentar o eliminar esta línea si no es necesaria
 
 const app = express();
 
 const allowedOrigins = [
     'http://localhost:3000', // Origen local para desarrollo
-    'https://oremos.vercel.app', // Reemplaza con tu dominio de producción en Vercel
-    'https://oremos.app' // Reemplaza con tu dominio de producción en Vercel
+    'https://oremos.vercel.app', // Tu dominio de producción en Vercel
+    'https://oremos.app' // Nuevo dominio
 ];
 
 const corsOptions = {
@@ -25,6 +24,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions)); // Habilita CORS con opciones
+
+// Definir una ruta para la raíz
+app.get('/', (req, res) => {
+    res.send('Servidor de Socket.IO funcionando');
+});
 
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -65,13 +69,6 @@ io.on('connection', (socket) => {
                 church: church || 'N/A'
             };
             io.emit('onlineUsers', { count: onlineUsers, users: userList });
-
-            // Registrar usuario en Google Sheets, si es necesario
-            // try {
-            //   await appendUserData({ name, age, church });
-            // } catch (error) {
-            //   console.error('Error al guardar los datos en Google Sheets:', error);
-            // }
         }
     });
 });
