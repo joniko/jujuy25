@@ -1,34 +1,114 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Mi Aplicación
 
-## Getting Started
+Este repositorio contiene tanto el frontend como el backend de Mi Aplicación.
 
-First, run the development server:
+## Estructura del Proyecto
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+El proyecto está dividido en dos partes principales:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `frontend/`: Contiene el código del frontend de la aplicación.
+- `backend/`: Contiene el código del backend de la aplicación.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuración y Despliegue
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Frontend (Vercel)
 
-## Learn More
+1. Navega al directorio del frontend:
 
-To learn more about Next.js, take a look at the following resources:
+   ```
+   cd frontend
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Instala las dependencias:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   ```
+   npm install
+   ```
 
-## Deploy on Vercel
+3. Para desarrollo local:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+4. Para desplegar en Vercel:
+
+   - Asegúrate de tener una cuenta en [Vercel](https://vercel.com)
+   - Instala la CLI de Vercel:
+     ```
+     npm install -g vercel
+     ```
+   - Inicia sesión en Vercel:
+     ```
+     vercel login
+     ```
+   - Despliega la aplicación:
+     ```
+     vercel
+     ```
+
+5. Para actualizaciones futuras:
+   ```
+   git push origin main
+   ```
+   Vercel desplegará automáticamente si está configurado el despliegue automático.
+
+### Backend (Fly.io)
+
+1. Navega al directorio del backend:
+
+   ```
+   cd backend
+   ```
+
+2. Instala las dependencias:
+
+   ```
+   npm install
+   ```
+
+3. Para desarrollo local:
+
+   ```
+   npm run dev
+   ```
+
+4. Para desplegar en Fly.io:
+
+   - Asegúrate de tener una cuenta en [Fly.io](https://fly.io)
+   - Instala la CLI de Fly:
+     ```
+     curl -L https://fly.io/install.sh | sh
+     ```
+   - Inicia sesión en Fly:
+     ```
+     fly auth login
+     ```
+   - Crea una nueva aplicación en Fly:
+     ```
+     fly launch
+     ```
+   - Configura las variables de entorno necesarias:
+     ```
+     fly secrets set NOMBRE_VARIABLE=valor
+     ```
+   - Despliega la aplicación:
+     ```
+     fly deploy
+     ```
+
+5. Para actualizaciones futuras:
+   ```
+   git push origin main
+   fly deploy
+   ```
+
+## Variables de Entorno
+
+Asegúrate de configurar las variables de entorno necesarias tanto en Vercel como en Fly.io para el correcto funcionamiento de la aplicación.
+
+## Notas Adicionales
+
+- Asegúrate de tener Node.js y npm instalados en tu sistema.
+- Para el backend, es posible que necesites un Dockerfile en la raíz del proyecto para Fly.io.
+- Consulta la documentación de [Vercel](https://vercel.com/docs) y [Fly.io](https://fly.io/docs/) para más detalles sobre la configuración y el despliegue.
