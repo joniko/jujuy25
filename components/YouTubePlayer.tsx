@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Volume2, VolumeX, Music, Play, Pause } from 'lucide-react';
-import Innertube from 'youtubei.js';
 
 interface YouTubePlayerProps {
   videoId?: string;
@@ -20,7 +19,7 @@ interface VideoInfo {
 }
 
 const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ 
-  videoId = 'RO3LQ-nGvB0', // Música de adoración seleccionada
+  videoId = 'xC2YbO10vaM', // Música de adoración seleccionada
   autoplay = true 
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -33,23 +32,14 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     const fetchVideoInfo = async () => {
       try {
         setIsLoading(true);
-        const yt = await Innertube.create();
-        const info = await yt.getInfo(videoId);
+        const response = await fetch(`/api/youtube?videoId=${videoId}`);
         
-        const durationSeconds = info.basic_info.duration || 0;
-        const hours = Math.floor(durationSeconds / 3600);
-        const minutes = Math.floor((durationSeconds % 3600) / 60);
-        const seconds = durationSeconds % 60;
-        const formattedDuration = hours > 0 
-          ? `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-          : `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        if (!response.ok) {
+          throw new Error('Failed to fetch video info');
+        }
 
-        setVideoInfo({
-          title: info.basic_info.title || 'Video de YouTube',
-          thumbnail: info.basic_info.thumbnail?.[0]?.url || '',
-          duration: formattedDuration,
-          channel: info.basic_info.author || 'Canal desconocido'
-        });
+        const data = await response.json();
+        setVideoInfo(data);
       } catch (error) {
         console.error('Error fetching video info:', error);
         // Fallback a información estática si falla
