@@ -17,15 +17,29 @@ npm install
 
 ### 2. Desarrollo Local
 
-Para correr el proyecto en modo desarrollo con hot-reload:
+Para correr el proyecto completo en modo desarrollo (Backend + Frontend):
 
 ```bash
 npm run dev
 ```
 
-Esto iniciará el servidor en `http://localhost:3000` (o el puerto disponible).
+Este comando iniciará **automáticamente ambos servidores**:
+- 🔵 **Backend (Socket.io)**: `http://localhost:4000`
+- 🟣 **Frontend (Next.js)**: `http://localhost:3000`
 
-**Nota:** Este proyecto usa un servidor Express personalizado con Socket.io, por lo que `npm run dev` ejecuta `node server.js` en lugar del servidor de desarrollo estándar de Next.js.
+Abre tu navegador en `http://localhost:3000` para ver la aplicación.
+
+#### Correr servidores individualmente
+
+Si necesitas correr solo uno de los servidores:
+
+```bash
+# Solo Backend (Socket.io) - Puerto 4000
+npm run dev:backend
+
+# Solo Frontend (Next.js) - Puerto 3000
+npm run dev:frontend
+```
 
 ### 3. Construir para Producción
 
@@ -45,10 +59,11 @@ npm start
 
 ### Scripts Disponibles
 
-- `npm run dev` - Inicia el servidor de desarrollo con Express + Socket.io
-- `npm run dev:frontend` - Inicia solo el servidor de desarrollo de Next.js (sin Socket.io)
+- `npm run dev` - **Inicia ambos servidores simultáneamente** (Backend en puerto 4000 + Frontend en puerto 3000)
+- `npm run dev:backend` - Inicia solo el servidor Backend (Socket.io) en puerto 4000
+- `npm run dev:frontend` - Inicia solo el servidor Frontend (Next.js) en puerto 3000
 - `npm run build` - Construye la aplicación para producción
-- `npm start` - Inicia el servidor en modo producción
+- `npm run start` - Inicia el servidor en modo producción
 - `npm run lint` - Ejecuta el linter de ESLint
 
 ## 📁 Estructura del Proyecto
@@ -108,6 +123,9 @@ fly secrets set NOMBRE_VARIABLE=valor
 
 ## 📝 Notas Adicionales
 
-- El proyecto usa un servidor Express personalizado (`server.js`) para soportar WebSockets con Socket.io
-- Para desarrollo frontend puro sin Socket.io, usa `npm run dev:frontend`
+- El proyecto usa **dos servidores en desarrollo**:
+  - Backend Express + Socket.io (`server.js`) en puerto **4000**
+  - Frontend Next.js en puerto **3000**
+- `npm run dev` usa `concurrently` para correr ambos servidores simultáneamente
+- El frontend se conecta al backend Socket.io para funcionalidad en tiempo real
 - El proyecto está configurado con Shadcn UI y sigue las mejores prácticas de Next.js App Router

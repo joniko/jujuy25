@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,magenta\"",
+    "dev:backend": "node server.js",
     "dev:frontend": "next dev",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.7",
     "@types/papaparse": "^5.3.14",
-    "@types/socket.io-client": "^3.0.0"
+    "@types/socket.io-client": "^3.0.0",
+    "concurrently": "^9.2.1"
   }
 }
