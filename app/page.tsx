@@ -109,26 +109,19 @@ export default function Home() {
   return (
     <>
       <main className="min-h-screen bg-background p-4 md:p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-2xl mx-auto space-y-6">
           {/* Header Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-3xl font-bold flex items-center gap-2">
-                Echeverria ora 24/7 
-                <span role="img" aria-label="fire" className="text-2xl">🔥</span>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
-          {/* YouTube Music Player - Solo se muestra después de unirse */}
-          {!isModalOpen && <YouTubePlayer autoplay={true} />}
+          <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
+            Echeverria ora 24/7 
+            <span role="img" aria-label="fire" className="text-2xl">🔥</span>
+          </h1>
 
           {/* Current Prayer Motive */}
-          <Card className="bg-primary/5 border-primary/20">
+          <Card className="bg-primary/5 border-primary">
             <CardHeader className="space-y-4">
               <div className="flex items-center gap-2">
                 <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                <CardTitle className="text-sm font-bold uppercase text-muted-foreground tracking-wide">Motivo de Oración Actual</CardTitle>
+                <CardTitle className="text-sm font-bold uppercase text-primary tracking-wide">Motivo de Oración</CardTitle>
               </div>
               {isLoading ? (
                 <>
@@ -146,6 +139,9 @@ export default function Home() {
               )}
             </CardHeader>
           </Card>
+          
+          {/* YouTube Music Player - Solo se muestra después de unirse */}
+          {!isModalOpen && <YouTubePlayer autoplay={true} />}
 
           {/* Online Users Card */}
           <Card>
@@ -158,12 +154,7 @@ export default function Home() {
             <CardContent>
               <div className="space-y-4">
                 {userList.map((user, index) => (
-                  <div key={index} className="flex items-center space-x-4 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Avatar>
-                      <AvatarFallback>
-                        {user.name.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                  <div key={index} className="flex items-center space-x-4 py-2 rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="flex-1 space-y-1">
                       <p className="font-medium leading-none">{user.name}</p>
                       <p className="text-sm text-muted-foreground">
