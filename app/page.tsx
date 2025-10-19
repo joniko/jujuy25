@@ -8,6 +8,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Papa from 'papaparse';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import FullScreenModal from '../components/FullScreenModal';
 
 dayjs.extend(customParseFormat);
@@ -32,6 +33,7 @@ export default function Home() {
   const [userList, setUserList] = useState<User[]>([]);
   const [message, setMessage] = useState({ title: '', body: '' });
   const [userData, setUserData] = useState<User>({ name: '', age: '', church: '' });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
@@ -59,6 +61,7 @@ export default function Home() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
+        setIsLoading(true);
         const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
         const response = await axios.get(sheetsUrl);
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
@@ -82,6 +85,8 @@ export default function Home() {
         }
       } catch (error) {
         console.error('Error fetching messages:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -111,24 +116,31 @@ export default function Home() {
                 Echeverria ora 24/7 
                 <span role="img" aria-label="fire" className="text-2xl">🔥</span>
               </CardTitle>
-              <CardDescription>
-                Bienvenido, {userData.name || 'Anónimo'}
-              </CardDescription>
             </CardHeader>
           </Card>
 
           {/* Current Prayer Motive */}
-          <Card className="bg-primary/5 border-2 border-primary/20">
+          <Card className="bg-primary/5 border-primary/20">
             <CardHeader className="space-y-4">
               <div className="flex items-center gap-2">
                 <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                <CardTitle className="text-2xl font-bold text-primary">Motivo de Oración Actual</CardTitle>
+                <CardTitle className="text-sm font-bold uppercase text-muted-foreground tracking-wide">Motivo de Oración Actual</CardTitle>
               </div>
-              <CardTitle className="text-xl">{message.title}</CardTitle>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-10 w-3/4" />
+                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-6 w-5/6" />
+                </>
+              ) : (
+                <>
+                  <CardTitle className="text-3xl">{message.title}</CardTitle>
+                  <CardDescription className="text-lg text-muted-foreground">
+                    {message.body}
+                  </CardDescription>
+                </>
+              )}
             </CardHeader>
-            <CardContent>
-              <p className="text-lg text-foreground/90">{message.body}</p>
-            </CardContent>
           </Card>
 
           {/* Online Users Card */}
