@@ -57,7 +57,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
   return (
     <Dialog open={isOpen} modal>
       <DialogPortal>
-        <DialogOverlay className="bg-black/60 backdrop-blur-sm" />
+        <DialogOverlay className="bg-black/60 backdrop-blur-xs" />
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="bg-background rounded-lg shadow-xl max-w-md w-full p-8 space-y-6 animate-in fade-in-0 zoom-in-95">
             <div className="text-center space-y-2">

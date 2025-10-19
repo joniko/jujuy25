@@ -93,7 +93,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     <Card className="p-4 bg-primary/5 border-primary/20">
       {isLoading ? (
         <div className="flex items-center gap-4">
-          <Skeleton className="w-20 h-20 rounded-md flex-shrink-0" />
+          <Skeleton className="w-20 h-20 rounded-md shrink-0" />
           <div className="flex-1 space-y-2">
             <Skeleton className="h-5 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
@@ -107,7 +107,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         <div className="flex items-center gap-4">
           {/* Thumbnail */}
           {videoInfo?.thumbnail ? (
-            <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+            <div className="relative w-20 h-20 shrink-0 rounded-md overflow-hidden bg-muted">
               <img 
                 src={videoInfo.thumbnail} 
                 alt={videoInfo.title}
@@ -118,7 +118,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
               </div>
             </div>
           ) : (
-            <div className="w-20 h-20 flex-shrink-0 rounded-md bg-primary/10 flex items-center justify-center">
+            <div className="w-20 h-20 shrink-0 rounded-md bg-primary/10 flex items-center justify-center">
               <Music className="w-8 h-8 text-primary" />
             </div>
           )}
@@ -137,7 +137,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
           </div>
           
           {/* Controls */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <Button
               variant="outline"
               size="icon"
