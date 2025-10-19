@@ -3,11 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Volume2, VolumeX, Music } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
+import { Volume2, VolumeX, Music, Play, Pause } from 'lucide-react';
+import Innertube from 'youtubei.js';
 
 interface YouTubePlayerProps {
   videoId?: string;
   autoplay?: boolean;
+}
+
+interface VideoInfo {
+  title: string;
+  thumbnail: string;
+  duration: string;
+  channel: string;
 }
 
 const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ 
@@ -16,7 +25,47 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const fetchVideoInfo = async () => {
+      try {
+        setIsLoading(true);
+        const yt = await Innertube.create();
+        const info = await yt.getInfo(videoId);
+        
+        const durationSeconds = info.basic_info.duration || 0;
+        const hours = Math.floor(durationSeconds / 3600);
+        const minutes = Math.floor((durationSeconds % 3600) / 60);
+        const seconds = durationSeconds % 60;
+        const formattedDuration = hours > 0 
+          ? `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+          : `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        setVideoInfo({
+          title: info.basic_info.title || 'Video de YouTube',
+          thumbnail: info.basic_info.thumbnail?.[0]?.url || '',
+          duration: formattedDuration,
+          channel: info.basic_info.author || 'Canal desconocido'
+        });
+      } catch (error) {
+        console.error('Error fetching video info:', error);
+        // Fallback a información estática si falla
+        setVideoInfo({
+          title: 'Música de Adoración',
+          thumbnail: '',
+          duration: '--:--',
+          channel: 'Ambiente de oración'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchVideoInfo();
+  }, [videoId]);
 
   useEffect(() => {
     if (autoplay) {
@@ -52,48 +101,79 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
   return (
     <Card className="p-4 bg-primary/5 border-primary/20">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 p-2 rounded-full">
-            <Music className="w-5 h-5 text-primary" />
+      {isLoading ? (
+        <div className="flex items-center gap-4">
+          <Skeleton className="w-20 h-20 rounded-md flex-shrink-0" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
           </div>
-          <div>
-            <h3 className="font-semibold text-sm">Música de Adoración</h3>
-            <p className="text-xs text-muted-foreground">Ambiente de oración</p>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-9 w-9 rounded-md" />
+            <Skeleton className="h-9 w-9 rounded-md" />
           </div>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleTogglePlay}
-            className="h-9 w-9"
-            aria-label={isPlaying ? "Pausar música" : "Reproducir música"}
-          >
-            {isPlaying ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="6" y="4" width="4" height="16"></rect>
-                <rect x="14" y="4" width="4" height="16"></rect>
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-              </svg>
-            )}
-          </Button>
+      ) : (
+        <div className="flex items-center gap-4">
+          {/* Thumbnail */}
+          {videoInfo?.thumbnail ? (
+            <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+              <img 
+                src={videoInfo.thumbnail} 
+                alt={videoInfo.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                <Music className="w-6 h-6 text-white drop-shadow-lg" />
+              </div>
+            </div>
+          ) : (
+            <div className="w-20 h-20 flex-shrink-0 rounded-md bg-primary/10 flex items-center justify-center">
+              <Music className="w-8 h-8 text-primary" />
+            </div>
+          )}
           
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleToggleMute}
-            className="h-9 w-9"
-            aria-label={isMuted ? "Activar sonido" : "Silenciar"}
-          >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </Button>
+          {/* Video Info */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm line-clamp-2 leading-tight mb-1">
+              {videoInfo?.title || 'Música de Adoración'}
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {videoInfo?.channel || 'Ambiente de oración'}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Duración: {videoInfo?.duration || '--:--'}
+            </p>
+          </div>
+          
+          {/* Controls */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleTogglePlay}
+              className="h-9 w-9"
+              aria-label={isPlaying ? "Pausar música" : "Reproducir música"}
+            >
+              {isPlaying ? (
+                <Pause className="w-4 h-4" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleToggleMute}
+              className="h-9 w-9"
+              aria-label={isMuted ? "Activar sonido" : "Silenciar"}
+            >
+              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* YouTube iframe (oculto) */}
       <iframe
