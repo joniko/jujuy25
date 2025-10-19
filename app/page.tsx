@@ -33,14 +33,12 @@ export default function Home() {
   const [message, setMessage] = useState({ title: '', body: '' });
   const [userData, setUserData] = useState<User>({ name: '', age: '', church: '' });
 
-  console.log('Modal state:', isModalOpen);
-
   useEffect(() => {
-    console.log('Component mounted, modal should be open:', isModalOpen);
-    socket = io('https://oremosapp.fly.dev');
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+    socket = io(socketUrl);
 
     socket.on('connect', () => {
-      console.log('connected');
+      // Connected to Socket.io server
     });
 
     socket.on('onlineUsers', ({ count, users }) => {
@@ -61,12 +59,13 @@ export default function Home() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await axios.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vQxc0yhrKG5AFZlAf9z8I3ufr3zleyrN-F3bxui3MZuhnGIkQliKCVXXRSG5pnqn9xOao9TDDRgVrt5/pub?output=csv');
+        const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
+        const response = await axios.get(sheetsUrl);
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
         const messages: Message[] = parsedData.data.map((row: any) => ({
           hour: row.hora,
-          title: row.titutlo,
+          title: row.titulo || row.titutlo, // Fallback por si hay typo en el CSV
           body: row.bajada
         }));
 
@@ -90,7 +89,6 @@ export default function Home() {
   }, []);
 
   const handleJoin = ({ name, age, church }: { name: string; age: string; church: string }) => {
-    console.log('Joining with data:', { name, age, church });
     if (socket) {
       socket.emit('newUser', {
         name: name.trim() || 'Anónimo',
@@ -99,7 +97,6 @@ export default function Home() {
       });
       setUserData({ name, age, church });
       setIsModalOpen(false);
-      console.log('Modal closed after join');
     }
   };
 
@@ -167,10 +164,7 @@ export default function Home() {
 
       <FullScreenModal 
         isOpen={isModalOpen}
-        onClose={() => {
-          console.log('Modal close requested');
-          setIsModalOpen(false);
-        }}
+        onClose={() => setIsModalOpen(false)}
         onJoin={handleJoin}
       />
     </>

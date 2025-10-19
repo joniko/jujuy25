@@ -98,6 +98,8 @@ oremos/
 
 ## 🚢 Despliegue en Fly.io
 
+### Primera vez o Redeploy
+
 1. Instala la CLI de Fly.io:
    ```bash
    curl -L https://fly.io/install.sh | sh
@@ -113,13 +115,51 @@ oremos/
    fly deploy
    ```
 
+### 🔄 Migrar de EZE a GRU (Región más estable)
+
+Si tu app está en la región **EZE (Buenos Aires)** y tiene problemas, migrala a **GRU (São Paulo)**:
+
+1. **Verifica tu app actual:**
+   ```bash
+   fly status
+   ```
+
+2. **Escala a 0 máquinas en EZE:**
+   ```bash
+   fly scale count 0
+   ```
+
+3. **Despliega en la nueva región GRU:**
+   ```bash
+   fly deploy --region gru
+   ```
+
+4. **Verifica que esté corriendo en GRU:**
+   ```bash
+   fly status
+   ```
+
+**Nota:** El archivo `fly.toml` ya está configurado con `primary_region = "gru"` para mayor estabilidad.
+
 ## 🔧 Variables de Entorno
 
-Configura las variables de entorno necesarias en un archivo `.env.local` para desarrollo local, o en Fly.io para producción usando:
+### Desarrollo Local
+
+Copia el archivo `.env.example` a `.env.local`:
 
 ```bash
-fly secrets set NOMBRE_VARIABLE=valor
+cp .env.example .env.local
 ```
+
+Variables disponibles:
+- `NEXT_PUBLIC_SOCKET_URL`: URL del servidor Socket.io (default: `http://localhost:4000`)
+- `NEXT_PUBLIC_SHEETS_URL`: URL del Google Sheets en formato CSV
+
+### Producción (Vercel)
+
+Configura estas variables en el dashboard de Vercel:
+- `NEXT_PUBLIC_SOCKET_URL=https://oremosapp.fly.dev`
+- `NEXT_PUBLIC_SHEETS_URL=<tu-url-de-google-sheets>`
 
 ## 📝 Notas Adicionales
 
