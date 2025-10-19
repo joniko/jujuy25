@@ -17,5 +17,10 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "iconLibrary": "lucide"
+  "iconLibrary": "lucide",
+  "registries": {
+    "@shadcndesign": {
+      "url": "https://shadcndesign-registry.vercel.app/api/registry/{name}"
+    }
+  }
 }
