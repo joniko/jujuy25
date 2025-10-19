@@ -16,19 +16,36 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
   const [name, setName] = React.useState('');
   const [age, setAge] = React.useState('');
   const [church, setChurch] = React.useState('');
-  const [error, setError] = React.useState('');
+  const [errors, setErrors] = React.useState({
+    name: '',
+    age: '',
+    church: ''
+  });
 
   const handleJoin = () => {
+    const newErrors = {
+      name: '',
+      age: '',
+      church: ''
+    };
+
     if (!name.trim()) {
-      setError('Por favor ingresa tu nombre');
+      newErrors.name = 'El nombre es obligatorio';
+    }
+    if (!age.trim()) {
+      newErrors.age = 'La edad es obligatoria';
+    }
+    if (!church.trim()) {
+      newErrors.church = 'La iglesia es obligatoria';
+    }
+
+    setErrors(newErrors);
+
+    if (newErrors.name || newErrors.age || newErrors.church) {
       return;
     }
-    setError('');
-    onJoin({ name, age, church });
-  };
 
-  const handleSkip = () => {
-    onJoin({ name: 'Anónimo', age: '', church: '' });
+    onJoin({ name, age, church });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -46,7 +63,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-bold">Bienvenido a Oremos 🙏</h2>
               <p className="text-muted-foreground">
-                Únete a nuestra comunidad de oración. Por favor, ingresa tus datos.
+                Para unirte a la oración, por favor completa todos los campos.
               </p>
             </div>
 
@@ -61,62 +78,68 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
                   value={name}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setName(e.target.value);
-                    setError('');
+                    setErrors({ ...errors, name: '' });
                   }}
                   onKeyPress={handleKeyPress}
                   autoFocus
-                  className={error ? 'border-red-500 focus-visible:ring-red-500' : ''}
+                  className={errors.name ? 'border-red-500 focus-visible:ring-red-500' : ''}
                 />
-                {error && (
-                  <p className="text-sm text-red-500">{error}</p>
+                {errors.name && (
+                  <p className="text-sm text-red-500">{errors.name}</p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="age" className="text-sm font-medium">
-                  Edad (opcional)
+                  Edad <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="age"
                   type="number"
                   placeholder="Tu edad"
                   value={age}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAge(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setAge(e.target.value);
+                    setErrors({ ...errors, age: '' });
+                  }}
                   onKeyPress={handleKeyPress}
                   min="1"
                   max="120"
+                  className={errors.age ? 'border-red-500 focus-visible:ring-red-500' : ''}
                 />
+                {errors.age && (
+                  <p className="text-sm text-red-500">{errors.age}</p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="church" className="text-sm font-medium">
-                  Iglesia (opcional)
+                  Iglesia <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="church"
                   placeholder="Nombre de tu iglesia"
                   value={church}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setChurch(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setChurch(e.target.value);
+                    setErrors({ ...errors, church: '' });
+                  }}
                   onKeyPress={handleKeyPress}
+                  className={errors.church ? 'border-red-500 focus-visible:ring-red-500' : ''}
                 />
+                {errors.church && (
+                  <p className="text-sm text-red-500">{errors.church}</p>
+                )}
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 pt-4">
+            <div className="pt-4">
               <Button 
                 onClick={handleJoin}
                 className="w-full h-11"
                 type="button"
               >
                 Unirse a la Oración
-              </Button>
-              <Button 
-                variant="ghost" 
-                onClick={handleSkip}
-                className="w-full h-11"
-                type="button"
-              >
-                Continuar como Anónimo
               </Button>
             </div>
           </div>
