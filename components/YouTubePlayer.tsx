@@ -11,7 +11,7 @@ interface YouTubePlayerProps {
 }
 
 const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ 
-  videoId = '0AEJreNiSiM', // Música de adoración seleccionada
+  videoId = 'RO3LQ-nGvB0', // Música de adoración seleccionada
   autoplay = true 
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -99,7 +99,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       <iframe
         ref={iframeRef}
         style={{ display: 'none' }}
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&enablejsapi=1&controls=0`}
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&start=53&loop=1&playlist=${videoId}&enablejsapi=1&controls=0`}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         title="YouTube Music Player"
