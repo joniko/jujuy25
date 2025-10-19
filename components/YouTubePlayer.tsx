@@ -11,7 +11,7 @@ interface YouTubePlayerProps {
 }
 
 const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ 
-  videoId = 'jfKfPfyJRdk', // Hillsong - Música de adoración tranquila (por defecto)
+  videoId = '0AEJreNiSiM', // Música de adoración seleccionada
   autoplay = true 
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
