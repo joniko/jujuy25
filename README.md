@@ -1,114 +1,113 @@
-# Mi Aplicación
+# Oremos - Aplicación Next.js
 
-Este repositorio contiene tanto el frontend como el backend de Mi Aplicación.
+Aplicación web construida con Next.js 14, React 18, TypeScript, Tailwind CSS, Shadcn UI y Socket.io para funcionalidad en tiempo real.
 
-## Estructura del Proyecto
+## 🚀 Cómo Correr el Proyecto
 
-El proyecto está dividido en dos partes principales:
+### Prerrequisitos
 
-- `frontend/`: Contiene el código del frontend de la aplicación.
-- `backend/`: Contiene el código del backend de la aplicación.
+- Node.js 18+ y npm instalados en tu sistema
+- Git instalado
 
-## Configuración y Despliegue
+### 1. Instalar Dependencias
 
-### Frontend (Vercel)
+```bash
+npm install
+```
 
-1. Navega al directorio del frontend:
+### 2. Desarrollo Local
 
+Para correr el proyecto en modo desarrollo con hot-reload:
+
+```bash
+npm run dev
+```
+
+Esto iniciará el servidor en `http://localhost:3000` (o el puerto disponible).
+
+**Nota:** Este proyecto usa un servidor Express personalizado con Socket.io, por lo que `npm run dev` ejecuta `node server.js` en lugar del servidor de desarrollo estándar de Next.js.
+
+### 3. Construir para Producción
+
+Para crear una build optimizada de producción:
+
+```bash
+npm run build
+```
+
+### 4. Iniciar en Modo Producción
+
+Después de construir, puedes iniciar el servidor en modo producción:
+
+```bash
+npm start
+```
+
+### Scripts Disponibles
+
+- `npm run dev` - Inicia el servidor de desarrollo con Express + Socket.io
+- `npm run dev:frontend` - Inicia solo el servidor de desarrollo de Next.js (sin Socket.io)
+- `npm run build` - Construye la aplicación para producción
+- `npm start` - Inicia el servidor en modo producción
+- `npm run lint` - Ejecuta el linter de ESLint
+
+## 📁 Estructura del Proyecto
+
+```
+oremos/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Layout principal
+│   ├── page.tsx           # Página principal
+│   └── globals.css        # Estilos globales
+├── components/            # Componentes de React
+│   └── FullScreenModal.tsx
+├── src/
+│   ├── components/ui/     # Componentes UI de Shadcn
+│   └── lib/              # Utilidades y helpers
+├── public/               # Archivos estáticos
+├── server.js            # Servidor Express personalizado con Socket.io
+├── Dockerfile           # Configuración Docker para despliegue
+└── fly.toml            # Configuración de Fly.io
+```
+
+## 🎨 Stack Tecnológico
+
+- **Framework:** Next.js 14 (App Router)
+- **Lenguaje:** TypeScript
+- **Estilos:** Tailwind CSS
+- **Componentes UI:** Shadcn UI, Radix UI
+- **Tiempo Real:** Socket.io
+- **Servidor:** Express.js
+- **Validación:** Zod
+- **Formularios:** React Hook Form
+
+## 🚢 Despliegue en Fly.io
+
+1. Instala la CLI de Fly.io:
+   ```bash
+   curl -L https://fly.io/install.sh | sh
    ```
-   cd frontend
+
+2. Inicia sesión:
+   ```bash
+   fly auth login
    ```
 
-2. Instala las dependencias:
-
-   ```
-   npm install
-   ```
-
-3. Para desarrollo local:
-
-   ```
-   npm run dev
-   ```
-
-4. Para desplegar en Vercel:
-
-   - Asegúrate de tener una cuenta en [Vercel](https://vercel.com)
-   - Instala la CLI de Vercel:
-     ```
-     npm install -g vercel
-     ```
-   - Inicia sesión en Vercel:
-     ```
-     vercel login
-     ```
-   - Despliega la aplicación:
-     ```
-     vercel
-     ```
-
-5. Para actualizaciones futuras:
-   ```
-   git push origin main
-   ```
-   Vercel desplegará automáticamente si está configurado el despliegue automático.
-
-### Backend (Fly.io)
-
-1. Navega al directorio del backend:
-
-   ```
-   cd backend
-   ```
-
-2. Instala las dependencias:
-
-   ```
-   npm install
-   ```
-
-3. Para desarrollo local:
-
-   ```
-   npm run dev
-   ```
-
-4. Para desplegar en Fly.io:
-
-   - Asegúrate de tener una cuenta en [Fly.io](https://fly.io)
-   - Instala la CLI de Fly:
-     ```
-     curl -L https://fly.io/install.sh | sh
-     ```
-   - Inicia sesión en Fly:
-     ```
-     fly auth login
-     ```
-   - Crea una nueva aplicación en Fly:
-     ```
-     fly launch
-     ```
-   - Configura las variables de entorno necesarias:
-     ```
-     fly secrets set NOMBRE_VARIABLE=valor
-     ```
-   - Despliega la aplicación:
-     ```
-     fly deploy
-     ```
-
-5. Para actualizaciones futuras:
-   ```
-   git push origin main
+3. Despliega la aplicación:
+   ```bash
    fly deploy
    ```
 
-## Variables de Entorno
+## 🔧 Variables de Entorno
 
-Asegúrate de configurar las variables de entorno necesarias tanto en Vercel como en Fly.io para el correcto funcionamiento de la aplicación.
+Configura las variables de entorno necesarias en un archivo `.env.local` para desarrollo local, o en Fly.io para producción usando:
 
-## Notas Adicionales
+```bash
+fly secrets set NOMBRE_VARIABLE=valor
+```
 
-- Asegúrate de tener Node.js y npm instalados en tu sistema.
-- Para el backend, es posible que necesites un Dockerfile en la raíz del proyecto para Fly.io.
-- Consulta la documentación de [Vercel](https://vercel.com/docs) y [Fly.io](https://fly.io/docs/) para más detalles sobre la configuración y el despliegue.
+## 📝 Notas Adicionales
+
+- El proyecto usa un servidor Express personalizado (`server.js`) para soportar WebSockets con Socket.io
+- Para desarrollo frontend puro sin Socket.io, usa `npm run dev:frontend`
+- El proyecto está configurado con Shadcn UI y sigue las mejores prácticas de Next.js App Router

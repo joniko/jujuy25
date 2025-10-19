@@ -5,8 +5,10 @@ import io, { Socket } from 'socket.io-client';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import FullScreenModal from '../components/FullScreenModal';
 import Papa from 'papaparse';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import FullScreenModal from '../components/FullScreenModal';
 
 dayjs.extend(customParseFormat);
 
@@ -26,18 +28,19 @@ interface Message {
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState(0);
   const [userList, setUserList] = useState<User[]>([]);
   const [message, setMessage] = useState({ title: '', body: '' });
   const [userData, setUserData] = useState<User>({ name: '', age: '', church: '' });
 
+  console.log('Modal state:', isModalOpen);
+
   useEffect(() => {
-    socket = io('https://oremosapp.fly.dev'); // URL de tu servidor de Socket.IO en Fly.io
+    console.log('Component mounted, modal should be open:', isModalOpen);
+    socket = io('https://oremosapp.fly.dev');
 
     socket.on('connect', () => {
       console.log('connected');
-      socket.emit('newUser', { name: 'Anónimo', age: 'N/A', church: 'N/A' });
     });
 
     socket.on('onlineUsers', ({ count, users }) => {
@@ -70,15 +73,10 @@ export default function Home() {
         const currentTime = dayjs();
         const currentHour = currentTime.format('h A');
 
-        console.log('Current Time:', currentHour);
-        console.log('Messages:', messages);
-
         const currentMessage = messages.find((message: Message) => {
           const messageTime = dayjs(message.hour, 'h:mm A');
           return currentHour === messageTime.format('h A');
         });
-
-        console.log('Current Message:', currentMessage);
 
         if (currentMessage) {
           setMessage({ title: currentMessage.title, body: currentMessage.body });
@@ -91,7 +89,8 @@ export default function Home() {
     fetchMessages();
   }, []);
 
-  const handleJoin = ({ name, age, church }: User) => {
+  const handleJoin = ({ name, age, church }: { name: string; age: string; church: string }) => {
+    console.log('Joining with data:', { name, age, church });
     if (socket) {
       socket.emit('newUser', {
         name: name.trim() || 'Anónimo',
@@ -99,35 +98,81 @@ export default function Home() {
         church: church.trim() || 'N/A'
       });
       setUserData({ name, age, church });
-      setIsConnected(true);
-    } else {
-      console.error('Socket is not initialized');
+      setIsModalOpen(false);
+      console.log('Modal closed after join');
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-zinc-900 shadow-lg rounded-lg">
-      <h1 className="text-3xl font-bold mb-4">Echeverria ora 24/7 🔥</h1>
-      <div className="bg-zinc-800 p-4 rounded-lg mb-4">
-        <h2 className="text-xl font-semibold">{message.title}</h2>
-        <p>{message.body}</p>
-      </div>
-      <div className="mb-4">
-        <p>Hola, {userData.name || 'Anónimo'}</p>
-      </div>
-      <div className="bg-zinc-800 p-4 rounded-lg mb-4">
-        <h3 className="text-xl font-semibold mb-2">{onlineUsers} personas en línea</h3>
-        <ul className="user-list">
-          {userList.map((user, index) => (
-            <li key={index} className="p-2 border-b border-zinc-700">
-              <p>Nombre: {user.name}</p>
-              <p>Edad: {user.age}</p>
-              <p>Iglesia: {user.church}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <FullScreenModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onJoin={handleJoin} />
-    </div>
+    <>
+      <main className="min-h-screen bg-background p-4 md:p-8">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Header Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-3xl font-bold flex items-center gap-2">
+                Echeverria ora 24/7 
+                <span role="img" aria-label="fire" className="text-2xl">🔥</span>
+              </CardTitle>
+              <CardDescription>
+                Bienvenido, {userData.name || 'Anónimo'}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          {/* Current Prayer Motive */}
+          <Card className="bg-primary/5 border-2 border-primary/20">
+            <CardHeader className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                <CardTitle className="text-2xl font-bold text-primary">Motivo de Oración Actual</CardTitle>
+              </div>
+              <CardTitle className="text-xl">{message.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg text-foreground/90">{message.body}</p>
+            </CardContent>
+          </Card>
+
+          {/* Online Users Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span>{onlineUsers} personas orando ahora</span>
+                <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {userList.map((user, index) => (
+                  <div key={index} className="flex items-center space-x-4 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                    <Avatar>
+                      <AvatarFallback>
+                        {user.name.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-1">
+                      <p className="font-medium leading-none">{user.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {user.age} años • {user.church}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+
+      <FullScreenModal 
+        isOpen={isModalOpen}
+        onClose={() => {
+          console.log('Modal close requested');
+          setIsModalOpen(false);
+        }}
+        onJoin={handleJoin}
+      />
+    </>
   );
 }

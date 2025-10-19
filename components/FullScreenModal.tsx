@@ -1,4 +1,17 @@
+"use client";
+
 import React from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface FullScreenModalProps {
   isOpen: boolean;
@@ -12,53 +25,66 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
   const [church, setChurch] = React.useState('');
 
   const handleJoin = () => {
+    if (!name.trim()) {
+      alert('Por favor ingresa tu nombre');
+      return;
+    }
     onJoin({ name, age, church });
-    onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-      <div className="bg-zinc-900 p-6 rounded-lg w-full max-w-4xl h-full flex flex-col justify-center">
-        <h2 className="text-2xl font-bold mb-4">Ingresa tus datos</h2>
-        <input
-          type="text"
-          placeholder="Ingresa tu nombre"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg mb-4 text-zinc-950"
-        />
-        <input
-          type="text"
-          placeholder="Ingresa tu edad"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg mb-4 text-zinc-950"
-        />
-        <input
-          type="text"
-          placeholder="Ingresa el nombre de tu iglesia"
-          value={church}
-          onChange={(e) => setChurch(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg mb-4 text-zinc-950"
-        />
-        <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-gray-500 text-white p-2 rounded-lg mr-2"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={handleJoin}
-            className="bg-blue-500 text-white p-2 rounded-lg"
-          >
-            Unirse
-          </button>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-xl">
+            Bienvenido a Oremos 🙏
+          </DialogTitle>
+          <DialogDescription>
+            Por favor, ingresa tus datos para unirte a la oración
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">
+              Nombre <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="name"
+              placeholder="Tu nombre"
+              value={name}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="age">Edad</Label>
+            <Input
+              id="age"
+              type="number"
+              placeholder="Tu edad"
+              value={age}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAge(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="church">Iglesia</Label>
+            <Input
+              id="church"
+              placeholder="Nombre de tu iglesia"
+              value={church}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setChurch(e.target.value)}
+            />
+          </div>
         </div>
-      </div>
-    </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button onClick={handleJoin}>
+            Unirse a la Oración
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
