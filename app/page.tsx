@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import FullScreenModal from '../components/FullScreenModal';
+import YouTubePlayer from '../components/YouTubePlayer';
 
 dayjs.extend(customParseFormat);
 
@@ -118,6 +119,9 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
           </Card>
+
+          {/* YouTube Music Player - Solo se muestra después de unirse */}
+          {!isModalOpen && <YouTubePlayer autoplay={true} />}
 
           {/* Current Prayer Motive */}
           <Card className="bg-primary/5 border-primary/20">
