@@ -21,6 +21,26 @@ Este documento explica cómo configurar el webhook para registrar las entradas y
 3. **Borra todo el código** que viene por defecto
 4. Copia y pega el código que está en el archivo `google-apps-script.js` de este repositorio
 5. Haz clic en el icono de **Guardar** (💾)
+6. Dale un nombre al proyecto (ej: "Webhook Oremos")
+
+## Paso 2.5: ⚠️ IMPORTANTE - Autorizar ANTES de Implementar
+
+**ANTES de implementar como aplicación web, debes autorizar el script:**
+
+1. En el menú desplegable de funciones (arriba), selecciona **test**
+2. Haz clic en el botón **Ejecutar** (▶️)
+3. Aparecerá un mensaje "Autorización necesaria"
+4. Haz clic en **Revisar permisos**
+5. Selecciona tu cuenta de Google
+6. Si aparece "Google no ha verificado esta aplicación":
+   - Haz clic en **Avanzado** (abajo a la izquierda)
+   - Haz clic en **Ir a [nombre del proyecto] (no seguro)**
+7. Haz clic en **Permitir**
+8. Espera que termine la ejecución
+9. Ve a tu Google Sheet y verifica que se haya agregado una fila de prueba
+10. **Elimina la fila de prueba** del sheet
+
+✅ Ahora sí estás listo para implementar
 
 ## Paso 3: Implementar como Aplicación Web
 

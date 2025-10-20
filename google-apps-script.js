@@ -16,13 +16,13 @@
 function doPost(e) {
   try {
     // Obtener el sheet activo
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     
     // Parsear los datos del request
-    const data = JSON.parse(e.postData.contents);
+    var data = JSON.parse(e.postData.contents);
     
     // Crear timestamp en formato legible
-    const timestamp = new Date();
+    var timestamp = new Date();
     
     // Agregar nueva fila con los datos
     sheet.appendRow([
@@ -63,5 +63,19 @@ function doGet(e) {
       timestamp: new Date()
     }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Función de prueba para autorizar manualmente antes de implementar
+function test() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  sheet.appendRow([
+    new Date(), 
+    "test", 
+    "Test User", 
+    "25", 
+    "Test Church", 
+    "test-id"
+  ]);
+  Logger.log("Test completado exitosamente");
 }
 

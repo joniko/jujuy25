@@ -9,7 +9,7 @@ export const metadata = {
 export default function Proposito() {
   return (
     <main className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-4 py-12 space-y-8">
+      <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4">
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl text-balance">

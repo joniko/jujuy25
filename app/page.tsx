@@ -110,11 +110,6 @@ export default function Home() {
     <>
       <main className="min-h-screen bg-background p-4 md:p-8">
         <div className="max-w-2xl mx-auto space-y-6">
-          {/* Header Card */}
-          <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
-            Echeverria ora 24/7 
-            <span role="img" aria-label="fire" className="text-2xl">🔥</span>
-          </h1>
 
           {/* Current Prayer Motive */}
           <Card className="bg-primary/5 border-primary">
