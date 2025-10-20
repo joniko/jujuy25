@@ -1,16 +1,19 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { X } from 'lucide-react';
 
 interface FullScreenModalProps {
   isOpen: boolean;
   onClose: () => void;
   onJoin: ({ name, age, church }: { name: string; age: string; church: string }) => void;
 }
+
+const STORAGE_KEY = 'oremos_user_data';
 
 const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJoin }) => {
   const [name, setName] = React.useState('');
@@ -21,6 +24,23 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
     age: '',
     church: ''
   });
+
+  // Cargar datos guardados de localStorage cuando el modal se abre
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+          const { name: savedName, age: savedAge, church: savedChurch } = JSON.parse(savedData);
+          setName(savedName || '');
+          setAge(savedAge || '');
+          setChurch(savedChurch || '');
+        }
+      } catch (error) {
+        console.error('Error loading saved data:', error);
+      }
+    }
+  }, [isOpen]);
 
   const handleJoin = () => {
     const newErrors = {
@@ -45,7 +65,26 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
       return;
     }
 
+    // Guardar datos en localStorage para la próxima vez
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, age, church }));
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+
     onJoin({ name, age, church });
+  };
+
+  const handleClearData = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      setName('');
+      setAge('');
+      setChurch('');
+      setErrors({ name: '', age: '', church: '' });
+    } catch (error) {
+      console.error('Error clearing data:', error);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -63,7 +102,10 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-bold">Bienvenido a Oremos 🙏</h2>
               <p className="text-muted-foreground">
-                Para unirte a la oración, por favor completa todos los campos.
+                {name || age || church ? 
+                  'Confirma tus datos o edítalos si es necesario.' : 
+                  'Para unirte a la oración, por favor completa todos los campos.'
+                }
               </p>
             </div>
 
@@ -133,7 +175,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-4 space-y-3">
               <Button 
                 onClick={handleJoin}
                 className="w-full h-11"
@@ -141,6 +183,18 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJo
               >
                 Unirse a la Oración
               </Button>
+              
+              {(name || age || church) && (
+                <Button 
+                  onClick={handleClearData}
+                  variant="ghost"
+                  className="w-full h-9 text-muted-foreground hover:text-foreground"
+                  type="button"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Borrar datos guardados
+                </Button>
+              )}
             </div>
           </div>
         </div>
