@@ -194,7 +194,7 @@ export default function Home() {
                   <Button
                     onClick={handleShare}
                     variant="outline"
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto border-primary/20 hover:bg-primary/10"
                   >
                     <Share2 className="w-4 h-4 mr-2" />
                     Compartir

@@ -47,7 +47,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Oremos 24/7" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#F6EEE5" />
+        <meta name="theme-color" content="#EDE8E2" />
         
         <link rel="manifest" href="/manifest.json" />
         <link rel="shortcut icon" href="/favicon.ico" />

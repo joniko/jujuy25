@@ -4,8 +4,8 @@
   "description": "Únete a la cadena de oración 24/7. Ora junto a la comunidad en tiempo real.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#FBF8F1",
+  "theme_color": "#EDE8E2",
   "orientation": "portrait",
   "icons": [
     {
