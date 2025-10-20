@@ -123,11 +123,34 @@ export default function Home() {
     }
 
     try {
-      await navigator.share({
+      const shareData: ShareData = {
         title: `Oremos 24/7 - ${message.title}`,
         text: `🙏 ${message.title}\n\n${message.body}\n\nÚnete a orar con nosotros:`,
         url: 'https://oremos.app'
-      });
+      };
+
+      // Intentar agregar imagen si existe y el navegador lo soporta
+      if (navigator.canShare) {
+        try {
+          const response = await fetch('/share-image.jpg');
+          if (response.ok) {
+            const blob = await response.blob();
+            const file = new File([blob], 'oremos-share.jpg', { type: 'image/jpeg' });
+            
+            // Verificar si el navegador puede compartir archivos
+            const dataWithFile = { ...shareData, files: [file] };
+            if (navigator.canShare(dataWithFile)) {
+              await navigator.share(dataWithFile);
+              return;
+            }
+          }
+        } catch (imageError) {
+          console.log('No se pudo cargar la imagen, compartiendo sin ella');
+        }
+      }
+
+      // Compartir sin imagen si no se pudo agregar
+      await navigator.share(shareData);
     } catch (err) {
       // Usuario canceló o error
       if ((err as Error).name !== 'AbortError') {
