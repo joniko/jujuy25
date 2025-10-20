@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 
@@ -40,6 +41,30 @@ const io = socketIo(server, {
 let onlineUsers = 0;
 let userList = [];
 
+// Webhook URL from environment variable
+const WEBHOOK_URL = process.env.WEBHOOK_URL;
+
+// Function to send data to Google Apps Script webhook
+async function sendToWebhook(eventData) {
+    if (!WEBHOOK_URL) {
+        console.log('WEBHOOK_URL not configured, skipping analytics');
+        return;
+    }
+    
+    try {
+        await axios.post(WEBHOOK_URL, eventData, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            timeout: 5000 // 5 second timeout
+        });
+        console.log('Analytics sent:', eventData.event);
+    } catch (error) {
+        console.error('Failed to send analytics:', error.message);
+        // Don't throw error - analytics failure shouldn't break the app
+    }
+}
+
 io.on('connection', (socket) => {
     onlineUsers++;
     const newUser = {
@@ -55,10 +80,22 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         onlineUsers--;
+        const disconnectedUser = userList.find(user => user.id === socket.id);
         userList = userList.filter(user => user.id !== socket.id);
         io.emit('onlineUsers', { count: onlineUsers, users: userList });
         console.log('User disconnected', socket.id);
         console.log('Online Users:', onlineUsers, userList);
+        
+        // Send leave event to webhook
+        if (disconnectedUser) {
+            sendToWebhook({
+                event: 'leave',
+                name: disconnectedUser.name,
+                age: disconnectedUser.age,
+                church: disconnectedUser.church,
+                socketId: socket.id
+            });
+        }
     });
 
     socket.on('newUser', async ({ name, age, church }) => {
@@ -71,6 +108,15 @@ io.on('connection', (socket) => {
                 church: church || 'N/A'
             };
             io.emit('onlineUsers', { count: onlineUsers, users: userList });
+            
+            // Send join event to webhook
+            sendToWebhook({
+                event: 'join',
+                name: name || 'Anónimo',
+                age: age || 'N/A',
+                church: church || 'N/A',
+                socketId: socket.id
+            });
         }
     });
 });
