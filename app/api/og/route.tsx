@@ -8,10 +8,24 @@ async function getCurrentPrayerMotive() {
   try {
     const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL;
     if (!sheetsUrl) {
-      throw new Error('NEXT_PUBLIC_SHEETS_URL not configured');
+      console.log('NEXT_PUBLIC_SHEETS_URL not configured, using default values');
+      const currentHour = new Date().getHours();
+      return { 
+        title: 'Únete a orar con nosotros', 
+        body: 'Cadena de oración 24/7 - Cada hora un nuevo motivo',
+        hour: currentHour.toString()
+      };
     }
 
-    const response = await fetch(sheetsUrl, { cache: 'no-store' });
+    const response = await fetch(sheetsUrl, { 
+      cache: 'no-store',
+      next: { revalidate: 0 }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const csvText = await response.text();
     
     // Parse CSV manualmente (simple parser para Edge runtime)
@@ -80,17 +94,24 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     
-    // Si vienen parámetros en la URL, usarlos (para el botón compartir)
-    // Si no, obtener el motivo actual del Google Sheet (para OG tags)
-    let title = searchParams.get('title');
-    let body = searchParams.get('body');
-    let hour = searchParams.get('hour');
+    // Valores por defecto
+    let title = searchParams.get('title') || 'Únete a orar con nosotros';
+    let body = searchParams.get('body') || 'Cadena de oración 24/7 - Cada hora un nuevo motivo';
+    let hour = searchParams.get('hour') || new Date().getHours().toString();
     
-    if (!title || !body) {
-      const currentMotive = await getCurrentPrayerMotive();
-      title = title || currentMotive.title;
-      body = body || currentMotive.body;
-      hour = hour || currentMotive.hour;
+    // Si no vienen parámetros, intentar obtener del Google Sheet
+    if (!searchParams.has('title') && !searchParams.has('body')) {
+      try {
+        const currentMotive = await getCurrentPrayerMotive();
+        if (currentMotive && currentMotive.title && currentMotive.body) {
+          title = currentMotive.title;
+          body = currentMotive.body;
+          hour = currentMotive.hour;
+        }
+      } catch (error) {
+        console.error('Error getting current motive, using defaults:', error);
+        // Usar los valores por defecto ya asignados
+      }
     }
 
     // Cargar fuente Inter desde Google Fonts
