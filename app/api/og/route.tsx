@@ -95,6 +95,15 @@ export async function GET(request: NextRequest) {
       hour = hour || currentMotive.hour;
     }
 
+    // Cargar fuente Inter desde Google Fonts
+    const interRegular = await fetch(
+      'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff'
+    ).then((res) => res.arrayBuffer());
+
+    const interBold = await fetch(
+      'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff'
+    ).then((res) => res.arrayBuffer());
+
     return new ImageResponse(
       (
         <div
@@ -123,7 +132,8 @@ export async function GET(request: NextRequest) {
             <div
               style={{
                 fontSize: 72,
-                fontWeight: 'bold',
+                fontWeight: 700,
+                fontFamily: 'Inter',
                 background: 'linear-gradient(to right, #9f1239, #dc2626)',
                 backgroundClip: 'text',
                 color: 'transparent',
@@ -164,7 +174,8 @@ export async function GET(request: NextRequest) {
                   padding: '8px 16px',
                   borderRadius: '12px',
                   fontSize: 20,
-                  fontWeight: 'bold',
+                  fontWeight: 700,
+                  fontFamily: 'Inter',
                   display: 'flex',
                 }}
               >
@@ -176,7 +187,8 @@ export async function GET(request: NextRequest) {
             <div
               style={{
                 fontSize: 48,
-                fontWeight: 'bold',
+                fontWeight: 700,
+                fontFamily: 'Inter',
                 color: '#1f2937',
                 marginBottom: '24px',
                 lineHeight: 1.2,
@@ -190,6 +202,7 @@ export async function GET(request: NextRequest) {
             <div
               style={{
                 fontSize: 28,
+                fontFamily: 'Inter',
                 color: '#6b7280',
                 lineHeight: 1.5,
                 display: 'flex',
@@ -205,7 +218,8 @@ export async function GET(request: NextRequest) {
               marginTop: '40px',
               fontSize: 32,
               color: '#9f1239',
-              fontWeight: 'bold',
+              fontWeight: 700,
+              fontFamily: 'Inter',
               display: 'flex',
             }}
           >
@@ -216,6 +230,20 @@ export async function GET(request: NextRequest) {
       {
         width: 1200,
         height: 630,
+        fonts: [
+          {
+            name: 'Inter',
+            data: interRegular,
+            style: 'normal',
+            weight: 400,
+          },
+          {
+            name: 'Inter',
+            data: interBold,
+            style: 'normal',
+            weight: 700,
+          },
+        ],
       }
     );
   } catch (e) {
