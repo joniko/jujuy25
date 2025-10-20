@@ -109,7 +109,7 @@ export default function Home() {
   return (
     <>
       <main className="min-h-screen bg-background p-4 md:p-8">
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="max-w-2xl mx-auto space-y-4">
 
           {/* Current Prayer Motive */}
           <Card className="bg-primary/5 border-primary">
