@@ -136,7 +136,7 @@ export default function Home() {
           </Card>
           
           {/* YouTube Music Player - Solo se muestra después de unirse */}
-          {!isModalOpen && <YouTubePlayer autoplay={true} />}
+          {!isModalOpen && <YouTubePlayer autoplay={false} />}
 
           {/* Online Users Card */}
           <Card>
