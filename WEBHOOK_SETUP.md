@@ -6,13 +6,16 @@ Este documento explica cómo configurar el webhook para registrar las entradas y
 
 1. Ve a [Google Sheets](https://sheets.google.com)
 2. Crea un nuevo documento y nómbralo "Registro Oremos 24/7"
-3. En la primera fila (encabezados), escribe las siguientes columnas:
+3. Crea o renombra una pestaña como **"Actividad"** (debe llamarse exactamente así)
+4. En la primera fila de la pestaña "Actividad" (encabezados), escribe:
    - A1: `Timestamp`
    - B1: `Evento`
    - C1: `Nombre`
    - D1: `Edad`
    - E1: `Iglesia`
    - F1: `Socket ID`
+
+**Nota:** El script automáticamente creará la pestaña "Actividad" con los encabezados si no existe, pero es mejor crearla manualmente para tener control.
 
 ## Paso 2: Configurar el Apps Script
 
@@ -93,9 +96,9 @@ Consulta la documentación de tu plataforma para agregar variables de entorno.
 
 1. Reinicia tu servidor backend
 2. Abre la aplicación y completa el formulario de entrada
-3. Ve a tu Google Sheet - deberías ver una nueva fila con los datos del usuario
+3. Ve a tu Google Sheet → pestaña **"Actividad"** - deberías ver una nueva fila con los datos del usuario
 4. Cierra la aplicación o recarga la página
-5. Deberías ver otra entrada con el evento "leave"
+5. Deberías ver otra entrada con el evento "leave" en la pestaña "Actividad"
 
 ## Estructura de los Datos
 
@@ -124,9 +127,11 @@ Cada entrada en el Google Sheet tendrá:
 
 ### Los datos no se guardan correctamente
 
-1. Verifica que los encabezados del Google Sheet estén en la primera fila
-2. Asegúrate de que el script tenga permisos de escritura en el sheet
-3. Revisa la consola de Apps Script para ver errores (Ver → Registros)
+1. Verifica que exista una pestaña llamada exactamente **"Actividad"** en tu Google Sheet
+2. Verifica que los encabezados estén en la primera fila de la pestaña "Actividad"
+3. Asegúrate de que el script tenga permisos de escritura en el sheet
+4. Revisa la consola de Apps Script para ver errores (Ver → Registros)
+5. Si la pestaña no existe, el script la creará automáticamente con los encabezados
 
 ## Notas Importantes
 

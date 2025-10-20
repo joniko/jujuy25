@@ -15,8 +15,16 @@
 
 function doPost(e) {
   try {
-    // Obtener el sheet activo
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    // Obtener la pestaña específica "Actividad"
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = spreadsheet.getSheetByName('Actividad');
+    
+    // Si no existe la pestaña "Actividad", crearla
+    if (!sheet) {
+      sheet = spreadsheet.insertSheet('Actividad');
+      // Agregar encabezados si es una pestaña nueva
+      sheet.appendRow(['Timestamp', 'Evento', 'Nombre', 'Edad', 'Iglesia', 'Socket ID']);
+    }
     
     // Parsear los datos del request
     var data = JSON.parse(e.postData.contents);
@@ -38,7 +46,7 @@ function doPost(e) {
     return ContentService
       .createTextOutput(JSON.stringify({ 
         success: true, 
-        message: 'Datos registrados exitosamente',
+        message: 'Datos registrados exitosamente en pestaña Actividad',
         timestamp: timestamp
       }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -67,7 +75,16 @@ function doGet(e) {
 
 // Función de prueba para autorizar manualmente antes de implementar
 function test() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName('Actividad');
+  
+  // Si no existe la pestaña "Actividad", crearla
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet('Actividad');
+    // Agregar encabezados
+    sheet.appendRow(['Timestamp', 'Evento', 'Nombre', 'Edad', 'Iglesia', 'Socket ID']);
+  }
+  
   sheet.appendRow([
     new Date(), 
     "test", 
@@ -76,6 +93,6 @@ function test() {
     "Test Church", 
     "test-id"
   ]);
-  Logger.log("Test completado exitosamente");
+  Logger.log("Test completado exitosamente en pestaña Actividad");
 }
 
