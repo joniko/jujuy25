@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://oremos.app'),
-  title: 'Oremos 24/7 - Echeverria Ora',
+  title: 'Oremos 24/7',
   description: 'Únete a la cadena de oración 24/7. Ora junto a la comunidad en tiempo real.',
   openGraph: {
     title: 'Oremos 24/7 🙏',
@@ -19,10 +19,10 @@ export const metadata: Metadata = {
         url: '/api/og', // Imagen dinámica generada por Vercel OG
         width: 1200,
         height: 630,
-        alt: 'Oremos 24/7 - Echeverria Ora',
+        alt: 'Oremos 24/7',
       },
     ],
-    locale: 'es_ES',
+    locale: 'es_AR',
     type: 'website',
   },
   twitter: {
@@ -47,7 +47,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Oremos 24/7" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#F6EEE5" />
         
         <link rel="manifest" href="/manifest.json" />
         <link rel="shortcut icon" href="/favicon.ico" />
