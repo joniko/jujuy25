@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: 'Oremos 24/7',
     images: [
       {
-        url: '/share-image.jpg', // Imagen que debes agregar en /public
+        url: '/api/og', // Imagen dinámica generada por Vercel OG
         width: 1200,
         height: 630,
         alt: 'Oremos 24/7 - Echeverria Ora',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Oremos 24/7 🙏',
     description: 'Únete a la cadena de oración 24/7. Ora junto a la comunidad en tiempo real.',
-    images: ['/share-image.jpg'],
+    images: ['/api/og'],
   },
 }
 

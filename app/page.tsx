@@ -109,6 +109,8 @@ export default function Home() {
   };
 
   const handleShare = async () => {
+    const currentHour = new Date().getHours();
+    
     // Verificar si el navegador soporta Web Share API
     if (!navigator.share) {
       // Fallback: copiar al clipboard
@@ -129,13 +131,16 @@ export default function Home() {
         url: 'https://oremos.app'
       };
 
-      // Intentar agregar imagen si existe y el navegador lo soporta
+      // Intentar agregar imagen OG dinámica si el navegador lo soporta
       if (navigator.canShare) {
         try {
-          const response = await fetch('/share-image.jpg');
+          // Generar URL de la imagen OG con el motivo actual
+          const ogImageUrl = `/api/og?title=${encodeURIComponent(message.title)}&body=${encodeURIComponent(message.body)}&hour=${currentHour}`;
+          const response = await fetch(ogImageUrl);
+          
           if (response.ok) {
             const blob = await response.blob();
-            const file = new File([blob], 'oremos-share.jpg', { type: 'image/jpeg' });
+            const file = new File([blob], 'oremos-motivo.png', { type: 'image/png' });
             
             // Verificar si el navegador puede compartir archivos
             const dataWithFile = { ...shareData, files: [file] };
@@ -145,7 +150,7 @@ export default function Home() {
             }
           }
         } catch (imageError) {
-          console.log('No se pudo cargar la imagen, compartiendo sin ella');
+          console.log('No se pudo cargar la imagen OG, compartiendo sin ella');
         }
       }
 
