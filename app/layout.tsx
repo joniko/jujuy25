@@ -50,8 +50,10 @@ export default function RootLayout({
         <meta name="theme-color" content="#EDE8E2" />
         
         <link rel="manifest" href="/manifest.json" />
-        <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="196x196" href="/favicon-196.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icon-192x192.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         
         {/* Apple Touch Icons */}
         <link rel="apple-touch-icon" href="/apple-icon-180.png" />
