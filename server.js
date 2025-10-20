@@ -1,3 +1,7 @@
+// Load environment variables from .env.local (fallback to .env)
+require('dotenv').config({ path: '.env.local' });
+require('dotenv').config(); // Fallback to .env if .env.local doesn't exist
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
