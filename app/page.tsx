@@ -7,7 +7,6 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Papa from 'papaparse';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Share2 } from 'lucide-react';
@@ -35,7 +34,6 @@ export default function Home() {
   const [onlineUsers, setOnlineUsers] = useState(0);
   const [userList, setUserList] = useState<User[]>([]);
   const [message, setMessage] = useState({ title: '', body: '' });
-  const [userData, setUserData] = useState<User>({ name: '', age: '', church: '' });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -69,9 +67,9 @@ export default function Home() {
         const response = await axios.get(sheetsUrl);
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
-        const messages: Message[] = parsedData.data.map((row: any) => ({
+        const messages: Message[] = (parsedData.data as Array<{ hora: string; titulo?: string; titutlo?: string; bajada: string }>).map((row) => ({
           hour: row.hora,
-          title: row.titulo || row.titutlo, // Fallback por si hay typo en el CSV
+          title: row.titulo || row.titutlo || '', // Fallback por si hay typo en el CSV
           body: row.bajada
         }));
 
@@ -103,7 +101,6 @@ export default function Home() {
         age: age.trim() || 'N/A',
         church: church.trim() || 'N/A'
       });
-      setUserData({ name, age, church });
       setIsModalOpen(false);
     }
   };
@@ -149,7 +146,7 @@ export default function Home() {
               return;
             }
           }
-        } catch (imageError) {
+        } catch {
           console.log('No se pudo cargar la imagen OG, compartiendo sin ella');
         }
       }

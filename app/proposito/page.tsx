@@ -32,27 +32,27 @@ export default function Proposito() {
             <div className="space-y-3">
               <div className="bg-card p-4 rounded-lg border border-border">
                 <p className="text-sm font-semibold text-primary mb-2">1 Tesalonicenses 5:17</p>
-                <p className="text-base italic">"Oren sin cesar"</p>
+                <p className="text-base italic">&ldquo;Oren sin cesar&rdquo;</p>
               </div>
               
               <div className="bg-card p-4 rounded-lg border border-border">
                 <p className="text-sm font-semibold text-primary mb-2">Mateo 18:20</p>
                 <p className="text-base italic">
-                  "Porque donde dos o tres se reúnen en mi nombre, allí estoy yo en medio de ellos"
+                  &ldquo;Porque donde dos o tres se reúnen en mi nombre, allí estoy yo en medio de ellos&rdquo;
                 </p>
               </div>
               
               <div className="bg-card p-4 rounded-lg border border-border">
                 <p className="text-sm font-semibold text-primary mb-2">Santiago 5:16</p>
                 <p className="text-base italic">
-                  "La oración del justo es poderosa y eficaz"
+                  &ldquo;La oración del justo es poderosa y eficaz&rdquo;
                 </p>
               </div>
 
               <div className="bg-card p-4 rounded-lg border border-border">
                 <p className="text-sm font-semibold text-primary mb-2">Lucas 18:1</p>
                 <p className="text-base italic">
-                  "Jesús les contó una parábola para enseñarles que debían orar siempre, sin desanimarse"
+                  &ldquo;Jesús les contó una parábola para enseñarles que debían orar siempre, sin desanimarse&rdquo;
                 </p>
               </div>
             </div>

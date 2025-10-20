@@ -16,12 +16,10 @@ async function getCurrentPrayerMotive() {
     
     // Parse CSV manualmente (simple parser para Edge runtime)
     const lines = csvText.split('\n');
-    const headers = lines[0].split(',');
     
     // Obtener hora actual
     const now = new Date();
     const currentHour = now.getHours();
-    const currentMinutes = now.getMinutes();
     
     // Buscar el motivo que corresponde a la hora actual
     for (let i = 1; i < lines.length; i++) {

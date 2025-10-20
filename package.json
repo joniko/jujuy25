@@ -54,6 +54,8 @@
     "@flydotio/dockerfile": "^0.5.7",
     "@types/papaparse": "^5.3.15",
     "@types/serviceworker": "^0.0.158",
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2"
   }
 }

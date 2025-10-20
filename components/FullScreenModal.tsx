@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/components/ui/dialog";
+import { Dialog, DialogOverlay, DialogPortal } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,7 @@ interface FullScreenModalProps {
 
 const STORAGE_KEY = 'oremos_user_data';
 
-const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onClose, onJoin }) => {
+const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => {
   const [name, setName] = React.useState('');
   const [age, setAge] = React.useState('');
   const [church, setChurch] = React.useState('');
