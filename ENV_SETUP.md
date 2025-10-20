@@ -9,7 +9,7 @@ URL del webhook de Google Apps Script para registrar entradas/salidas de usuario
 
 **Tu URL actual:**
 ```
-https://script.google.com/macros/s/AKfycbyLd604Gv-1B6KMEgmPny5S4z_yBP6fT6939XPz5vwwr6C_A9P77sQi5-cPvt4Kj3Gx/exec
+https://script.google.com/macros/s/AKfycbxsLr4BcySC-9Qqa7y56myOVPDGevkSqHM_H59l29D4ccDCmGRmwg8Xi9eWCcFdpzGr/exec
 ```
 
 ### NEXT_PUBLIC_SOCKET_URL (Frontend)
@@ -27,7 +27,7 @@ Crea un archivo `.env` en la raíz del proyecto:
 
 ```bash
 # Backend - Google Apps Script Webhook
-WEBHOOK_URL=https://script.google.com/macros/s/AKfycbyLd604Gv-1B6KMEgmPny5S4z_yBP6fT6939XPz5vwwr6C_A9P77sQi5-cPvt4Kj3Gx/exec
+WEBHOOK_URL=https://script.google.com/macros/s/AKfycbxsLr4BcySC-9Qqa7y56myOVPDGevkSqHM_H59l29D4ccDCmGRmwg8Xi9eWCcFdpzGr/exec
 
 # Frontend - Socket.io
 NEXT_PUBLIC_SOCKET_URL=http://localhost:4000
@@ -43,7 +43,7 @@ NEXT_PUBLIC_SHEETS_URL=https://docs.google.com/spreadsheets/d/TU_SHEET_ID/export
 Si tu backend está en Fly.io:
 
 ```bash
-fly secrets set WEBHOOK_URL=https://script.google.com/macros/s/AKfycbyLd604Gv-1B6KMEgmPny5S4z_yBP6fT6939XPz5vwwr6C_A9P77sQi5-cPvt4Kj3Gx/exec
+fly secrets set WEBHOOK_URL=https://script.google.com/macros/s/AKfycbxsLr4BcySC-9Qqa7y56myOVPDGevkSqHM_H59l29D4ccDCmGRmwg8Xi9eWCcFdpzGr/exec
 ```
 
 ### Vercel (Frontend)
@@ -67,7 +67,7 @@ Consulta la documentación de tu plataforma para agregar variables de entorno.
 Ejecuta en terminal:
 
 ```bash
-curl https://script.google.com/macros/s/AKfycbyLd604Gv-1B6KMEgmPny5S4z_yBP6fT6939XPz5vwwr6C_A9P77sQi5-cPvt4Kj3Gx/exec
+curl https://script.google.com/macros/s/AKfycbxsLr4BcySC-9Qqa7y56myOVPDGevkSqHM_H59l29D4ccDCmGRmwg8Xi9eWCcFdpzGr/exec
 ```
 
 Deberías ver:

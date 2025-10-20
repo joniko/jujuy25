@@ -47,20 +47,21 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL;
 // Function to send data to Google Apps Script webhook
 async function sendToWebhook(eventData) {
     if (!WEBHOOK_URL) {
-        console.log('WEBHOOK_URL not configured, skipping analytics');
+        console.log('⚠️  WEBHOOK_URL not configured, skipping analytics');
         return;
     }
     
     try {
-        await axios.post(WEBHOOK_URL, eventData, {
+        const response = await axios.post(WEBHOOK_URL, eventData, {
             headers: {
                 'Content-Type': 'application/json'
             },
             timeout: 5000 // 5 second timeout
         });
-        console.log('Analytics sent:', eventData.event);
+        console.log(`📊 Analytics sent: ${eventData.event} - ${eventData.name}`);
+        console.log(`✅ Response:`, response.data);
     } catch (error) {
-        console.error('Failed to send analytics:', error.message);
+        console.error(`❌ Failed to send analytics for ${eventData.event}:`, error.message);
         // Don't throw error - analytics failure shouldn't break the app
     }
 }
@@ -123,5 +124,12 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`\n🚀 Server running on port ${PORT}`);
+    console.log(`📊 Analytics: ${WEBHOOK_URL ? '✅ ENABLED' : '❌ DISABLED (WEBHOOK_URL not configured)'}`);
+    if (WEBHOOK_URL) {
+        console.log(`🔗 Webhook URL: ${WEBHOOK_URL.substring(0, 50)}...`);
+    } else {
+        console.log(`⚠️  Set WEBHOOK_URL environment variable to enable analytics`);
+        console.log(`📖 See ENV_SETUP.md for instructions\n`);
+    }
 });
