@@ -50,14 +50,13 @@ export default function RootLayout({
         <meta name="theme-color" content="#EDE8E2" />
         
         <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" type="image/png" sizes="196x196" href="/favicon-196.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/icon-192x192.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="shortcut icon" href="/favicon.ico" />
         
         {/* Apple Touch Icons */}
-        <link rel="apple-touch-icon" href="/apple-icon-180.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         
         {/* Splash Screens for iOS */}
         <link
