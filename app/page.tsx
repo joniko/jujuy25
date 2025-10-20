@@ -9,6 +9,8 @@ import Papa from 'papaparse';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Share2 } from 'lucide-react';
 import FullScreenModal from '../components/FullScreenModal';
 import YouTubePlayer from '../components/YouTubePlayer';
 
@@ -106,10 +108,38 @@ export default function Home() {
     }
   };
 
+  const handleShare = async () => {
+    // Verificar si el navegador soporta Web Share API
+    if (!navigator.share) {
+      // Fallback: copiar al clipboard
+      const shareText = `🙏 Únete a orar con nosotros\n\n${message.title}\n${message.body}\n\n👉 https://oremos.app`;
+      try {
+        await navigator.clipboard.writeText(shareText);
+        alert('¡Texto copiado! Ahora puedes pegarlo donde quieras.');
+      } catch (err) {
+        console.error('Error al copiar:', err);
+      }
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: `Oremos 24/7 - ${message.title}`,
+        text: `🙏 ${message.title}\n\n${message.body}\n\nÚnete a orar con nosotros:`,
+        url: 'https://oremos.app'
+      });
+    } catch (err) {
+      // Usuario canceló o error
+      if ((err as Error).name !== 'AbortError') {
+        console.error('Error al compartir:', err);
+      }
+    }
+  };
+
   return (
     <>
       <main className="min-h-screen bg-background p-4 md:p-8">
-        <div className="max-w-2xl mx-auto space-y-4">
+        <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
 
           {/* Current Prayer Motive */}
           <Card className="bg-primary/5 border-primary">
@@ -126,10 +156,21 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <CardTitle className="text-2xl md:text-3xl md:leading-tight">{message.title}</CardTitle>
-                  <CardDescription className="text-lg text-muted-foreground">
-                    {message.body}
-                  </CardDescription>
+                  <div className="space-y-4">
+                    <CardTitle className="text-2xl md:text-3xl md:leading-tight">{message.title}</CardTitle>
+                    <CardDescription className="text-lg text-muted-foreground">
+                      {message.body}
+                    </CardDescription>
+                  </div>
+                  
+                  <Button
+                    onClick={handleShare}
+                    variant="outline"
+                    className="w-full sm:w-auto"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Compartir
+                  </Button>
                 </>
               )}
             </CardHeader>
