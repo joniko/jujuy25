@@ -3,14 +3,97 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
+// Función para obtener el motivo de oración actual del Google Sheet
+async function getCurrentPrayerMotive() {
+  try {
+    const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL;
+    if (!sheetsUrl) {
+      throw new Error('NEXT_PUBLIC_SHEETS_URL not configured');
+    }
+
+    const response = await fetch(sheetsUrl, { cache: 'no-store' });
+    const csvText = await response.text();
+    
+    // Parse CSV manualmente (simple parser para Edge runtime)
+    const lines = csvText.split('\n');
+    const headers = lines[0].split(',');
+    
+    // Obtener hora actual
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+    
+    // Buscar el motivo que corresponde a la hora actual
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.trim()) continue;
+      
+      // Parse la línea (considerando que puede haber comas dentro de comillas)
+      const match = line.match(/^([^,]*),([^,]*),(.*)$/);
+      if (!match) continue;
+      
+      const hora = match[1].trim();
+      const titulo = match[2].trim().replace(/^"|"$/g, '');
+      const bajada = match[3].trim().replace(/^"|"$/g, '');
+      
+      // Convertir hora del CSV al formato de 24h
+      let csvHour = 0;
+      if (hora.includes('AM') || hora.includes('PM')) {
+        // Formato 12h
+        const hourMatch = hora.match(/(\d+):?(\d*)\s*(AM|PM)/i);
+        if (hourMatch) {
+          csvHour = parseInt(hourMatch[1]);
+          if (hourMatch[3].toUpperCase() === 'PM' && csvHour !== 12) {
+            csvHour += 12;
+          } else if (hourMatch[3].toUpperCase() === 'AM' && csvHour === 12) {
+            csvHour = 0;
+          }
+        }
+      } else {
+        // Formato 24h
+        const hourMatch = hora.match(/(\d+)/);
+        if (hourMatch) {
+          csvHour = parseInt(hourMatch[1]);
+        }
+      }
+      
+      if (csvHour === currentHour) {
+        return { title: titulo, body: bajada, hour: currentHour.toString() };
+      }
+    }
+    
+    // Si no se encuentra, devolver el primero disponible
+    return { 
+      title: 'Únete a orar con nosotros', 
+      body: 'Cadena de oración 24/7',
+      hour: currentHour.toString()
+    };
+  } catch (error) {
+    console.error('Error fetching prayer motive:', error);
+    return { 
+      title: 'Únete a orar con nosotros', 
+      body: 'Cadena de oración 24/7',
+      hour: new Date().getHours().toString()
+    };
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     
-    // Obtener parámetros de la URL o valores por defecto
-    const title = searchParams.get('title') || 'Únete a orar con nosotros';
-    const body = searchParams.get('body') || 'Cadena de oración 24/7';
-    const hour = searchParams.get('hour') || new Date().getHours().toString();
+    // Si vienen parámetros en la URL, usarlos (para el botón compartir)
+    // Si no, obtener el motivo actual del Google Sheet (para OG tags)
+    let title = searchParams.get('title');
+    let body = searchParams.get('body');
+    let hour = searchParams.get('hour');
+    
+    if (!title || !body) {
+      const currentMotive = await getCurrentPrayerMotive();
+      title = title || currentMotive.title;
+      body = body || currentMotive.body;
+      hour = hour || currentMotive.hour;
+    }
 
     return new ImageResponse(
       (
