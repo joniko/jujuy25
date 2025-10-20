@@ -22,8 +22,11 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   videoId = 'xC2YbO10vaM', // Música de adoración seleccionada
   autoplay = true 
 }) => {
+  // Detectar iOS para manejar autoplay correctamente
+  const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(isIOS); // Iniciar muted en iOS para permitir autoplay
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -166,7 +169,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       <iframe
         ref={iframeRef}
         style={{ display: 'none' }}
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&start=53&loop=1&playlist=${videoId}&enablejsapi=1&controls=0`}
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${isIOS ? '1' : '0'}&start=53&loop=1&playlist=${videoId}&enablejsapi=1&controls=0`}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         title="YouTube Music Player"
