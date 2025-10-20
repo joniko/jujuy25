@@ -126,7 +126,7 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <CardTitle className="text-3xl">{message.title}</CardTitle>
+                  <CardTitle className="text-2xl md:text-3xl md:leading-tight">{message.title}</CardTitle>
                   <CardDescription className="text-lg text-muted-foreground">
                     {message.body}
                   </CardDescription>
@@ -136,13 +136,15 @@ export default function Home() {
           </Card>
           
           {/* YouTube Music Player - Solo se muestra después de unirse */}
-          {!isModalOpen && <YouTubePlayer autoplay={false} />}
+          {!isModalOpen && <YouTubePlayer autoplay={true} />}
 
           {/* Online Users Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span>{onlineUsers} personas orando ahora</span>
+                <span>
+                  {onlineUsers} {onlineUsers === 1 ? 'persona' : 'personas'} orando ahora
+                </span>
                 <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               </CardTitle>
             </CardHeader>
