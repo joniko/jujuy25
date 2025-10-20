@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Volume2, VolumeX, Music, Play, Pause } from 'lucide-react';
+import { Music, Play, Pause } from 'lucide-react';
 
 interface YouTubePlayerProps {
   videoId?: string;
@@ -26,7 +26,6 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
   
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -82,17 +81,6 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
   };
 
-  const handleToggleMute = () => {
-    if (iframeRef.current && iframeRef.current.contentWindow) {
-      const command = isMuted ? 'unMute' : 'mute';
-      iframeRef.current.contentWindow.postMessage(
-        JSON.stringify({ event: 'command', func: command, args: [] }),
-        '*'
-      );
-      setIsMuted(!isMuted);
-    }
-  };
-
   return (
     <Card className="p-4">
       {isLoading ? (
@@ -102,10 +90,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
             <Skeleton className="h-5 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
           </div>
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-9 w-9 rounded-md" />
-            <Skeleton className="h-9 w-9 rounded-md" />
-          </div>
+          <Skeleton className="h-9 w-9 rounded-md shrink-0" />
         </div>
       ) : (
         <div className="flex items-center gap-4">
@@ -137,32 +122,20 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
             </p>
           </div>
           
-          {/* Controls */}
-          <div className="flex items-center gap-2 shrink-0">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleTogglePlay}
-              className="h-9 w-9"
-              aria-label={isPlaying ? "Pausar música" : "Reproducir música"}
-            >
-              {isPlaying ? (
-                <Pause className="w-4 h-4" />
-              ) : (
-                <Play className="w-4 h-4" />
-              )}
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleToggleMute}
-              className="h-9 w-9"
-              aria-label={isMuted ? "Activar sonido" : "Silenciar"}
-            >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </Button>
-          </div>
+          {/* Control */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleTogglePlay}
+            className="h-9 w-9 shrink-0"
+            aria-label={isPlaying ? "Pausar música" : "Reproducir música"}
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+          </Button>
         </div>
       )}
 
