@@ -26,7 +26,6 @@ export default function CronogramaPage() {
   const router = useRouter();
   const [scheduleItems, setScheduleItems] = useState<PrayerScheduleItem[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentHour, setCurrentHour] = useState('');
 
   useEffect(() => {
@@ -35,13 +34,11 @@ export default function CronogramaPage() {
         // Solo mostrar loading en el fetch inicial
         if (isInitial) {
           setIsInitialLoading(true);
-        } else {
-          setIsRefreshing(true);
         }
 
         const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
         // Agregar timestamp para evitar cache del navegador
-        const cacheBuster = `?t=${Date.now()}`;
+        const cacheBuster = `&t=${Date.now()}`;
         const response = await axios.get(sheetsUrl + cacheBuster, {
           headers: {
             'Cache-Control': 'no-cache',
@@ -87,8 +84,6 @@ export default function CronogramaPage() {
       } finally {
         if (isInitial) {
           setIsInitialLoading(false);
-        } else {
-          setIsRefreshing(false);
         }
       }
     };
@@ -194,7 +189,7 @@ export default function CronogramaPage() {
                   
                   {/* Media del item */}
                   {item.media && (
-                    <CardContent>
+                    <CardContent className="p-0 pb-2">
                       <MediaDisplay media={item.media} title={item.title} />
                     </CardContent>
                   )}

@@ -40,7 +40,6 @@ export default function Home() {
   const [userList, setUserList] = useState<User[]>([]);
   const [message, setMessage] = useState({ title: '', body: '', media: '', responsible: '' });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
@@ -71,13 +70,11 @@ export default function Home() {
         // Solo mostrar loading en el fetch inicial
         if (isInitial) {
           setIsInitialLoading(true);
-        } else {
-          setIsRefreshing(true);
         }
 
         const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
         // Agregar timestamp para evitar cache del navegador
-        const cacheBuster = `?t=${Date.now()}`;
+        const cacheBuster = `&t=${Date.now()}`;
         const response = await axios.get(sheetsUrl + cacheBuster, {
           headers: {
             'Cache-Control': 'no-cache',
@@ -148,8 +145,6 @@ export default function Home() {
       } finally {
         if (isInitial) {
           setIsInitialLoading(false);
-        } else {
-          setIsRefreshing(false);
         }
       }
     };
