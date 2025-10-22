@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -9,7 +10,7 @@ import Papa from 'papaparse';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Share2 } from 'lucide-react';
+import { Share2, ChevronRight } from 'lucide-react';
 import FullScreenModal from '../components/FullScreenModal';
 import YouTubePlayer from '../components/YouTubePlayer';
 
@@ -27,9 +28,12 @@ interface Message {
   hour: string;
   title: string;
   body: string;
+  responsible: string;
+  media: string;
 }
 
 export default function Home() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [onlineUsers, setOnlineUsers] = useState(0);
   const [userList, setUserList] = useState<User[]>([]);
@@ -67,10 +71,20 @@ export default function Home() {
         const response = await axios.get(sheetsUrl);
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
-        const messages: Message[] = (parsedData.data as Array<{ hora: string; titulo?: string; titutlo?: string; bajada: string }>).map((row) => ({
+        const messages: Message[] = (parsedData.data as Array<{ 
+          hora: string; 
+          titulo?: string; 
+          titutlo?: string; 
+          bajada: string; 
+          responsable?: string; 
+          'video/imagen'?: string;
+          media?: string;
+        }>).map((row) => ({
           hour: row.hora,
           title: row.titulo || row.titutlo || '', // Fallback por si hay typo en el CSV
-          body: row.bajada
+          body: row.bajada,
+          responsible: row.responsable || '',
+          media: row['video/imagen'] || row.media || ''
         }));
 
         const currentTime = dayjs();
@@ -167,11 +181,17 @@ export default function Home() {
         <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
 
           {/* Current Prayer Motive */}
-          <Card className="bg-primary/5 border-primary">
+          <Card 
+            className="bg-primary/5 border-primary cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push('/cronograma')}
+          >
             <CardHeader className="space-y-4">
-              <div className="flex items-center gap-2">
-                <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                <CardTitle className="text-sm font-bold uppercase text-primary tracking-wide">Motivo de Oración</CardTitle>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                  <CardTitle className="text-sm font-bold uppercase text-primary tracking-wide">Motivo de Oración</CardTitle>
+                </div>
+                <ChevronRight className="w-5 h-5 text-primary" />
               </div>
               {isLoading ? (
                 <>
@@ -189,7 +209,10 @@ export default function Home() {
                   </div>
                   
                   <Button
-                    onClick={handleShare}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShare();
+                    }}
                     variant="outline"
                     className="w-full sm:w-auto border-primary/20 hover:bg-primary/10"
                   >
