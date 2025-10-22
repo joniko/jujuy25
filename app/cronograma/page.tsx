@@ -66,7 +66,18 @@ export default function CronogramaPage() {
       }
     };
 
+    // Fetch inicial
     fetchSchedule();
+    
+    // Auto-refresh cada 3 minutos (180000 ms)
+    const refreshInterval = setInterval(() => {
+      console.log('🔄 Auto-refreshing cronograma from Google Sheets...');
+      fetchSchedule();
+    }, 180000);
+
+    return () => {
+      clearInterval(refreshInterval);
+    };
   }, []);
 
   const isCurrentHour = (hour: string): boolean => {

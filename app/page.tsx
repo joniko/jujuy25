@@ -121,7 +121,18 @@ export default function Home() {
       }
     };
 
+    // Fetch inicial
     fetchMessages();
+    
+    // Auto-refresh cada 3 minutos (180000 ms)
+    const refreshInterval = setInterval(() => {
+      console.log('🔄 Auto-refreshing data from Google Sheets...');
+      fetchMessages();
+    }, 180000);
+
+    return () => {
+      clearInterval(refreshInterval);
+    };
   }, []);
 
   const handleJoin = ({ name, age, church }: { name: string; age: string; church: string }) => {
