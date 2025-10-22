@@ -39,7 +39,7 @@ export default function MediaDisplay({ media, title = 'Media' }: MediaDisplayPro
   if (isYouTubeUrl(media) && youtubeId) {
     console.log('✅ Rendering YouTube video with ID:', youtubeId);
     return (
-      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted">
+      <div className="relative w-full aspect-video rounded-b-lg overflow-hidden bg-muted">
         <iframe
           src={`https://www.youtube.com/embed/${youtubeId}`}
           title={title}
@@ -54,7 +54,7 @@ export default function MediaDisplay({ media, title = 'Media' }: MediaDisplayPro
   console.log('🖼️ Rendering image with URL:', media);
   
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-muted">
+    <div className="relative w-full overflow-hidden rounded-b-lg bg-muted">
       <img
         src={media}
         alt={title}

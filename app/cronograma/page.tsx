@@ -189,7 +189,7 @@ export default function CronogramaPage() {
                   
                   {/* Media del item */}
                   {item.media && (
-                    <CardContent className="p-0 pb-2">
+                    <CardContent className="p-0">
                       <MediaDisplay media={item.media} title={item.title} />
                     </CardContent>
                   )}
