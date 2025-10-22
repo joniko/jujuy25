@@ -127,6 +127,12 @@ export default function CronogramaPage() {
                             <Clock className="w-4 h-4" />
                             {item.hour}
                           </div>
+                          {item.responsible && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
+                            <User className="w-4 h-4" />
+                            <span className="font-medium">{item.responsible}</span>
+                          </div>
+                        )}
                           {isCurrent && (
                             <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
                               <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
@@ -142,13 +148,6 @@ export default function CronogramaPage() {
                         <CardDescription className="text-base">
                           {item.body}
                         </CardDescription>
-
-                        {item.responsible && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
-                            <User className="w-4 h-4" />
-                            <span className="font-medium">Responsable: {item.responsible}</span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </CardHeader>
