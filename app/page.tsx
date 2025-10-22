@@ -78,6 +78,7 @@ export default function Home() {
           titutlo?: string; 
           bajada: string; 
           responsable?: string; 
+          'Video o imagen'?: string;
           'video/imagen'?: string;
           media?: string;
         }>).map((row) => {
@@ -89,7 +90,7 @@ export default function Home() {
             title: row.titulo || row.titutlo || '', // Fallback por si hay typo en el CSV
             body: row.bajada,
             responsible: row.responsable || '',
-            media: row['video/imagen'] || row.media || ''
+            media: row['Video o imagen'] || row['video/imagen'] || row.media || ''
           };
         });
 
@@ -222,6 +223,13 @@ export default function Home() {
                       {message.body}
                     </CardDescription>
                   </div>
+
+                   {/* Media del motivo actual */}
+            {!isLoading && message.media && (
+              <CardContent onClick={(e) => e.stopPropagation()}>
+                <MediaDisplay media={message.media} title={message.title} />
+              </CardContent>
+            )}
                   
                   <Button
                     onClick={(e) => {
@@ -238,12 +246,7 @@ export default function Home() {
               )}
             </CardHeader>
             
-            {/* Media del motivo actual */}
-            {!isLoading && message.media && (
-              <CardContent onClick={(e) => e.stopPropagation()}>
-                <MediaDisplay media={message.media} title={message.title} />
-              </CardContent>
-            )}
+           
           </Card>
           
           {/* YouTube Music Player - Solo se muestra después de unirse */}

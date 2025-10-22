@@ -41,6 +41,7 @@ export default function CronogramaPage() {
           titutlo?: string;
           bajada: string;
           responsable?: string;
+          'Video o imagen'?: string;
           'video/imagen'?: string;
           media?: string;
         }>).map((row) => ({
@@ -48,7 +49,7 @@ export default function CronogramaPage() {
           title: row.titulo || row.titutlo || '',
           body: row.bajada,
           responsible: row.responsable || '',
-          media: row['video/imagen'] || row.media || ''
+          media: row['Video o imagen'] || row['video/imagen'] || row.media || ''
         }));
 
         setScheduleItems(items);
