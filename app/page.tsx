@@ -80,13 +80,18 @@ export default function Home() {
           responsable?: string; 
           'video/imagen'?: string;
           media?: string;
-        }>).map((row) => ({
-          hour: row.hora,
-          title: row.titulo || row.titutlo || '', // Fallback por si hay typo en el CSV
-          body: row.bajada,
-          responsible: row.responsable || '',
-          media: row['video/imagen'] || row.media || ''
-        }));
+        }>).map((row) => {
+          console.log('📋 CSV Row:', row);
+          console.log('🔍 Available keys:', Object.keys(row));
+          
+          return {
+            hour: row.hora,
+            title: row.titulo || row.titutlo || '', // Fallback por si hay typo en el CSV
+            body: row.bajada,
+            responsible: row.responsable || '',
+            media: row['video/imagen'] || row.media || ''
+          };
+        });
 
         const currentTime = dayjs();
         const currentHour = currentTime.format('h A');
@@ -97,6 +102,10 @@ export default function Home() {
         });
 
         if (currentMessage) {
+          console.log('📊 Current Message Data:', currentMessage);
+          console.log('🎬 Media URL:', currentMessage.media);
+          console.log('👤 Responsible:', currentMessage.responsible);
+          
           setMessage({ 
             title: currentMessage.title, 
             body: currentMessage.body,
