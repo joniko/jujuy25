@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, User } from 'lucide-react';
-import MediaDisplay from '../../components/MediaDisplay';
 
 dayjs.extend(customParseFormat);
 
@@ -76,7 +75,7 @@ export default function CronogramaPage() {
 
   return (
     <main className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
           <Button
@@ -88,8 +87,7 @@ export default function CronogramaPage() {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Cronograma de Oración</h1>
-            <p className="text-muted-foreground">Cadena de oración 24/7</p>
+            <h1 className="text-2xl font-bold">Cronograma de Oración</h1>
           </div>
         </div>
 
@@ -137,7 +135,7 @@ export default function CronogramaPage() {
                           )}
                         </div>
                         
-                        <CardTitle className="text-xl md:text-2xl">
+                        <CardTitle className="text-xl md:text-xl">
                           {item.title}
                         </CardTitle>
                         
@@ -148,19 +146,12 @@ export default function CronogramaPage() {
                         {item.responsible && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
                             <User className="w-4 h-4" />
-                            <span className="font-medium">Responsable:</span>
-                            <span>{item.responsible}</span>
+                            <span className="font-medium">Responsable: {item.responsible}</span>
                           </div>
                         )}
                       </div>
                     </div>
                   </CardHeader>
-
-                  {item.media && (
-                    <CardContent>
-                      <MediaDisplay media={item.media} title={item.title} />
-                    </CardContent>
-                  )}
                 </Card>
               );
             })}

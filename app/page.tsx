@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Share2, ChevronRight } from 'lucide-react';
 import FullScreenModal from '../components/FullScreenModal';
 import YouTubePlayer from '../components/YouTubePlayer';
+import MediaDisplay from '../components/MediaDisplay';
 
 dayjs.extend(customParseFormat);
 
@@ -37,7 +38,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [onlineUsers, setOnlineUsers] = useState(0);
   const [userList, setUserList] = useState<User[]>([]);
-  const [message, setMessage] = useState({ title: '', body: '' });
+  const [message, setMessage] = useState({ title: '', body: '', media: '', responsible: '' });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -96,7 +97,12 @@ export default function Home() {
         });
 
         if (currentMessage) {
-          setMessage({ title: currentMessage.title, body: currentMessage.body });
+          setMessage({ 
+            title: currentMessage.title, 
+            body: currentMessage.body,
+            media: currentMessage.media,
+            responsible: currentMessage.responsible
+          });
         }
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -222,6 +228,13 @@ export default function Home() {
                 </>
               )}
             </CardHeader>
+            
+            {/* Media del motivo actual */}
+            {!isLoading && message.media && (
+              <CardContent onClick={(e) => e.stopPropagation()}>
+                <MediaDisplay media={message.media} title={message.title} />
+              </CardContent>
+            )}
           </Card>
           
           {/* YouTube Music Player - Solo se muestra después de unirse */}
