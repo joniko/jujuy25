@@ -224,12 +224,12 @@ export default function Home() {
                     </CardDescription>
                   </div>
 
-                   {/* Media del motivo actual */}
-            {!isLoading && message.media && (
-              <CardContent onClick={(e) => e.stopPropagation()}>
-                <MediaDisplay media={message.media} title={message.title} />
-              </CardContent>
-            )}
+                  {/* Media del motivo actual */}
+                  {!isLoading && message.media && (
+                    <CardContent onClick={(e) => e.stopPropagation()} className="p-0">
+                      <MediaDisplay media={message.media} title={message.title} />
+                    </CardContent>
+                  )}
                   
                   <Button
                     onClick={(e) => {
@@ -246,7 +246,6 @@ export default function Home() {
               )}
             </CardHeader>
             
-           
           </Card>
           
           {/* YouTube Music Player - Solo se muestra después de unirse */}

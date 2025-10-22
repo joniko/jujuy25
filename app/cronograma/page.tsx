@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, User } from 'lucide-react';
+import MediaDisplay from '../../components/MediaDisplay';
 
 dayjs.extend(customParseFormat);
 
@@ -152,6 +153,13 @@ export default function CronogramaPage() {
                       </div>
                     </div>
                   </CardHeader>
+                  
+                  {/* Media del item */}
+                  {item.media && (
+                    <CardContent>
+                      <MediaDisplay media={item.media} title={item.title} />
+                    </CardContent>
+                  )}
                 </Card>
               );
             })}
