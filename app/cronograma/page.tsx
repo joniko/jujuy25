@@ -123,14 +123,14 @@ export default function CronogramaPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-2 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                          <div className="flex items-center gap-1 text-sm font-semibold text-primary">
                             <Clock className="w-4 h-4" />
                             {item.hour}
                           </div>
-                          {item.responsible && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
+                        {item.responsible && (
+                          <div className="flex items-center gap-1 text-sm font-semibold uppercase text-muted-foreground">
                             <User className="w-4 h-4" />
-                            <span className="font-medium">{item.responsible}</span>
+                            {item.responsible}
                           </div>
                         )}
                           {isCurrent && (
