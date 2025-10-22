@@ -25,15 +25,28 @@ interface PrayerScheduleItem {
 export default function CronogramaPage() {
   const router = useRouter();
   const [scheduleItems, setScheduleItems] = useState<PrayerScheduleItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentHour, setCurrentHour] = useState('');
 
   useEffect(() => {
-    const fetchSchedule = async () => {
+    const fetchSchedule = async (isInitial = false) => {
       try {
-        setIsLoading(true);
+        // Solo mostrar loading en el fetch inicial
+        if (isInitial) {
+          setIsInitialLoading(true);
+        } else {
+          setIsRefreshing(true);
+        }
+
         const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
-        const response = await axios.get(sheetsUrl);
+        // Agregar timestamp para evitar cache del navegador
+        const cacheBuster = `?t=${Date.now()}`;
+        const response = await axios.get(sheetsUrl + cacheBuster, {
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
         const items: PrayerScheduleItem[] = (parsedData.data as Array<{
@@ -53,7 +66,17 @@ export default function CronogramaPage() {
           media: row['Video o imagen'] || row['video/imagen'] || row.media || ''
         }));
 
-        setScheduleItems(items);
+        // Comparar datos para detectar cambios
+        const hasChanges = JSON.stringify(items) !== JSON.stringify(scheduleItems);
+        
+        if (hasChanges) {
+          if (!isInitial) {
+            console.log('✅ Cambios detectados en el cronograma - Actualizando');
+          }
+          setScheduleItems(items);
+        } else if (!isInitial) {
+          console.log('ℹ️ Sin cambios en el cronograma');
+        }
 
         // Set current hour for highlighting
         const now = dayjs();
@@ -62,23 +85,27 @@ export default function CronogramaPage() {
       } catch (error) {
         console.error('Error fetching schedule:', error);
       } finally {
-        setIsLoading(false);
+        if (isInitial) {
+          setIsInitialLoading(false);
+        } else {
+          setIsRefreshing(false);
+        }
       }
     };
 
     // Fetch inicial
-    fetchSchedule();
+    fetchSchedule(true);
     
-    // Auto-refresh cada 3 minutos (180000 ms)
+    // Auto-refresh cada 30 segundos
     const refreshInterval = setInterval(() => {
-      console.log('🔄 Auto-refreshing cronograma from Google Sheets...');
-      fetchSchedule();
-    }, 180000);
+      console.log('🔄 Verificando cambios en cronograma...');
+      fetchSchedule(false);
+    }, 30000);
 
     return () => {
       clearInterval(refreshInterval);
     };
-  }, []);
+  }, [scheduleItems]);
 
   const isCurrentHour = (hour: string): boolean => {
     if (!hour || !currentHour) return false;
@@ -105,7 +132,7 @@ export default function CronogramaPage() {
         </div>
 
         {/* Loading State */}
-        {isLoading ? (
+        {isInitialLoading ? (
           <div className="space-y-4">
             {[...Array(6)].map((_, i) => (
               <Card key={i}>
@@ -178,7 +205,7 @@ export default function CronogramaPage() {
         )}
 
         {/* Empty State */}
-        {!isLoading && scheduleItems.length === 0 && (
+        {!isInitialLoading && scheduleItems.length === 0 && (
           <Card>
             <CardContent className="text-center py-12">
               <p className="text-muted-foreground">

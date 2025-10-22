@@ -39,7 +39,8 @@ export default function Home() {
   const [onlineUsers, setOnlineUsers] = useState(0);
   const [userList, setUserList] = useState<User[]>([]);
   const [message, setMessage] = useState({ title: '', body: '', media: '', responsible: '' });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
@@ -65,11 +66,23 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const fetchMessages = async () => {
+    const fetchMessages = async (isInitial = false) => {
       try {
-        setIsLoading(true);
+        // Solo mostrar loading en el fetch inicial
+        if (isInitial) {
+          setIsInitialLoading(true);
+        } else {
+          setIsRefreshing(true);
+        }
+
         const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
-        const response = await axios.get(sheetsUrl);
+        // Agregar timestamp para evitar cache del navegador
+        const cacheBuster = `?t=${Date.now()}`;
+        const response = await axios.get(sheetsUrl + cacheBuster, {
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
         const messages: Message[] = (parsedData.data as Array<{ 
@@ -82,8 +95,10 @@ export default function Home() {
           'video/imagen'?: string;
           media?: string;
         }>).map((row) => {
-          console.log('📋 CSV Row:', row);
-          console.log('🔍 Available keys:', Object.keys(row));
+          if (isInitial) {
+            console.log('📋 CSV Row:', row);
+            console.log('🔍 Available keys:', Object.keys(row));
+          }
           
           return {
             hour: row.hora,
@@ -103,37 +118,55 @@ export default function Home() {
         });
 
         if (currentMessage) {
-          console.log('📊 Current Message Data:', currentMessage);
-          console.log('🎬 Media URL:', currentMessage.media);
-          console.log('👤 Responsible:', currentMessage.responsible);
-          
-          setMessage({ 
-            title: currentMessage.title, 
+          // Crear objeto nuevo para comparar
+          const newMessage = {
+            title: currentMessage.title,
             body: currentMessage.body,
             media: currentMessage.media,
             responsible: currentMessage.responsible
-          });
+          };
+
+          // Solo actualizar si hay cambios
+          const hasChanges = JSON.stringify(newMessage) !== JSON.stringify(message);
+          
+          if (hasChanges) {
+            console.log('✅ Cambios detectados en el Excel - Actualizando motivo de oración');
+            setMessage(newMessage);
+          } else if (!isInitial) {
+            console.log('ℹ️ Sin cambios detectados');
+          }
+
+          if (isInitial) {
+            console.log('📊 Current Message Data:', currentMessage);
+            console.log('🎬 Media URL:', currentMessage.media);
+            console.log('👤 Responsible:', currentMessage.responsible);
+            setMessage(newMessage);
+          }
         }
       } catch (error) {
         console.error('Error fetching messages:', error);
       } finally {
-        setIsLoading(false);
+        if (isInitial) {
+          setIsInitialLoading(false);
+        } else {
+          setIsRefreshing(false);
+        }
       }
     };
 
     // Fetch inicial
-    fetchMessages();
+    fetchMessages(true);
     
-    // Auto-refresh cada 3 minutos (180000 ms)
+    // Auto-refresh cada 30 segundos
     const refreshInterval = setInterval(() => {
-      console.log('🔄 Auto-refreshing data from Google Sheets...');
-      fetchMessages();
-    }, 180000);
+      console.log('🔄 Verificando cambios en Google Sheets...');
+      fetchMessages(false);
+    }, 30000);
 
     return () => {
       clearInterval(refreshInterval);
     };
-  }, []);
+  }, [message]);
 
   const handleJoin = ({ name, age, church }: { name: string; age: string; church: string }) => {
     if (socket) {
@@ -220,7 +253,7 @@ export default function Home() {
                 </div>
                 <ChevronRight className="w-5 h-5 text-primary" />
               </div>
-              {isLoading ? (
+              {isInitialLoading ? (
                 <>
                   <Skeleton className="h-10 w-3/4" />
                   <Skeleton className="h-6 w-full" />
@@ -235,12 +268,12 @@ export default function Home() {
                     </CardDescription>
                   </div>
 
-                  {/* Media del motivo actual */}
-                  {!isLoading && message.media && (
-                    <CardContent onClick={(e) => e.stopPropagation()} className="p-0">
-                      <MediaDisplay media={message.media} title={message.title} />
-                    </CardContent>
-                  )}
+                   {/* Media del motivo actual */}
+                   {!isInitialLoading && message.media && (
+                     <CardContent onClick={(e) => e.stopPropagation()} className="p-0">
+                       <MediaDisplay media={message.media} title={message.title} />
+                     </CardContent>
+                   )}
                   
                   <Button
                     onClick={(e) => {
