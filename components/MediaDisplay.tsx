@@ -25,19 +25,13 @@ const isYouTubeUrl = (url: string): boolean => {
 };
 
 export default function MediaDisplay({ media, title = 'Media' }: MediaDisplayProps) {
-  console.log('🎥 MediaDisplay received:', { media, title });
-  
   if (!media) {
-    console.log('❌ No media URL provided');
     return null;
   }
 
   const youtubeId = extractYouTubeId(media);
-  console.log('🔍 YouTube ID:', youtubeId);
-  console.log('🔍 Is YouTube URL:', isYouTubeUrl(media));
 
   if (isYouTubeUrl(media) && youtubeId) {
-    console.log('✅ Rendering YouTube video with ID:', youtubeId);
     return (
       <div className="relative w-full aspect-video rounded-b-lg overflow-hidden bg-muted">
         <iframe
@@ -50,8 +44,6 @@ export default function MediaDisplay({ media, title = 'Media' }: MediaDisplayPro
       </div>
     );
   }
-
-  console.log('🖼️ Rendering image with URL:', media);
   
   return (
     <div className="relative w-full overflow-hidden rounded-b-lg bg-muted">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 import axios from 'axios';
@@ -40,6 +40,7 @@ export default function Home() {
   const [userList, setUserList] = useState<User[]>([]);
   const [message, setMessage] = useState({ title: '', body: '', media: '', responsible: '' });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const messageRef = useRef({ title: '', body: '', media: '', responsible: '' });
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
@@ -124,10 +125,13 @@ export default function Home() {
           };
 
           // Solo actualizar si hay cambios
-          const hasChanges = JSON.stringify(newMessage) !== JSON.stringify(message);
+          const hasChanges = JSON.stringify(newMessage) !== JSON.stringify(messageRef.current);
           
           if (hasChanges) {
-            console.log('✅ Cambios detectados en el Excel - Actualizando motivo de oración');
+            if (!isInitial) {
+              console.log('✅ Cambios detectados en el Excel - Actualizando motivo de oración');
+            }
+            messageRef.current = newMessage;
             setMessage(newMessage);
           } else if (!isInitial) {
             console.log('ℹ️ Sin cambios detectados');
@@ -137,7 +141,6 @@ export default function Home() {
             console.log('📊 Current Message Data:', currentMessage);
             console.log('🎬 Media URL:', currentMessage.media);
             console.log('👤 Responsible:', currentMessage.responsible);
-            setMessage(newMessage);
           }
         }
       } catch (error) {
@@ -161,7 +164,8 @@ export default function Home() {
     return () => {
       clearInterval(refreshInterval);
     };
-  }, [message]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleJoin = ({ name, age, church }: { name: string; age: string; church: string }) => {
     if (socket) {

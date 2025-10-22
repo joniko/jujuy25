@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -27,6 +27,7 @@ export default function CronogramaPage() {
   const [scheduleItems, setScheduleItems] = useState<PrayerScheduleItem[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [currentHour, setCurrentHour] = useState('');
+  const scheduleItemsRef = useRef<PrayerScheduleItem[]>([]);
 
   useEffect(() => {
     const fetchSchedule = async (isInitial = false) => {
@@ -64,12 +65,13 @@ export default function CronogramaPage() {
         }));
 
         // Comparar datos para detectar cambios
-        const hasChanges = JSON.stringify(items) !== JSON.stringify(scheduleItems);
+        const hasChanges = JSON.stringify(items) !== JSON.stringify(scheduleItemsRef.current);
         
         if (hasChanges) {
           if (!isInitial) {
             console.log('✅ Cambios detectados en el cronograma - Actualizando');
           }
+          scheduleItemsRef.current = items;
           setScheduleItems(items);
         } else if (!isInitial) {
           console.log('ℹ️ Sin cambios en el cronograma');
@@ -100,7 +102,8 @@ export default function CronogramaPage() {
     return () => {
       clearInterval(refreshInterval);
     };
-  }, [scheduleItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const isCurrentHour = (hour: string): boolean => {
     if (!hour || !currentHour) return false;
