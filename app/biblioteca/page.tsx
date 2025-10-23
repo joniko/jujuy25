@@ -257,7 +257,7 @@ export default function BibliotecaPage() {
                           className={`
                             flex items-start gap-3 p-4 rounded-lg border-2 
                             transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
-                            text-left group
+                            text-left group cursor-pointer
                             ${getFileTypeColor(archivo.tipo)}
                           `}
                         >
