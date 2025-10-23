@@ -191,9 +191,6 @@ export default function BibliotecaPage() {
     };
   }, []);
 
-  const handleFileClick = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
 
   return (
     <main className="min-h-screen bg-background p-4 md:p-8">
@@ -251,9 +248,11 @@ export default function BibliotecaPage() {
                   {post.archivos.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {post.archivos.map((archivo, archivoIndex) => (
-                        <button
+                        <a
                           key={archivoIndex}
-                          onClick={() => handleFileClick(archivo.url)}
+                          href={archivo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="
                             flex items-start gap-3 p-4 rounded-lg border
                             bg-white hover:bg-gray-50 border-gray-200 hover:border-gray-300
@@ -287,7 +286,7 @@ export default function BibliotecaPage() {
                           <div className="shrink-0">
                             <ExternalLink className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
-                        </button>
+                        </a>
                       ))}
                     </div>
                   ) : (
