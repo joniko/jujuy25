@@ -107,7 +107,17 @@ export default function CronogramaPage() {
 
   const isCurrentHour = (hour: string): boolean => {
     if (!hour || !currentHour) return false;
-    const itemTime = dayjs(hour, 'h:mm A');
+    
+    // Limpiar el formato del CSV: "1:00 a. m." -> "1:00 AM"
+    const cleanHour = hour
+      .replace(/\s+/g, ' ')  // Normalizar espacios
+      .replace('a. m.', 'AM')
+      .replace('p. m.', 'PM')
+      .replace('a.m.', 'AM')
+      .replace('p.m.', 'PM')
+      .trim();
+    
+    const itemTime = dayjs(cleanHour, 'h:mm A');
     return currentHour === itemTime.format('h A');
   };
 
@@ -179,7 +189,7 @@ export default function CronogramaPage() {
                           )}
                         </div>
                         
-                        <CardTitle className="text-xl md:text-xl">
+                        <CardTitle className="text-xl md:text-2xl">
                           {item.title}
                         </CardTitle>
                         

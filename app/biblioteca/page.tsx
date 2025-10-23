@@ -239,7 +239,7 @@ export default function BibliotecaPage() {
             {libraryPosts.map((post, postIndex) => (
               <Card key={postIndex}>
                 <CardHeader>
-                  <CardTitle className="text-2xl md:text-3xl">{post.titulo}</CardTitle>
+                  <CardTitle className="text-xl md:text-2xl">{post.titulo}</CardTitle>
                   {post.bajada && (
                     <CardDescription className="text-base">
                       {post.bajada}

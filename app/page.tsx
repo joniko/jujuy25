@@ -111,7 +111,16 @@ export default function Home() {
         const currentHour = currentTime.format('h A');
 
         const currentMessage = messages.find((message: Message) => {
-          const messageTime = dayjs(message.hour, 'h:mm A');
+          // Limpiar el formato del CSV: "1:00 a. m." -> "1:00 AM"
+          const cleanHour = message.hour
+            .replace(/\s+/g, ' ')  // Normalizar espacios
+            .replace('a. m.', 'AM')
+            .replace('p. m.', 'PM')
+            .replace('a.m.', 'AM')
+            .replace('p.m.', 'PM')
+            .trim();
+          
+          const messageTime = dayjs(cleanHour, 'h:mm A');
           return currentHour === messageTime.format('h A');
         });
 
