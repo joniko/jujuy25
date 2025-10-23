@@ -6,45 +6,52 @@ Este documento explica cómo configurar la sección Biblioteca con Google Sheets
 
 ### Tab: "Biblioteca"
 
-Crea un nuevo tab en tu Google Sheet con las siguientes columnas:
+Crea un nuevo tab en tu Google Sheet con las siguientes columnas. **Cada fila es un "post" o grupo de archivos relacionados:**
 
 | titulo | bajada | url | nombre | tipo | peso |
 |--------|--------|-----|--------|------|------|
-| Recursos de Oración | Material complementario para acompañar tus momentos de oración | https://docs.google.com/document/d/123/edit | =AI("Extract the document name from: "&C2) | =AI("What type of file is this? Answer only one word: pdf, doc, imagen, video, audio, or carpeta: "&C2) | (opcional) |
-| | | https://drive.google.com/file/d/456/view | =AI("Extract the document name from: "&C3) | =AI("What type of file is this? Answer only one word: pdf, doc, imagen, video, audio, or carpeta: "&C3) | 2.5 MB |
-| | | https://example.com/documento.pdf | =AI("Extract the document name from: "&C4) | =AI("What type of file is this? Answer only one word: pdf, doc, imagen, video, audio, or carpeta: "&C4) | |
+| Recursos de Oración | Material complementario para acompañar tus momentos de oración | https://url1,https://url2,https://url3 | Guía Diaria\|Manual de Ayuno\|Carpeta Recursos | doc\|pdf\|carpeta | \|1.2 MB\| |
+| Guías de Ayuno | Documentos y recursos sobre el ayuno cristiano | https://url4,https://url5 | Introducción al Ayuno\|Calendario de Ayuno | pdf\|doc | 850 KB\|500 KB |
 
 ### Explicación de Columnas:
 
-1. **titulo** (Primera fila solamente)
-   - El título principal de la biblioteca
-   - Ejemplo: "Recursos de Oración"
+1. **titulo** (Requerido en cada fila)
+   - El título del grupo de archivos
+   - Ejemplo: "Recursos de Oración", "Guías de Ayuno"
 
-2. **bajada** (Primera fila solamente)
-   - Descripción o subtítulo de la biblioteca
+2. **bajada** (Requerido en cada fila)
+   - Descripción del grupo de archivos
    - Ejemplo: "Material complementario para acompañar tus momentos de oración"
 
-3. **url** (Todas las filas con archivos)
-   - La URL directa del archivo (Google Drive, Google Docs, PDF, etc.)
+3. **url** (Requerido - múltiples URLs separadas por comas)
+   - URLs de los archivos, separadas por comas
    - Ejemplos:
+     - Una URL: `https://docs.google.com/document/d/ID/edit`
+     - Múltiples URLs: `https://url1,https://url2,https://url3`
+   - Tipos soportados:
      - Google Docs: `https://docs.google.com/document/d/ID/edit`
      - Google Drive: `https://drive.google.com/file/d/ID/view`
      - Carpeta Drive: `https://drive.google.com/drive/folders/ID`
      - PDF directo: `https://example.com/archivo.pdf`
 
-4. **nombre** (Fórmula AI automática)
-   - Usa la fórmula AI de Google Sheets para extraer el nombre
-   - Fórmula: `=AI("Extract the document name from: "&C2)`
-   - Cambia `C2` por la celda correspondiente de la URL
+4. **nombre** (Múltiples nombres separados por `|`)
+   - Un nombre por cada URL, en el mismo orden
+   - Separados por el símbolo pipe `|`
+   - Ejemplo: `Guía Diaria|Manual de Ayuno|Carpeta Recursos`
+   - Puedes usar fórmulas AI si lo prefieres
 
-5. **tipo** (Fórmula AI automática)
-   - Usa la fórmula AI para detectar el tipo de archivo
-   - Fórmula: `=AI("What type of file is this? Answer only one word: pdf, doc, imagen, video, audio, or carpeta: "&C2)`
+5. **tipo** (Múltiples tipos separados por `|`)
+   - Un tipo por cada URL, en el mismo orden
+   - Separados por el símbolo pipe `|`
    - Tipos válidos: `pdf`, `doc`, `imagen`, `video`, `audio`, `carpeta`
+   - Ejemplo: `doc|pdf|carpeta`
+   - Puedes usar fórmulas AI si lo prefieres
 
-6. **peso** (Opcional)
-   - El tamaño del archivo (ej: "2.5 MB", "150 KB")
-   - Puedes dejarlo vacío o usar fórmula AI (pero es difícil obtenerlo sin API)
+6. **peso** (Opcional - múltiples pesos separados por `|`)
+   - Un peso por cada URL, en el mismo orden
+   - Separados por el símbolo pipe `|`
+   - Ejemplo: `|1.2 MB|` (el primero vacío, el segundo con peso, el tercero vacío)
+   - Puedes dejarlo completamente vacío
 
 ## 🔧 Configuración de Variables de Entorno
 
@@ -74,12 +81,12 @@ NEXT_PUBLIC_SHEETS_BIBLIOTECA_GID=123456789
 
 ```csv
 titulo,bajada,url,nombre,tipo,peso
-Recursos de Oración,Material complementario para acompañar tus momentos de oración,https://docs.google.com/document/d/123/edit,Guía de Oración Diaria,doc,
-,,https://drive.google.com/file/d/456/view,Manual de Ayuno,pdf,1.2 MB
-,,https://drive.google.com/drive/folders/789,Carpeta de Recursos,carpeta,
-,,https://example.com/imagen.jpg,Imagen Inspiracional,imagen,850 KB
-,,https://www.youtube.com/watch?v=abc,Video de Testimonio,video,
+Recursos de Oración,Material complementario para acompañar tus momentos de oración,"https://docs.google.com/document/d/123/edit,https://drive.google.com/file/d/456/view,https://drive.google.com/drive/folders/789",Guía de Oración Diaria|Manual de Ayuno|Carpeta de Recursos,doc|pdf|carpeta,|1.2 MB|
+Guías de Ayuno,Documentos y recursos sobre el ayuno cristiano,"https://example.com/introduccion.pdf,https://docs.google.com/document/d/abc/edit",Introducción al Ayuno|Calendario de Ayuno,pdf|doc,850 KB|500 KB
+Testimonios,Videos e imágenes de testimonios,"https://www.youtube.com/watch?v=xyz,https://example.com/imagen.jpg",Video Testimonio 1|Imagen Inspiracional,video|imagen,|2 MB
 ```
+
+**Nota importante:** Si una celda tiene comas (como en el campo `url`), Google Sheets automáticamente la encerrará entre comillas dobles al exportar como CSV.
 
 ## 🎨 Tipos de Archivo y sus Iconos
 

@@ -16,7 +16,7 @@ interface LibraryFile {
   peso?: string;
 }
 
-interface LibraryData {
+interface LibraryPost {
   titulo: string;
   bajada: string;
   archivos: LibraryFile[];
@@ -74,9 +74,9 @@ const getFileTypeColor = (tipo: string) => {
 
 export default function BibliotecaPage() {
   const router = useRouter();
-  const [libraryData, setLibraryData] = useState<LibraryData | null>(null);
+  const [libraryPosts, setLibraryPosts] = useState<LibraryPost[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const libraryDataRef = useRef<LibraryData | null>(null);
+  const libraryPostsRef = useRef<LibraryPost[]>([]);
 
   useEffect(() => {
     const fetchLibrary = async (isInitial = false) => {
@@ -132,36 +132,39 @@ export default function BibliotecaPage() {
           return;
         }
 
-        // Primera fila tiene el título y bajada
-        const firstRow = rows[0];
-        const titulo = firstRow.titulo || 'Biblioteca';
-        const bajada = firstRow.bajada || '';
+        // Cada fila es un post con su título, bajada y archivos
+        const posts: LibraryPost[] = rows
+          .filter(row => row.titulo && row.titulo.trim() !== '')
+          .map(row => {
+            const urls = (row.url || '').split(',').map(u => u.trim()).filter(u => u !== '');
+            const nombres = (row.nombre || '').split('|').map(n => n.trim()).filter(n => n !== '');
+            const tipos = (row.tipo || '').split('|').map(t => t.trim()).filter(t => t !== '');
+            const pesos = (row.peso || '').split('|').map(p => p.trim());
 
-        // Recolectar todos los archivos (incluyendo primera fila si tiene url)
-        const archivos: LibraryFile[] = rows
-          .filter(row => row.url && row.url.trim() !== '')
-          .map(row => ({
-            nombre: row.nombre || 'Archivo',
-            tipo: row.tipo || 'documento',
-            url: row.url || '',
-            peso: row.peso || undefined
-          }));
+            // Crear un archivo por cada URL
+            const archivos: LibraryFile[] = urls.map((url, index) => ({
+              url,
+              nombre: nombres[index] || `Archivo ${index + 1}`,
+              tipo: tipos[index] || 'documento',
+              peso: pesos[index] || undefined
+            }));
 
-        const newLibraryData: LibraryData = {
-          titulo,
-          bajada,
-          archivos
-        };
+            return {
+              titulo: row.titulo || '',
+              bajada: row.bajada || '',
+              archivos
+            };
+          });
 
         // Comparar datos para detectar cambios
-        const hasChanges = JSON.stringify(newLibraryData) !== JSON.stringify(libraryDataRef.current);
+        const hasChanges = JSON.stringify(posts) !== JSON.stringify(libraryPostsRef.current);
         
         if (hasChanges) {
           if (!isInitial) {
             console.log('✅ Cambios detectados en la Biblioteca - Actualizando');
           }
-          libraryDataRef.current = newLibraryData;
-          setLibraryData(newLibraryData);
+          libraryPostsRef.current = posts;
+          setLibraryPosts(posts);
         } else if (!isInitial) {
           console.log('ℹ️ Sin cambios en la Biblioteca');
         }
@@ -212,84 +215,90 @@ export default function BibliotecaPage() {
 
         {/* Loading State */}
         {isInitialLoading ? (
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <Skeleton className="h-8 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[...Array(4)].map((_, i) => (
-                    <Skeleton key={i} className="h-20" />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          <div className="space-y-6">
+            {[...Array(2)].map((_, i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <Skeleton className="h-8 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[...Array(3)].map((_, j) => (
+                      <Skeleton key={j} className="h-20" />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        ) : libraryData ? (
-          /* Library Content */
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl md:text-3xl">{libraryData.titulo}</CardTitle>
-              {libraryData.bajada && (
-                <CardDescription className="text-base">
-                  {libraryData.bajada}
-                </CardDescription>
-              )}
-            </CardHeader>
-            
-            <CardContent>
-              {libraryData.archivos.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {libraryData.archivos.map((archivo, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleFileClick(archivo.url)}
-                      className={`
-                        flex items-start gap-3 p-4 rounded-lg border-2 
-                        transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
-                        text-left group
-                        ${getFileTypeColor(archivo.tipo)}
-                      `}
-                    >
-                      <div className="shrink-0 mt-0.5">
-                        {getFileIcon(archivo.tipo)}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <p className="font-medium text-sm leading-tight break-words">
-                          {archivo.nombre}
-                        </p>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs opacity-80 uppercase font-semibold">
-                            {archivo.tipo}
-                          </span>
-                          {archivo.peso && (
-                            <>
-                              <span className="text-xs opacity-60">•</span>
-                              <span className="text-xs opacity-80">
-                                {archivo.peso}
+        ) : libraryPosts.length > 0 ? (
+          /* Library Posts */
+          <div className="space-y-6">
+            {libraryPosts.map((post, postIndex) => (
+              <Card key={postIndex}>
+                <CardHeader>
+                  <CardTitle className="text-2xl md:text-3xl">{post.titulo}</CardTitle>
+                  {post.bajada && (
+                    <CardDescription className="text-base">
+                      {post.bajada}
+                    </CardDescription>
+                  )}
+                </CardHeader>
+                
+                <CardContent>
+                  {post.archivos.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {post.archivos.map((archivo, archivoIndex) => (
+                        <button
+                          key={archivoIndex}
+                          onClick={() => handleFileClick(archivo.url)}
+                          className={`
+                            flex items-start gap-3 p-4 rounded-lg border-2 
+                            transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
+                            text-left group
+                            ${getFileTypeColor(archivo.tipo)}
+                          `}
+                        >
+                          <div className="shrink-0 mt-0.5">
+                            {getFileIcon(archivo.tipo)}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <p className="font-medium text-sm leading-tight break-words">
+                              {archivo.nombre}
+                            </p>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-xs opacity-80 uppercase font-semibold">
+                                {archivo.tipo}
                               </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
+                              {archivo.peso && archivo.peso.trim() !== '' && (
+                                <>
+                                  <span className="text-xs opacity-60">•</span>
+                                  <span className="text-xs opacity-80">
+                                    {archivo.peso}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
 
-                      <div className="shrink-0">
-                        <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No hay archivos disponibles en la biblioteca.
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                          <div className="shrink-0">
+                            <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No hay archivos en este grupo.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         ) : (
           /* Empty State */
           <Card>
