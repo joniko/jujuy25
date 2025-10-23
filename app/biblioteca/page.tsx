@@ -47,29 +47,54 @@ const getFileIcon = (tipo: string) => {
   return <FileText className="w-5 h-5" />;
 };
 
-const getFileTypeColor = (tipo: string) => {
+const getIconColor = (tipo: string) => {
   const tipoLower = tipo.toLowerCase();
   
   if (tipoLower.includes('pdf') || tipoLower.includes('doc')) {
-    return 'text-blue-600 bg-blue-50 border-blue-200';
+    return 'text-blue-600';
   }
   if (tipoLower.includes('sheet') || tipoLower.includes('excel')) {
-    return 'text-green-600 bg-green-50 border-green-200';
+    return 'text-green-600';
   }
   if (tipoLower.includes('imagen') || tipoLower.includes('image')) {
-    return 'text-purple-600 bg-purple-50 border-purple-200';
+    return 'text-purple-600';
   }
   if (tipoLower.includes('video')) {
-    return 'text-red-600 bg-red-50 border-red-200';
+    return 'text-red-600';
   }
   if (tipoLower.includes('audio') || tipoLower.includes('music')) {
-    return 'text-orange-600 bg-orange-50 border-orange-200';
+    return 'text-orange-600';
   }
   if (tipoLower.includes('carpeta') || tipoLower.includes('folder')) {
-    return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+    return 'text-yellow-600';
   }
   
-  return 'text-gray-600 bg-gray-50 border-gray-200';
+  return 'text-gray-600';
+};
+
+const getTypeColor = (tipo: string) => {
+  const tipoLower = tipo.toLowerCase();
+  
+  if (tipoLower.includes('pdf') || tipoLower.includes('doc')) {
+    return 'text-blue-600';
+  }
+  if (tipoLower.includes('sheet') || tipoLower.includes('excel')) {
+    return 'text-green-600';
+  }
+  if (tipoLower.includes('imagen') || tipoLower.includes('image')) {
+    return 'text-purple-600';
+  }
+  if (tipoLower.includes('video')) {
+    return 'text-red-600';
+  }
+  if (tipoLower.includes('audio') || tipoLower.includes('music')) {
+    return 'text-orange-600';
+  }
+  if (tipoLower.includes('carpeta') || tipoLower.includes('folder')) {
+    return 'text-yellow-600';
+  }
+  
+  return 'text-gray-600';
 };
 
 export default function BibliotecaPage() {
@@ -254,29 +279,29 @@ export default function BibliotecaPage() {
                         <button
                           key={archivoIndex}
                           onClick={() => handleFileClick(archivo.url)}
-                          className={`
-                            flex items-start gap-3 p-4 rounded-lg border-2 
-                            transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
+                          className="
+                            flex items-start gap-3 p-4 rounded-lg border
+                            bg-white hover:bg-gray-50 border-gray-200 hover:border-gray-300
+                            transition-all hover:shadow-md hover:scale-[1.01] active:scale-[0.99]
                             text-left group cursor-pointer
-                            ${getFileTypeColor(archivo.tipo)}
-                          `}
+                          "
                         >
-                          <div className="shrink-0 mt-0.5">
+                          <div className={`shrink-0 mt-0.5 ${getIconColor(archivo.tipo)}`}>
                             {getFileIcon(archivo.tipo)}
                           </div>
                           
                           <div className="flex-1 min-w-0 space-y-1">
-                            <p className="font-medium text-sm leading-tight break-words">
+                            <p className="font-medium text-sm leading-tight break-words text-gray-900">
                               {archivo.nombre}
                             </p>
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-xs opacity-80 uppercase font-semibold">
+                              <span className={`text-xs uppercase font-semibold ${getTypeColor(archivo.tipo)}`}>
                                 {archivo.tipo}
                               </span>
                               {archivo.peso && archivo.peso.trim() !== '' && (
                                 <>
-                                  <span className="text-xs opacity-60">•</span>
-                                  <span className="text-xs opacity-80">
+                                  <span className="text-xs text-gray-400">•</span>
+                                  <span className="text-xs text-gray-500">
                                     {archivo.peso}
                                   </span>
                                 </>
@@ -285,7 +310,7 @@ export default function BibliotecaPage() {
                           </div>
 
                           <div className="shrink-0">
-                            <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <ExternalLink className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                         </button>
                       ))}
