@@ -48,23 +48,27 @@ Crea un nuevo tab en tu Google Sheet con las siguientes columnas:
 
 ## 🔧 Configuración de Variables de Entorno
 
-### Opción 1: Tab separado en el mismo Google Sheet (Recomendado)
+La biblioteca usa el mismo Google Sheet que el cronograma, solo necesitás el GID de la pestaña "Biblioteca":
 
-1. En tu Google Sheet, crea un nuevo tab llamado "Biblioteca"
-2. Llena la estructura como se indica arriba
-3. Publica el tab:
-   - Archivo → Compartir → Publicar en la web
-   - Selecciona el tab "Biblioteca"
-   - Formato: CSV
-   - Copia la URL generada
-4. En tu archivo `.env.local`:
-   ```env
-   NEXT_PUBLIC_SHEETS_BIBLIOTECA_URL=https://docs.google.com/spreadsheets/d/e/TU_ID/pub?gid=GID_BIBLIOTECA&single=true&output=csv
+### Paso 1: Obtener el GID de la pestaña "Biblioteca"
+
+1. Abrí tu Google Sheet
+2. Click en la pestaña "Biblioteca" 
+3. Mirá la URL del navegador, debería verse así:
    ```
+   https://docs.google.com/spreadsheets/d/TU_SHEET_ID/edit#gid=123456789
+   ```
+4. El número después de `#gid=` es tu GID (ej: `123456789`)
 
-### Opción 2: Usar el mismo tab del cronograma
+### Paso 2: Configurar la variable de entorno
 
-Si prefieres no crear un tab separado, la app usará `NEXT_PUBLIC_SHEETS_URL` por defecto. Pero esto no es recomendado porque mezclaría datos.
+En tu archivo `.env.local`:
+```env
+NEXT_PUBLIC_SHEETS_URL=https://docs.google.com/spreadsheets/d/e/2PACX-XXX/pub?output=csv
+NEXT_PUBLIC_SHEETS_BIBLIOTECA_GID=123456789
+```
+
+**Nota:** Si no especificás el GID, la biblioteca usará la misma pestaña que el cronograma (no recomendado).
 
 ## 📝 Ejemplo Completo de CSV
 
@@ -94,7 +98,7 @@ No olvides agregar la variable en Vercel:
 
 1. Ve a tu proyecto en Vercel
 2. Settings → Environment Variables
-3. Agrega: `NEXT_PUBLIC_SHEETS_BIBLIOTECA_URL` con la URL del CSV
+3. Agrega: `NEXT_PUBLIC_SHEETS_BIBLIOTECA_GID` con el número del GID de tu pestaña "Biblioteca"
 
 ## ✅ Verificación
 

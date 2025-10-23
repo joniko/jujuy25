@@ -85,11 +85,24 @@ export default function BibliotecaPage() {
           setIsInitialLoading(true);
         }
 
-        const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_BIBLIOTECA_URL || process.env.NEXT_PUBLIC_SHEETS_URL || '';
+        const baseUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
+        const bibliotecaGid = process.env.NEXT_PUBLIC_SHEETS_BIBLIOTECA_GID || '';
         
-        if (!sheetsUrl) {
+        if (!baseUrl) {
           console.error('No sheets URL configured');
           return;
+        }
+
+        // Si hay GID específico para biblioteca, usarlo, sino usar la URL base
+        let sheetsUrl = baseUrl;
+        if (bibliotecaGid) {
+          // Reemplazar el gid en la URL o agregarlo si no existe
+          if (baseUrl.includes('gid=')) {
+            sheetsUrl = baseUrl.replace(/gid=\d+/, `gid=${bibliotecaGid}`);
+          } else {
+            // Si no tiene gid, agregar el parámetro
+            sheetsUrl = baseUrl.replace('output=csv', `gid=${bibliotecaGid}&single=true&output=csv`);
+          }
         }
 
         // Agregar timestamp para evitar cache del navegador
