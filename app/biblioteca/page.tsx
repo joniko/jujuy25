@@ -47,54 +47,29 @@ const getFileIcon = (tipo: string) => {
   return <FileText className="w-5 h-5" />;
 };
 
-const getIconColor = (tipo: string) => {
+const getIconBoxStyle = (tipo: string) => {
   const tipoLower = tipo.toLowerCase();
   
   if (tipoLower.includes('pdf') || tipoLower.includes('doc')) {
-    return 'text-blue-600';
+    return 'bg-blue-100 text-blue-600';
   }
   if (tipoLower.includes('sheet') || tipoLower.includes('excel')) {
-    return 'text-green-600';
+    return 'bg-green-100 text-green-600';
   }
   if (tipoLower.includes('imagen') || tipoLower.includes('image')) {
-    return 'text-purple-600';
+    return 'bg-purple-100 text-purple-600';
   }
   if (tipoLower.includes('video')) {
-    return 'text-red-600';
+    return 'bg-red-100 text-red-600';
   }
   if (tipoLower.includes('audio') || tipoLower.includes('music')) {
-    return 'text-orange-600';
+    return 'bg-orange-100 text-orange-600';
   }
   if (tipoLower.includes('carpeta') || tipoLower.includes('folder')) {
-    return 'text-yellow-600';
+    return 'bg-yellow-100 text-yellow-600';
   }
   
-  return 'text-gray-600';
-};
-
-const getTypeColor = (tipo: string) => {
-  const tipoLower = tipo.toLowerCase();
-  
-  if (tipoLower.includes('pdf') || tipoLower.includes('doc')) {
-    return 'text-blue-600';
-  }
-  if (tipoLower.includes('sheet') || tipoLower.includes('excel')) {
-    return 'text-green-600';
-  }
-  if (tipoLower.includes('imagen') || tipoLower.includes('image')) {
-    return 'text-purple-600';
-  }
-  if (tipoLower.includes('video')) {
-    return 'text-red-600';
-  }
-  if (tipoLower.includes('audio') || tipoLower.includes('music')) {
-    return 'text-orange-600';
-  }
-  if (tipoLower.includes('carpeta') || tipoLower.includes('folder')) {
-    return 'text-yellow-600';
-  }
-  
-  return 'text-gray-600';
+  return 'bg-gray-100 text-gray-600';
 };
 
 export default function BibliotecaPage() {
@@ -286,7 +261,7 @@ export default function BibliotecaPage() {
                             text-left group cursor-pointer
                           "
                         >
-                          <div className={`shrink-0 mt-0.5 ${getIconColor(archivo.tipo)}`}>
+                          <div className={`shrink-0 p-2 rounded-lg ${getIconBoxStyle(archivo.tipo)}`}>
                             {getFileIcon(archivo.tipo)}
                           </div>
                           
@@ -295,7 +270,7 @@ export default function BibliotecaPage() {
                               {archivo.nombre}
                             </p>
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className={`text-xs uppercase font-semibold ${getTypeColor(archivo.tipo)}`}>
+                              <span className="text-xs uppercase font-semibold text-gray-500">
                                 {archivo.tipo}
                               </span>
                               {archivo.peso && archivo.peso.trim() !== '' && (
