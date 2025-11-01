@@ -202,18 +202,14 @@ export default function AdminPage() {
   };
 
   const handleSaveFeed = async () => {
-    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL || process.env.WEBHOOK_URL;
-    
-    if (!webhookUrl) {
-      alert('⚠️ Error: WEBHOOK_URL no está configurado en las variables de entorno.');
-      return;
-    }
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+    const webhookProxyUrl = `${socketUrl}/api/admin-webhook`;
 
     try {
       const isEditing = editingFeedIndex !== null;
       const action = isEditing ? 'update' : 'create';
       
-      const response = await axios.post(webhookUrl, {
+      const response = await axios.post(webhookProxyUrl, {
         action: action,
         sheet: 'Feed',
         index: editingFeedIndex,
@@ -253,15 +249,11 @@ export default function AdminPage() {
       return;
     }
 
-    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL || process.env.WEBHOOK_URL;
-    
-    if (!webhookUrl) {
-      alert('⚠️ Error: WEBHOOK_URL no está configurado en las variables de entorno.');
-      return;
-    }
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+    const webhookProxyUrl = `${socketUrl}/api/admin-webhook`;
 
     try {
-      const response = await axios.post(webhookUrl, {
+      const response = await axios.post(webhookProxyUrl, {
         action: 'delete',
         sheet: 'Feed',
         index: index
@@ -306,18 +298,14 @@ export default function AdminPage() {
   };
 
   const handleSaveLibrary = async () => {
-    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL || process.env.WEBHOOK_URL;
-    
-    if (!webhookUrl) {
-      alert('⚠️ Error: WEBHOOK_URL no está configurado en las variables de entorno.');
-      return;
-    }
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+    const webhookProxyUrl = `${socketUrl}/api/admin-webhook`;
 
     try {
       const isEditing = editingLibraryIndex !== null;
       const action = isEditing ? 'update' : 'create';
       
-      const response = await axios.post(webhookUrl, {
+      const response = await axios.post(webhookProxyUrl, {
         action: action,
         sheet: 'Biblioteca',
         index: editingLibraryIndex,
@@ -357,15 +345,11 @@ export default function AdminPage() {
       return;
     }
 
-    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL || process.env.WEBHOOK_URL;
-    
-    if (!webhookUrl) {
-      alert('⚠️ Error: WEBHOOK_URL no está configurado en las variables de entorno.');
-      return;
-    }
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+    const webhookProxyUrl = `${socketUrl}/api/admin-webhook`;
 
     try {
-      const response = await axios.post(webhookUrl, {
+      const response = await axios.post(webhookProxyUrl, {
         action: 'delete',
         sheet: 'Biblioteca',
         index: index

@@ -31,10 +31,38 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions)); // Habilita CORS con opciones
+app.use(express.json()); // Para parsear JSON en el body
 
 // Definir una ruta para la raíz
 app.get('/', (req, res) => {
     res.send('Servidor de Socket.IO funcionando');
+});
+
+// Endpoint proxy para el admin panel
+app.post('/api/admin-webhook', async (req, res) => {
+    if (!WEBHOOK_URL) {
+        return res.status(500).json({
+            success: false,
+            error: 'WEBHOOK_URL no está configurado en el servidor'
+        });
+    }
+
+    try {
+        const response = await axios.post(WEBHOOK_URL, req.body, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            timeout: 10000 // 10 segundos
+        });
+        
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error en proxy webhook:', error.message);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
 });
 
 const server = http.createServer(app);
