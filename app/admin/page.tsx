@@ -114,13 +114,7 @@ export default function AdminPage() {
 
       // Cache buster más agresivo: timestamp + random
       const cacheBuster = `&t=${Date.now()}&r=${Math.random()}`;
-      const response = await axios.get(sheetsUrl + cacheBuster, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
+      const response = await axios.get(sheetsUrl + cacheBuster);
       const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
       const rows = parsedData.data as Array<{
@@ -164,13 +158,7 @@ export default function AdminPage() {
 
       // Cache buster más agresivo: timestamp + random
       const cacheBuster = `&t=${Date.now()}&r=${Math.random()}`;
-      const response = await axios.get(sheetsUrl + cacheBuster, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
+      const response = await axios.get(sheetsUrl + cacheBuster);
       const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
       const rows = parsedData.data as Array<{
