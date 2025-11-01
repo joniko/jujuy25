@@ -10,15 +10,18 @@ import { X } from 'lucide-react';
 interface FullScreenModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onJoin: ({ name, age, church }: { name: string; age: string; church: string }) => void;
+  onJoin: ({ name, age, church, attendance }: { name: string; age: string; church: string; attendance: 'online' | 'presencial' }) => void;
 }
 
 const STORAGE_KEY = 'oremos_user_data';
+const ATTENDANCE_STORAGE_KEY = 'oremos_attendance_data';
+const ATTENDANCE_EXPIRY_HOURS = 5;
 
 const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => {
   const [name, setName] = React.useState('');
   const [age, setAge] = React.useState('');
   const [church, setChurch] = React.useState('');
+  const [attendance, setAttendance] = React.useState<'online' | 'presencial'>('online');
   const [errors, setErrors] = React.useState({
     name: '',
     age: '',
@@ -35,6 +38,21 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => 
           setName(savedName || '');
           setAge(savedAge || '');
           setChurch(savedChurch || '');
+        }
+
+        // Cargar y validar attendance guardado
+        const savedAttendance = localStorage.getItem(ATTENDANCE_STORAGE_KEY);
+        if (savedAttendance) {
+          const { type, timestamp } = JSON.parse(savedAttendance);
+          const hoursSinceSet = (Date.now() - timestamp) / (1000 * 60 * 60);
+          
+          // Si pasaron más de 5 horas, resetear a online
+          if (hoursSinceSet < ATTENDANCE_EXPIRY_HOURS) {
+            setAttendance(type);
+          } else {
+            setAttendance('online');
+            localStorage.removeItem(ATTENDANCE_STORAGE_KEY);
+          }
         }
       } catch (error) {
         console.error('Error loading saved data:', error);
@@ -68,19 +86,25 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => 
     // Guardar datos en localStorage para la próxima vez
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, age, church }));
+      localStorage.setItem(ATTENDANCE_STORAGE_KEY, JSON.stringify({ 
+        type: attendance, 
+        timestamp: Date.now() 
+      }));
     } catch (error) {
       console.error('Error saving data:', error);
     }
 
-    onJoin({ name, age, church });
+    onJoin({ name, age, church, attendance });
   };
 
   const handleClearData = () => {
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(ATTENDANCE_STORAGE_KEY);
       setName('');
       setAge('');
       setChurch('');
+      setAttendance('online');
       setErrors({ name: '', age: '', church: '' });
     } catch (error) {
       console.error('Error clearing data:', error);
@@ -110,6 +134,43 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => 
             </div>
 
             <div className="space-y-4">
+              {/* Attendance Selection */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Modalidad de Participación
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAttendance('online')}
+                    className={`px-4 py-3 rounded-lg border-2 font-medium transition-all ${
+                      attendance === 'online'
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-background hover:border-primary/50'
+                    }`}
+                  >
+                    💻 Online
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAttendance('presencial')}
+                    className={`px-4 py-3 rounded-lg border-2 font-medium transition-all ${
+                      attendance === 'presencial'
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-background hover:border-primary/50'
+                    }`}
+                  >
+                    📍 Presencial
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {attendance === 'presencial' 
+                    ? 'Tu selección se mantendrá por 5 horas' 
+                    : 'Conectándote desde casa u otro lugar'
+                  }
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium">
                   Nombre <span className="text-red-500">*</span>

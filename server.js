@@ -76,7 +76,9 @@ io.on('connection', (socket) => {
         id: socket.id,
         name: 'Anónimo',
         age: 'N/A',
-        church: 'N/A'
+        church: 'N/A',
+        attendance: 'online',
+        comment: ''
     };
     userList.push(newUser);
     io.emit('onlineUsers', { count: onlineUsers, users: userList });
@@ -103,14 +105,16 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('newUser', async ({ name, age, church }) => {
+    socket.on('newUser', async ({ name, age, church, attendance }) => {
         const userIndex = userList.findIndex(user => user.id === socket.id);
         if (userIndex !== -1) {
             userList[userIndex] = {
                 id: socket.id,
                 name: name || 'Anónimo',
                 age: age || 'N/A',
-                church: church || 'N/A'
+                church: church || 'N/A',
+                attendance: attendance || 'online',
+                comment: userList[userIndex].comment || ''
             };
             io.emit('onlineUsers', { count: onlineUsers, users: userList });
             
@@ -120,8 +124,28 @@ io.on('connection', (socket) => {
                 name: name || 'Anónimo',
                 age: age || 'N/A',
                 church: church || 'N/A',
+                attendance: attendance || 'online',
                 socketId: socket.id
             });
+        }
+    });
+
+    // Handle user comment updates
+    socket.on('updateComment', ({ comment }) => {
+        const userIndex = userList.findIndex(user => user.id === socket.id);
+        if (userIndex !== -1) {
+            userList[userIndex].comment = comment || '';
+            io.emit('onlineUsers', { count: onlineUsers, users: userList });
+            
+            // Send comment event to webhook
+            if (comment) {
+                sendToWebhook({
+                    event: 'comment',
+                    name: userList[userIndex].name,
+                    comment: comment,
+                    socketId: socket.id
+                });
+            }
         }
     });
 });

@@ -10,7 +10,9 @@ import Papa from 'papaparse';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Share2, ChevronRight } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Share2, ChevronRight, MapPin, MessageCircle } from 'lucide-react';
 import FullScreenModal from '../components/FullScreenModal';
 import YouTubePlayer from '../components/YouTubePlayer';
 import MediaDisplay from '../components/MediaDisplay';
@@ -20,9 +22,12 @@ dayjs.extend(customParseFormat);
 let socket: Socket;
 
 interface User {
+  id?: string;
   name: string;
   age: string;
   church: string;
+  attendance?: 'online' | 'presencial';
+  comment?: string;
 }
 
 interface Message {
@@ -41,18 +46,28 @@ export default function Home() {
   const [message, setMessage] = useState({ title: '', body: '', media: '', responsible: '' });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const messageRef = useRef({ title: '', body: '', media: '', responsible: '' });
+  const [commentDialogOpen, setCommentDialogOpen] = useState(false);
+  const [currentComment, setCurrentComment] = useState('');
+  const [mySocketId, setMySocketId] = useState<string>('');
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
     socket = io(socketUrl);
 
     socket.on('connect', () => {
-      // Connected to Socket.io server
+      setMySocketId(socket.id || '');
+      console.log('Connected with socket ID:', socket.id);
     });
 
     socket.on('onlineUsers', ({ count, users }) => {
       setOnlineUsers(count);
       setUserList(users || []);
+      
+      // Update current comment if user's comment changed
+      const myUser = users?.find((u: User) => u.id === socket.id);
+      if (myUser) {
+        setCurrentComment(myUser.comment || '');
+      }
     });
 
     socket.on('newUser', ({ count, users }) => {
@@ -176,12 +191,13 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleJoin = ({ name, age, church }: { name: string; age: string; church: string }) => {
+  const handleJoin = ({ name, age, church, attendance }: { name: string; age: string; church: string; attendance: 'online' | 'presencial' }) => {
     if (socket) {
       socket.emit('newUser', {
         name: name.trim() || 'Anónimo',
         age: age.trim() || 'N/A',
-        church: church.trim() || 'N/A'
+        church: church.trim() || 'N/A',
+        attendance: attendance
       });
       setIsModalOpen(false);
     }
@@ -240,6 +256,19 @@ export default function Home() {
       if ((err as Error).name !== 'AbortError') {
         console.error('Error al compartir:', err);
       }
+    }
+  };
+
+  const handleOpenCommentDialog = () => {
+    const myUser = userList.find(u => u.id === mySocketId);
+    setCurrentComment(myUser?.comment || '');
+    setCommentDialogOpen(true);
+  };
+
+  const handleSaveComment = () => {
+    if (socket) {
+      socket.emit('updateComment', { comment: currentComment.trim() });
+      setCommentDialogOpen(false);
     }
   };
 
@@ -312,19 +341,54 @@ export default function Home() {
                 </span>
                 <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               </CardTitle>
+              {userList.some(u => u.attendance === 'presencial') && (
+                <p className="text-sm text-muted-foreground">
+                  {userList.filter(u => u.attendance === 'presencial').length} presencial{userList.filter(u => u.attendance === 'presencial').length !== 1 ? 'es' : ''} • {userList.filter(u => u.attendance !== 'presencial').length} online
+                </p>
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {userList.map((user, index) => (
-                  <div key={index} className="flex items-center space-x-4 py-2 rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex-1 space-y-1">
-                      <p className="font-medium leading-none">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {user.age} años • {user.church}
-                      </p>
+                {userList.map((user, index) => {
+                  const isMyUser = user.id === mySocketId;
+                  
+                  return (
+                    <div key={index} className="flex items-start space-x-4 py-2 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium leading-none">
+                            {user.name}
+                            {isMyUser && <span className="text-xs text-muted-foreground">(tú)</span>}
+                          </p>
+                          {user.attendance === 'presencial' && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                              <MapPin className="w-3 h-3" />
+                              Presencial
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {user.age} años • {user.church}
+                        </p>
+                        {user.comment && (
+                          <p className="text-sm text-muted-foreground italic mt-1 line-clamp-2">
+                            &quot;{user.comment}&quot;
+                          </p>
+                        )}
+                      </div>
+                      {isMyUser && !isModalOpen && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="shrink-0"
+                          onClick={handleOpenCommentDialog}
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -336,6 +400,37 @@ export default function Home() {
         onClose={() => setIsModalOpen(false)}
         onJoin={handleJoin}
       />
+
+      {/* Comment Dialog */}
+      <Dialog open={commentDialogOpen} onOpenChange={setCommentDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Agregar Comentario</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Comparte una impresión espiritual, consulta o indicación (máx. 280 caracteres)
+            </p>
+            <Input
+              placeholder="Escribe tu comentario..."
+              value={currentComment}
+              onChange={(e) => setCurrentComment(e.target.value.slice(0, 280))}
+              maxLength={280}
+            />
+            <p className="text-xs text-muted-foreground text-right">
+              {currentComment.length}/280
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCommentDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveComment}>
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

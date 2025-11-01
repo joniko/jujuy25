@@ -13,22 +13,28 @@ export default function TopNav() {
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link 
               href="/" 
-              className="text-sm sm:text-base font-medium text-foreground hover:text-primary transition-colors"
+              className="text-xs sm:text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Guía
             </Link>
             <Link 
+              href="/feed" 
+              className="text-xs sm:text-sm font-medium text-foreground hover:text-primary transition-colors"
+            >
+              Feed
+            </Link>
+            <Link 
               href="/proposito" 
-              className="text-sm sm:text-base font-medium text-foreground hover:text-primary transition-colors"
+              className="text-xs sm:text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Propósito
             </Link>
             <Link 
               href="/biblioteca" 
-              className="text-sm sm:text-base font-medium text-foreground hover:text-primary transition-colors"
+              className="text-xs sm:text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Biblioteca
             </Link>
