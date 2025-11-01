@@ -70,26 +70,20 @@ export default function FeedPage() {
 
         const rows = parsedData.data as Array<{
           titulo?: string;
-          titutlo?: string;
           descripcion?: string;
-          bajada?: string;
           media?: string;
-          'Video o imagen'?: string;
-          'video/imagen'?: string;
           destacado?: string;
           fecha?: string;
-          hora?: string;
-          responsable?: string;
         }>;
 
         const posts: FeedPost[] = rows
-          .filter(row => (row.titulo || row.titutlo) && (row.titulo?.trim() || row.titutlo?.trim()))
+          .filter(row => row.titulo && row.titulo.trim() !== '')
           .map((row, index) => ({
-            titulo: row.titulo || row.titutlo || '',
-            descripcion: row.bajada || row.descripcion || '',
-            media: row['Video o imagen'] || row['video/imagen'] || row.media || '',
+            titulo: row.titulo || '',
+            descripcion: row.descripcion || '',
+            media: row.media || '',
             destacado: row.destacado?.toLowerCase() === 'true' || row.destacado?.toLowerCase() === 'sí' || row.destacado?.toLowerCase() === 'si',
-            fecha: row.fecha || new Date(Date.now() - index * 60000).toISOString() // Usar índice para ordenar si no hay fecha
+            fecha: row.fecha || new Date(Date.now() - index * 60000).toISOString()
           }))
           .sort((a, b) => {
             // Destacados primero
