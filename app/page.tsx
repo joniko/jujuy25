@@ -19,6 +19,55 @@ import { useSocket } from '../components/SocketProvider';
 
 dayjs.extend(customParseFormat);
 
+// Lista de palabras prohibidas (debe coincidir con el servidor)
+const FORBIDDEN_WORDS = [
+  // Insultos y palabras ofensivas
+  'idiota', 'estúpido', 'imbécil', 'tonto', 'pendejo', 'cabrón', 'maldito',
+  'puto', 'puta', 'zorra', 'bastardo', 'hijo de puta', 'hdp', 'hp',
+  
+  // Blasfemias y palabras irrespetuosas
+  'mierda', 'carajo', 'coño', 'joder', 'chingar', 'verga', 'cojones',
+  
+  // Contenido sexual inapropiado
+  'sexo', 'porno', 'xxx', 'desnudo', 'desnuda', 'pornografía',
+  
+  // Violencia y amenazas
+  'matar', 'muere', 'suicidio', 'morir', 'asesinar', 'violencia',
+  
+  // Discriminación y odio
+  'racismo', 'nazi', 'fascista', 'odio',
+  
+  // Drogas
+  'droga', 'cocaína', 'marihuana', 'heroína', 'crack',
+  
+  // Spam y promociones
+  'compra', 'vende', 'dinero fácil', 'ganar dinero', 'oferta', 'descuento',
+  'promoción', 'bitcoin', 'forex', 'inversión garantizada', 'haz click',
+  
+  // URLs y contactos (patrones básicos)
+  'http://', 'https://', 'www.', '.com', '.net', '.org', '.co',
+  'whatsapp', 'telegram', 'instagram', '@gmail', '@hotmail', '@yahoo',
+  
+  // Otros
+  'paypal', 'transferencia', 'cuenta bancaria', 'tarjeta de crédito'
+];
+
+// Función para validar que el texto no contenga palabras prohibidas
+const containsForbiddenWords = (text: string): boolean => {
+  if (!text || typeof text !== 'string') return false;
+  
+  const lowerText = text.toLowerCase();
+  
+  // Verificar cada palabra prohibida
+  for (const word of FORBIDDEN_WORDS) {
+    if (lowerText.includes(word.toLowerCase())) {
+      return true;
+    }
+  }
+  
+  return false;
+};
+
 // Helper para evitar joins duplicados usando sessionStorage
 const hasJoinedInSession = () => {
   try {
@@ -247,6 +296,14 @@ export default function Home() {
   }, []);
 
   const handleJoin = ({ name, age, church, attendance }: { name: string; age: string; church: string; attendance: 'online' | 'presencial' }) => {
+    // Validar que los datos no contengan palabras prohibidas
+    if (containsForbiddenWords(name) || containsForbiddenWords(church)) {
+      // Silenciosamente rechazar sin notificar al usuario
+      console.log('⛔ Registro bloqueado - contenido prohibido detectado');
+      setIsModalOpen(false);
+      return;
+    }
+    
     if (socket) {
       socket.emit('newUser', {
         name: name.trim() || 'Anónimo',
@@ -337,6 +394,14 @@ export default function Home() {
   };
 
   const handleSaveComment = () => {
+    // Validar que el comentario no contenga palabras prohibidas
+    if (currentComment.trim() && containsForbiddenWords(currentComment)) {
+      // Silenciosamente rechazar sin notificar al usuario
+      console.log('⛔ Comentario bloqueado - contenido prohibido detectado');
+      setCommentDialogOpen(false);
+      return;
+    }
+    
     if (socket) {
       socket.emit('updateComment', { comment: currentComment.trim() });
       
@@ -356,6 +421,14 @@ export default function Home() {
   };
 
   const handleUpdateProfile = ({ name, age, church, attendance }: { name: string; age: string; church: string; attendance: 'online' | 'presencial' }) => {
+    // Validar que los datos no contengan palabras prohibidas
+    if (containsForbiddenWords(name) || containsForbiddenWords(church)) {
+      // Silenciosamente rechazar sin notificar al usuario
+      console.log('⛔ Actualización bloqueada - contenido prohibido detectado');
+      setIsEditModalOpen(false);
+      return;
+    }
+    
     if (socket) {
       socket.emit('newUser', {
         name: name.trim() || 'Anónimo',
