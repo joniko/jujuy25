@@ -99,30 +99,21 @@ async function sendToWebhook(eventData) {
 }
 
 io.on('connection', (socket) => {
-    onlineUsers++;
-    const newUser = {
-        id: socket.id,
-        name: 'Anónimo',
-        age: 'N/A',
-        church: 'N/A',
-        attendance: 'online',
-        comment: ''
-    };
-    userList.push(newUser);
-    io.emit('onlineUsers', { count: onlineUsers, users: userList });
-    console.log('User connected', newUser);
-    console.log('Online Users:', onlineUsers, userList);
+    // NO crear usuario aquí - esperar a que complete el modal y envíe 'newUser'
+    console.log('Socket connected:', socket.id);
 
     socket.on('disconnect', () => {
-        onlineUsers--;
         const disconnectedUser = userList.find(user => user.id === socket.id);
-        userList = userList.filter(user => user.id !== socket.id);
-        io.emit('onlineUsers', { count: onlineUsers, users: userList });
-        console.log('User disconnected', socket.id);
-        console.log('Online Users:', onlineUsers, userList);
         
-        // Send leave event to webhook with full user data
+        // Solo procesar si el usuario completó el modal (tiene datos reales)
         if (disconnectedUser) {
+            onlineUsers--;
+            userList = userList.filter(user => user.id !== socket.id);
+            io.emit('onlineUsers', { count: onlineUsers, users: userList });
+            console.log('User disconnected', socket.id);
+            console.log('Online Users:', onlineUsers, userList);
+            
+            // Send leave event to webhook with full user data
             sendToWebhook({
                 event: 'leave',
                 name: disconnectedUser.name,
@@ -132,22 +123,26 @@ io.on('connection', (socket) => {
                 comment: disconnectedUser.comment || '',
                 socketId: socket.id
             });
+        } else {
+            console.log('Socket disconnected before completing modal:', socket.id);
         }
     });
 
     socket.on('newUser', async ({ name, age, church, attendance }) => {
+        // Validar que los datos no contengan palabras prohibidas
+        if (containsForbiddenWords(name) || containsForbiddenWords(church)) {
+            console.log(`⛔ Registro rechazado - contenido prohibido detectado`);
+            socket.emit('contentRejected', { 
+                field: 'profile',
+                message: 'Tu información contiene contenido no permitido. Por favor usa un lenguaje respetuoso.' 
+            });
+            return;
+        }
+        
         const userIndex = userList.findIndex(user => user.id === socket.id);
+        
+        // Si el usuario ya existe, actualizar sus datos
         if (userIndex !== -1) {
-            // Validar que los datos no contengan palabras prohibidas
-            if (containsForbiddenWords(name) || containsForbiddenWords(church)) {
-                console.log(`⛔ Registro rechazado - contenido prohibido detectado`);
-                socket.emit('contentRejected', { 
-                    field: 'profile',
-                    message: 'Tu información contiene contenido no permitido. Por favor usa un lenguaje respetuoso.' 
-                });
-                return;
-            }
-            
             userList[userIndex] = {
                 id: socket.id,
                 name: name || 'Anónimo',
@@ -156,18 +151,30 @@ io.on('connection', (socket) => {
                 attendance: attendance || 'online',
                 comment: userList[userIndex].comment || ''
             };
-            io.emit('onlineUsers', { count: onlineUsers, users: userList });
-            
-            // Send join event to webhook
-            sendToWebhook({
-                event: 'join',
+        } else {
+            // Si no existe, crear nuevo usuario
+            onlineUsers++;
+            userList.push({
+                id: socket.id,
                 name: name || 'Anónimo',
                 age: age || 'N/A',
                 church: church || 'N/A',
                 attendance: attendance || 'online',
-                socketId: socket.id
+                comment: ''
             });
         }
+        
+        io.emit('onlineUsers', { count: onlineUsers, users: userList });
+        
+        // Send join event to webhook
+        sendToWebhook({
+            event: 'join',
+            name: name || 'Anónimo',
+            age: age || 'N/A',
+            church: church || 'N/A',
+            attendance: attendance || 'online',
+            socketId: socket.id
+        });
     });
 
     // Handle user comment updates
