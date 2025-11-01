@@ -112,7 +112,15 @@ export default function AdminPage() {
         }
       }
 
-      const response = await axios.get(sheetsUrl + `&t=${Date.now()}`);
+      // Cache buster más agresivo: timestamp + random
+      const cacheBuster = `&t=${Date.now()}&r=${Math.random()}`;
+      const response = await axios.get(sheetsUrl + cacheBuster, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
       const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
       const rows = parsedData.data as Array<{
@@ -154,7 +162,15 @@ export default function AdminPage() {
         }
       }
 
-      const response = await axios.get(sheetsUrl + `&t=${Date.now()}`);
+      // Cache buster más agresivo: timestamp + random
+      const cacheBuster = `&t=${Date.now()}&r=${Math.random()}`;
+      const response = await axios.get(sheetsUrl + cacheBuster, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
       const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
       const rows = parsedData.data as Array<{
@@ -217,7 +233,7 @@ export default function AdminPage() {
       });
 
       if (response.data.success) {
-        // Actualizar estado local
+        // Actualizar estado local INMEDIATAMENTE
         const updatedPosts = [...feedPosts];
         
         if (isEditing) {
@@ -231,10 +247,8 @@ export default function AdminPage() {
         
         alert(`✅ ${isEditing ? 'Actualizado' : 'Creado'} exitosamente en Google Sheets!`);
         
-        // Recargar datos después de 1 segundo
-        setTimeout(() => {
-          loadFeedData();
-        }, 1000);
+        // NO recargar desde CSV - el estado local ya está actualizado
+        // El CSV público puede tardar en actualizar, pero eso no importa en el admin
       } else {
         alert(`❌ Error: ${response.data.error || 'No se pudo guardar'}`);
       }
@@ -265,10 +279,7 @@ export default function AdminPage() {
         
         alert('✅ Eliminado exitosamente de Google Sheets!');
         
-        // Recargar datos después de 1 segundo
-        setTimeout(() => {
-          loadFeedData();
-        }, 1000);
+        // NO recargar desde CSV - el estado local ya está actualizado
       } else {
         alert(`❌ Error: ${response.data.error || 'No se pudo eliminar'}`);
       }
@@ -313,7 +324,7 @@ export default function AdminPage() {
       });
 
       if (response.data.success) {
-        // Actualizar estado local
+        // Actualizar estado local INMEDIATAMENTE
         const updatedItems = [...libraryItems];
         
         if (isEditing) {
@@ -327,10 +338,7 @@ export default function AdminPage() {
         
         alert(`✅ ${isEditing ? 'Actualizado' : 'Creado'} exitosamente en Google Sheets!`);
         
-        // Recargar datos después de 1 segundo
-        setTimeout(() => {
-          loadLibraryData();
-        }, 1000);
+        // NO recargar desde CSV - el estado local ya está actualizado
       } else {
         alert(`❌ Error: ${response.data.error || 'No se pudo guardar'}`);
       }
@@ -361,10 +369,7 @@ export default function AdminPage() {
         
         alert('✅ Eliminado exitosamente de Google Sheets!');
         
-        // Recargar datos después de 1 segundo
-        setTimeout(() => {
-          loadLibraryData();
-        }, 1000);
+        // NO recargar desde CSV - el estado local ya está actualizado
       } else {
         alert(`❌ Error: ${response.data.error || 'No se pudo eliminar'}`);
       }
