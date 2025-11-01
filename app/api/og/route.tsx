@@ -12,7 +12,7 @@ async function getCurrentPrayerMotive() {
       const currentHour = new Date().getHours();
       return { 
         title: 'Únete a orar con nosotros', 
-        body: 'Cadena de oración 24/7 - Cada hora un nuevo motivo',
+        body: 'Cadena de oración - Cada hora un nuevo motivo',
         hour: currentHour.toString()
       };
     }
@@ -77,14 +77,14 @@ async function getCurrentPrayerMotive() {
     // Si no se encuentra, devolver el primero disponible
     return { 
       title: 'Únete a orar con nosotros', 
-      body: 'Cadena de oración 24/7',
+      body: 'Cadena de oración',
       hour: currentHour.toString()
     };
   } catch (error) {
     console.error('Error fetching prayer motive:', error);
     return { 
       title: 'Únete a orar con nosotros', 
-      body: 'Cadena de oración 24/7',
+      body: 'Cadena de oración',
       hour: new Date().getHours().toString()
     };
   }
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     
     // Valores por defecto
     let title = searchParams.get('title') || 'Únete a orar con nosotros';
-    let body = searchParams.get('body') || 'Cadena de oración 24/7 - Cada hora un nuevo motivo';
+    let body = searchParams.get('body') || 'Cadena de oración - Cada hora un nuevo motivo';
     let hour = searchParams.get('hour') || new Date().getHours().toString();
     
     // Si no vienen parámetros, intentar obtener del Google Sheet
@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
                 alignItems: 'center',
               }}
             >
-              Oremos 24/7 🙏
+              Oremos 🙏
             </div>
           </div>
 

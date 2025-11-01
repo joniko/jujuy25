@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import Link from "next/link";
 
 export const metadata = {
-  title: 'Propósito - Echeverria Ora 24/7',
-  description: 'El fundamento bíblico y la visión detrás del movimiento de oración 24/7',
+  title: 'Propósito',
+  description: 'El fundamento bíblico y la visión detrás del movimiento de oración',
 };
 
 export default function Proposito() {
@@ -66,7 +66,7 @@ export default function Proposito() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed">
             <p>
-              <strong>Echeverria Ora 24/7</strong> nace del deseo de ver a nuestra comunidad transformada 
+              <strong>Oremos</strong> nace del deseo de ver a nuestra comunidad transformada 
               por el poder de la oración continua. Creemos que cuando nos unimos en oración, Dios se mueve 
               de maneras extraordinarias.
             </p>

@@ -9,19 +9,19 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://oremos.app'),
-  title: 'Oremos 24/7',
-  description: 'Únete a la cadena de oración 24/7. Ora junto a la comunidad en tiempo real.',
+  title: 'Oremos',
+  description: 'Únete a la cadena de oración. Ora junto a la comunidad en tiempo real.',
   openGraph: {
-    title: 'Oremos 24/7 🙏',
-    description: 'Únete a la cadena de oración 24/7. Ora junto a la comunidad en tiempo real.',
+    title: 'Oremos 🙏',
+    description: 'Únete a la cadena de oración. Ora junto a la comunidad en tiempo real.',
     url: 'https://oremos.app',
-    siteName: 'Oremos 24/7',
+    siteName: 'Oremos',
     images: [
       {
         url: 'https://oremos.app/api/og',
         width: 1200,
         height: 630,
-        alt: 'Oremos 24/7',
+        alt: 'Oremos',
       },
     ],
     locale: 'es_AR',
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Oremos 24/7 🙏',
-    description: 'Únete a la cadena de oración 24/7. Ora junto a la comunidad en tiempo real.',
+    title: 'Oremos 🙏',
+    description: 'Únete a la cadena de oración. Ora junto a la comunidad en tiempo real.',
     images: ['https://oremos.app/api/og'],
   },
 }
@@ -43,10 +43,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        <meta name="application-name" content="Oremos 24/7" />
+        <meta name="application-name" content="Oremos" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Oremos 24/7" />
+        <meta name="apple-mobile-web-app-title" content="Oremos" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#EDE8E2" />

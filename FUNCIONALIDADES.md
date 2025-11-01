@@ -1,7 +1,7 @@
-# 📱 Oremos 24/7 - Reporte de Funcionalidades
+# 📱 Oremos - Reporte de Funcionalidades
 
 ## 🎯 Descripción General
-**Oremos 24/7** es una aplicación web progresiva (PWA) diseñada para facilitar la oración continua en comunidad. Permite que personas se unan virtualmente para orar juntas en tiempo real, creando una cadena ininterrumpida de intercesión las 24 horas del día.
+**Oremos** es una aplicación web progresiva (PWA) diseñada para facilitar la oración continua en comunidad. Permite que personas se unan virtualmente para orar juntas en tiempo real, creando una cadena ininterrumpida de intercesión las 24 horas del día.
 
 ---
 
@@ -178,7 +178,7 @@
 
 ## 🎯 Casos de Uso
 
-1. **Oración comunitaria 24/7**: Asegurar que siempre haya alguien orando
+1. **Oración comunitaria**: Asegurar que siempre haya alguien orando
 2. **Motivos dirigidos**: Guiar la oración con temas específicos por hora
 3. **Conexión espiritual**: Sentir que se ora en comunidad aunque cada uno esté en su lugar
 4. **Evangelización**: Compartir motivos de oración para invitar a otros

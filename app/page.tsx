@@ -19,6 +19,23 @@ import { useSocket } from '../components/SocketProvider';
 
 dayjs.extend(customParseFormat);
 
+// Helper para evitar joins duplicados usando sessionStorage
+const hasJoinedInSession = () => {
+  try {
+    return sessionStorage.getItem('oremos_session_joined') === 'true';
+  } catch {
+    return false;
+  }
+};
+
+const markAsJoined = () => {
+  try {
+    sessionStorage.setItem('oremos_session_joined', 'true');
+  } catch (error) {
+    console.error('Error marking as joined:', error);
+  }
+};
+
 interface Message {
   hour: string;
   title: string;
@@ -37,7 +54,6 @@ export default function Home() {
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const hasJoinedRef = useRef(false);
 
   // Verificar si hay datos guardados válidos al cargar
   useEffect(() => {
@@ -65,7 +81,7 @@ export default function Home() {
 
   // Auto-join cuando hay datos guardados y socket está conectado
   useEffect(() => {
-    if (socket && !hasJoinedRef.current && !isModalOpen) {
+    if (socket && !hasJoinedInSession() && !isModalOpen) {
       try {
         const savedData = localStorage.getItem('oremos_user_data');
         const savedAttendance = localStorage.getItem('oremos_attendance_data');
@@ -101,7 +117,8 @@ export default function Home() {
               }, 500);
             }
             
-            hasJoinedRef.current = true;
+            // Marcar como joined en sessionStorage
+            markAsJoined();
           }
         }
       } catch (error) {
@@ -237,7 +254,7 @@ export default function Home() {
         church: church.trim() || 'N/A',
         attendance: attendance
       });
-      hasJoinedRef.current = true;
+      markAsJoined();
       setIsModalOpen(false);
     }
   };
@@ -260,7 +277,7 @@ export default function Home() {
 
     try {
       const shareData: ShareData = {
-        title: `Oremos 24/7 - ${message.title}`,
+        title: `Oremos - ${message.title}`,
         text: `🙏 ${message.title}\n\n${message.body}\n\nÚnete a orar con nosotros:`,
         url: 'https://oremos.app'
       };

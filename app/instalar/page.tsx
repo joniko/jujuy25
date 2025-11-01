@@ -22,10 +22,7 @@ export default function InstalarPage() {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Instalar Oremos en tu teléfono</h1>
-            <p className="text-sm text-muted-foreground">
-              Accede más rápido instalando la app en tu pantalla de inicio
-            </p>
+            <h1 className="text-2xl font-bold">Guarda Oremos en tu pantalla de inicio</h1>
           </div>
         </div>
 

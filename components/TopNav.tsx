@@ -8,7 +8,7 @@ export default function TopNav() {
           {/* Logo/Title */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <h1 className="text-xl sm:text-2xl font-bold text-primary">
-              Oremos 24/7 <span role="img" aria-label="fire">🔥</span>
+              Oremos
             </h1>
           </Link>
 
@@ -24,7 +24,7 @@ export default function TopNav() {
               href="/feed" 
               className="text-xs sm:text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
-              Feed
+              Novedades
             </Link>
             <Link 
               href="/proposito" 

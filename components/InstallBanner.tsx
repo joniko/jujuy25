@@ -41,7 +41,7 @@ export default function InstallBanner() {
             href="/instalar"
             className="text-sm font-medium hover:underline truncate"
           >
-            📱 Instala Oremos en tu teléfono
+          Guardá Oremos en tu pantalla de inicio
           </Link>
         </div>
         <Button

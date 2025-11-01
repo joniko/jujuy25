@@ -1,7 +1,7 @@
 {
-  "name": "Oremos 24/7",
-  "short_name": "Oremos 24/7",
-  "description": "Únete a la cadena de oración 24/7. Ora junto a la comunidad en tiempo real.",
+  "name": "Oremos",
+  "short_name": "Oremos",
+  "description": "Únete a la cadena de oración. Ora junto a la comunidad en tiempo real.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FBF8F1",

@@ -21,7 +21,7 @@ Para que funcione correctamente el botón de compartir con imagen, necesitas cre
 ## 🎯 Contenido sugerido:
 
 La imagen debería incluir:
-- Logo o nombre "Oremos 24/7 🙏"
+- Logo o nombre "Oremos 🙏"
 - Frase llamativa: "Únete a orar con nosotros"
 - URL: oremos.app
 - Colores acordes a tu marca
@@ -42,7 +42,7 @@ La imagen debería incluir:
 ```
 ┌────────────────────────────────────────┐
 │                                        │
-│         🙏 Oremos 24/7                │
+│         🙏 Oremos                │
 │                                        │
 │   Únete a la cadena de oración        │
 │     en tiempo real                     │

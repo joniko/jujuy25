@@ -1,4 +1,4 @@
-# PWA Setup Guide - Oremos 24/7
+# PWA Setup Guide - Oremos
 
 ## ✅ Implementación Completada
 

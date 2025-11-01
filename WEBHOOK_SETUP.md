@@ -5,7 +5,7 @@ Este documento explica cómo configurar el webhook para registrar las entradas y
 ## Paso 1: Crear el Google Sheet
 
 1. Ve a [Google Sheets](https://sheets.google.com)
-2. Crea un nuevo documento y nómbralo "Registro Oremos 24/7"
+2. Crea un nuevo documento y nómbralo "Registro Oremos"
 3. Crea o renombra una pestaña como **"Actividad"** (debe llamarse exactamente así)
 4. En la primera fila de la pestaña "Actividad" (encabezados), escribe:
    - A1: `Timestamp`

@@ -3,7 +3,7 @@
 # Script para generar todos los assets PWA usando pwa-asset-generator
 # Basado en: https://github.com/elegantapp/pwa-asset-generator
 
-echo "🎨 Generando assets PWA para Oremos 24/7..."
+echo "🎨 Generando assets PWA para Oremos..."
 echo ""
 
 # Colores
