@@ -667,8 +667,10 @@ export default function AdminPage() {
                 <Input
                   id="feed-fecha"
                   type="datetime-local"
-                  value={feedForm.fecha ? new Date(feedForm.fecha).toISOString().slice(0, 16) : ''}
-                  onChange={(e) => setFeedForm({ ...feedForm, fecha: new Date(e.target.value).toISOString() })}
+                  value={feedForm.fecha && !isNaN(new Date(feedForm.fecha).getTime()) 
+                    ? new Date(feedForm.fecha).toISOString().slice(0, 16) 
+                    : new Date().toISOString().slice(0, 16)}
+                  onChange={(e) => setFeedForm({ ...feedForm, fecha: e.target.value ? new Date(e.target.value).toISOString() : new Date().toISOString() })}
                 />
               </div>
             </div>
