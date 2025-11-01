@@ -139,11 +139,14 @@ io.on('connection', (socket) => {
             userList[userIndex].comment = comment || '';
             io.emit('onlineUsers', { count: onlineUsers, users: userList });
             
-            // Send comment event to webhook
+            // Send comment event to webhook with full user data
             if (comment) {
                 sendToWebhook({
                     event: 'comment',
                     name: userList[userIndex].name,
+                    age: userList[userIndex].age,
+                    church: userList[userIndex].church,
+                    attendance: userList[userIndex].attendance || 'online',
                     comment: comment,
                     socketId: socket.id
                 });
