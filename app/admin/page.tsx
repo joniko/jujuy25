@@ -721,44 +721,132 @@ export default function AdminPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="lib-url">URLs (separadas por coma)</Label>
-                <Textarea
-                  id="lib-url"
-                  value={libraryForm.url}
-                  onChange={(e) => setLibraryForm({ ...libraryForm, url: e.target.value })}
-                  placeholder="https://drive.google.com/..., https://..."
-                  rows={2}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lib-nombre">Nombres de archivos (separados por |)</Label>
-                <Input
-                  id="lib-nombre"
-                  value={libraryForm.nombre}
-                  onChange={(e) => setLibraryForm({ ...libraryForm, nombre: e.target.value })}
-                  placeholder="Manual de Intercesor | Guía de Oración"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lib-tipo">Tipos de archivo (separados por |)</Label>
-                <Input
-                  id="lib-tipo"
-                  value={libraryForm.tipo}
-                  onChange={(e) => setLibraryForm({ ...libraryForm, tipo: e.target.value })}
-                  placeholder="PDF | Video"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lib-peso">Tamaños (separados por |, opcional)</Label>
-                <Input
-                  id="lib-peso"
-                  value={libraryForm.peso}
-                  onChange={(e) => setLibraryForm({ ...libraryForm, peso: e.target.value })}
-                  placeholder="2.5 MB | 15 MB"
-                />
+                <div className="flex items-center justify-between">
+                  <Label>Archivos</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const urls = libraryForm.url ? libraryForm.url.split(',') : [];
+                      const nombres = libraryForm.nombre ? libraryForm.nombre.split('|') : [];
+                      const tipos = libraryForm.tipo ? libraryForm.tipo.split('|') : [];
+                      const pesos = libraryForm.peso ? libraryForm.peso.split('|') : [];
+                      
+                      urls.push('');
+                      nombres.push('');
+                      tipos.push('');
+                      pesos.push('');
+                      
+                      setLibraryForm({
+                        ...libraryForm,
+                        url: urls.join(','),
+                        nombre: nombres.join('|'),
+                        tipo: tipos.join('|'),
+                        peso: pesos.join('|')
+                      });
+                    }}
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Agregar archivo
+                  </Button>
+                </div>
+                
+                <div className="space-y-4 border rounded-lg p-4">
+                  {(() => {
+                    const urls = libraryForm.url ? libraryForm.url.split(',') : [''];
+                    const nombres = libraryForm.nombre ? libraryForm.nombre.split('|') : [''];
+                    const tipos = libraryForm.tipo ? libraryForm.tipo.split('|') : [''];
+                    const pesos = libraryForm.peso ? libraryForm.peso.split('|') : [''];
+                    
+                    const maxLength = Math.max(urls.length, nombres.length, tipos.length, pesos.length, 1);
+                    
+                    return Array.from({ length: maxLength }).map((_, fileIndex) => (
+                      <div key={fileIndex} className="space-y-3 p-3 border rounded-lg bg-muted/30">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Archivo {fileIndex + 1}</span>
+                          {maxLength > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const newUrls = urls.filter((_, i) => i !== fileIndex);
+                                const newNombres = nombres.filter((_, i) => i !== fileIndex);
+                                const newTipos = tipos.filter((_, i) => i !== fileIndex);
+                                const newPesos = pesos.filter((_, i) => i !== fileIndex);
+                                
+                                setLibraryForm({
+                                  ...libraryForm,
+                                  url: newUrls.join(','),
+                                  nombre: newNombres.join('|'),
+                                  tipo: newTipos.join('|'),
+                                  peso: newPesos.join('|')
+                                });
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                            </Button>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-xs">URL</Label>
+                          <Input
+                            value={urls[fileIndex] || ''}
+                            onChange={(e) => {
+                              const newUrls = [...urls];
+                              newUrls[fileIndex] = e.target.value;
+                              setLibraryForm({ ...libraryForm, url: newUrls.join(',') });
+                            }}
+                            placeholder="https://drive.google.com/..."
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-xs">Nombre del archivo</Label>
+                          <Input
+                            value={nombres[fileIndex] || ''}
+                            onChange={(e) => {
+                              const newNombres = [...nombres];
+                              newNombres[fileIndex] = e.target.value;
+                              setLibraryForm({ ...libraryForm, nombre: newNombres.join('|') });
+                            }}
+                            placeholder="Manual de Intercesor"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-2">
+                            <Label className="text-xs">Tipo</Label>
+                            <Input
+                              value={tipos[fileIndex] || ''}
+                              onChange={(e) => {
+                                const newTipos = [...tipos];
+                                newTipos[fileIndex] = e.target.value;
+                                setLibraryForm({ ...libraryForm, tipo: newTipos.join('|') });
+                              }}
+                              placeholder="PDF"
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="text-xs">Tamaño (opcional)</Label>
+                            <Input
+                              value={pesos[fileIndex] || ''}
+                              onChange={(e) => {
+                                const newPesos = [...pesos];
+                                newPesos[fileIndex] = e.target.value;
+                                setLibraryForm({ ...libraryForm, peso: newPesos.join('|') });
+                              }}
+                              placeholder="1.2 MB"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
               </div>
             </div>
 
