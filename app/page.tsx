@@ -95,7 +95,7 @@ interface Message {
 
 export default function Home() {
   const router = useRouter();
-  const { socket, onlineUsers, userList, mySocketId } = useSocket();
+  const { socket, onlineUsers, userList, mySocketId, isConnected } = useSocket();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState({ title: '', body: '', media: '', responsible: '' });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -106,6 +106,10 @@ export default function Home() {
 
   // Verificar si hay datos guardados válidos al cargar
   useEffect(() => {
+    // Limpiar el flag de session al recargar la página
+    // Esto permite que el auto-join se ejecute de nuevo
+    sessionStorage.removeItem('oremos_session_joined');
+    
     const checkSavedData = () => {
       try {
         const savedData = localStorage.getItem('oremos_user_data');
@@ -130,7 +134,7 @@ export default function Home() {
 
   // Auto-join cuando hay datos guardados y socket está conectado
   useEffect(() => {
-    if (socket && !hasJoinedInSession() && !isModalOpen) {
+    if (socket && isConnected && !hasJoinedInSession() && !isModalOpen) {
       try {
         const savedData = localStorage.getItem('oremos_user_data');
         const savedAttendance = localStorage.getItem('oremos_attendance_data');
@@ -150,6 +154,7 @@ export default function Home() {
           }
           
           if (hoursSinceSaved < 4 && name && age && church) {
+            console.log('Auto-joining with saved data:', { name, age, church, attendance });
             socket.emit('newUser', {
               name: name.trim() || 'Anónimo',
               age: age.trim() || 'N/A',
@@ -174,7 +179,7 @@ export default function Home() {
         console.error('Error auto-joining:', error);
       }
     }
-  }, [socket, isModalOpen]);
+  }, [socket, isConnected, isModalOpen]);
 
   useEffect(() => {
     // Update current comment if user's comment changed
