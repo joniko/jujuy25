@@ -201,30 +201,88 @@ export default function AdminPage() {
     setFeedDialogOpen(true);
   };
 
-  const handleSaveFeed = () => {
-    const updatedPosts = [...feedPosts];
+  const handleSaveFeed = async () => {
+    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL || process.env.WEBHOOK_URL;
     
-    if (editingFeedIndex !== null) {
-      updatedPosts[editingFeedIndex] = feedForm;
-    } else {
-      updatedPosts.push(feedForm);
+    if (!webhookUrl) {
+      alert('⚠️ Error: WEBHOOK_URL no está configurado en las variables de entorno.');
+      return;
     }
 
-    setFeedPosts(updatedPosts);
-    setFeedDialogOpen(false);
-    
-    // TODO: Send to Google Sheets via webhook or API
-    alert('⚠️ Importante: Debes copiar y pegar manualmente los cambios a Google Sheets.\n\nEn una futura versión, esto se guardará automáticamente.');
-    console.log('Feed data to save:', updatedPosts);
+    try {
+      const isEditing = editingFeedIndex !== null;
+      const action = isEditing ? 'update' : 'create';
+      
+      const response = await axios.post(webhookUrl, {
+        action: action,
+        sheet: 'Feed',
+        index: editingFeedIndex,
+        item: feedForm
+      });
+
+      if (response.data.success) {
+        // Actualizar estado local
+        const updatedPosts = [...feedPosts];
+        
+        if (isEditing) {
+          updatedPosts[editingFeedIndex] = feedForm;
+        } else {
+          updatedPosts.push(feedForm);
+        }
+
+        setFeedPosts(updatedPosts);
+        setFeedDialogOpen(false);
+        
+        alert(`✅ ${isEditing ? 'Actualizado' : 'Creado'} exitosamente en Google Sheets!`);
+        
+        // Recargar datos después de 1 segundo
+        setTimeout(() => {
+          loadFeedData();
+        }, 1000);
+      } else {
+        alert(`❌ Error: ${response.data.error || 'No se pudo guardar'}`);
+      }
+    } catch (error) {
+      console.error('Error saving feed:', error);
+      alert(`❌ Error al guardar: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    }
   };
 
-  const handleDeleteFeed = (index: number) => {
-    if (confirm('¿Estás seguro de eliminar este post?')) {
-      const updatedPosts = feedPosts.filter((_, i) => i !== index);
-      setFeedPosts(updatedPosts);
-      
-      alert('⚠️ Importante: Debes eliminar manualmente esta fila en Google Sheets.');
-      console.log('Feed data after delete:', updatedPosts);
+  const handleDeleteFeed = async (index: number) => {
+    if (!confirm('¿Estás seguro de eliminar este post?')) {
+      return;
+    }
+
+    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL || process.env.WEBHOOK_URL;
+    
+    if (!webhookUrl) {
+      alert('⚠️ Error: WEBHOOK_URL no está configurado en las variables de entorno.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(webhookUrl, {
+        action: 'delete',
+        sheet: 'Feed',
+        index: index
+      });
+
+      if (response.data.success) {
+        const updatedPosts = feedPosts.filter((_, i) => i !== index);
+        setFeedPosts(updatedPosts);
+        
+        alert('✅ Eliminado exitosamente de Google Sheets!');
+        
+        // Recargar datos después de 1 segundo
+        setTimeout(() => {
+          loadFeedData();
+        }, 1000);
+      } else {
+        alert(`❌ Error: ${response.data.error || 'No se pudo eliminar'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting feed:', error);
+      alert(`❌ Error al eliminar: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
 
@@ -247,29 +305,88 @@ export default function AdminPage() {
     setLibraryDialogOpen(true);
   };
 
-  const handleSaveLibrary = () => {
-    const updatedItems = [...libraryItems];
+  const handleSaveLibrary = async () => {
+    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL || process.env.WEBHOOK_URL;
     
-    if (editingLibraryIndex !== null) {
-      updatedItems[editingLibraryIndex] = libraryForm;
-    } else {
-      updatedItems.push(libraryForm);
+    if (!webhookUrl) {
+      alert('⚠️ Error: WEBHOOK_URL no está configurado en las variables de entorno.');
+      return;
     }
 
-    setLibraryItems(updatedItems);
-    setLibraryDialogOpen(false);
-    
-    alert('⚠️ Importante: Debes copiar y pegar manualmente los cambios a Google Sheets.\n\nEn una futura versión, esto se guardará automáticamente.');
-    console.log('Library data to save:', updatedItems);
+    try {
+      const isEditing = editingLibraryIndex !== null;
+      const action = isEditing ? 'update' : 'create';
+      
+      const response = await axios.post(webhookUrl, {
+        action: action,
+        sheet: 'Biblioteca',
+        index: editingLibraryIndex,
+        item: libraryForm
+      });
+
+      if (response.data.success) {
+        // Actualizar estado local
+        const updatedItems = [...libraryItems];
+        
+        if (isEditing) {
+          updatedItems[editingLibraryIndex] = libraryForm;
+        } else {
+          updatedItems.push(libraryForm);
+        }
+
+        setLibraryItems(updatedItems);
+        setLibraryDialogOpen(false);
+        
+        alert(`✅ ${isEditing ? 'Actualizado' : 'Creado'} exitosamente en Google Sheets!`);
+        
+        // Recargar datos después de 1 segundo
+        setTimeout(() => {
+          loadLibraryData();
+        }, 1000);
+      } else {
+        alert(`❌ Error: ${response.data.error || 'No se pudo guardar'}`);
+      }
+    } catch (error) {
+      console.error('Error saving library:', error);
+      alert(`❌ Error al guardar: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    }
   };
 
-  const handleDeleteLibrary = (index: number) => {
-    if (confirm('¿Estás seguro de eliminar este recurso?')) {
-      const updatedItems = libraryItems.filter((_, i) => i !== index);
-      setLibraryItems(updatedItems);
-      
-      alert('⚠️ Importante: Debes eliminar manualmente esta fila en Google Sheets.');
-      console.log('Library data after delete:', updatedItems);
+  const handleDeleteLibrary = async (index: number) => {
+    if (!confirm('¿Estás seguro de eliminar este recurso?')) {
+      return;
+    }
+
+    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL || process.env.WEBHOOK_URL;
+    
+    if (!webhookUrl) {
+      alert('⚠️ Error: WEBHOOK_URL no está configurado en las variables de entorno.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(webhookUrl, {
+        action: 'delete',
+        sheet: 'Biblioteca',
+        index: index
+      });
+
+      if (response.data.success) {
+        const updatedItems = libraryItems.filter((_, i) => i !== index);
+        setLibraryItems(updatedItems);
+        
+        alert('✅ Eliminado exitosamente de Google Sheets!');
+        
+        // Recargar datos después de 1 segundo
+        setTimeout(() => {
+          loadLibraryData();
+        }, 1000);
+      } else {
+        alert(`❌ Error: ${response.data.error || 'No se pudo eliminar'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting library:', error);
+      alert(`❌ Error al eliminar: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
 
