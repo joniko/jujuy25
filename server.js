@@ -93,13 +93,15 @@ io.on('connection', (socket) => {
         console.log('User disconnected', socket.id);
         console.log('Online Users:', onlineUsers, userList);
         
-        // Send leave event to webhook
+        // Send leave event to webhook with full user data
         if (disconnectedUser) {
             sendToWebhook({
                 event: 'leave',
                 name: disconnectedUser.name,
                 age: disconnectedUser.age,
                 church: disconnectedUser.church,
+                attendance: disconnectedUser.attendance || 'online',
+                comment: disconnectedUser.comment || '',
                 socketId: socket.id
             });
         }

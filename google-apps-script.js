@@ -2,7 +2,7 @@
  * INSTRUCCIONES PARA CONFIGURAR EL WEBHOOK DE GOOGLE APPS SCRIPT:
  * 
  * 1. Crea un nuevo Google Sheet con el nombre "Registro Oremos"
- * 2. En la primera fila (encabezados), escribe: Timestamp | Evento | Nombre | Edad | Iglesia | Socket ID
+ * 2. En la primera fila (encabezados), escribe: Timestamp | Evento | Nombre | Edad | Iglesia | Tipo Asistencia | Comentario | Socket ID
  * 3. En el Google Sheet, ve a Extensiones > Apps Script
  * 4. Borra el código por defecto y pega este código
  * 5. Haz clic en "Implementar" > "Nueva implementación"
@@ -23,7 +23,7 @@ function doPost(e) {
     if (!sheet) {
       sheet = spreadsheet.insertSheet('Actividad');
       // Agregar encabezados si es una pestaña nueva
-      sheet.appendRow(['Timestamp', 'Evento', 'Nombre', 'Edad', 'Iglesia', 'Socket ID']);
+      sheet.appendRow(['Timestamp', 'Evento', 'Nombre', 'Edad', 'Iglesia', 'Tipo Asistencia', 'Comentario', 'Socket ID']);
     }
     
     // Parsear los datos del request
@@ -39,6 +39,8 @@ function doPost(e) {
       data.name || 'Anónimo',
       data.age || 'N/A',
       data.church || 'N/A',
+      data.attendance || 'online',
+      data.comment || '',
       data.socketId || 'N/A'
     ]);
     
@@ -82,7 +84,7 @@ function test() {
   if (!sheet) {
     sheet = spreadsheet.insertSheet('Actividad');
     // Agregar encabezados
-    sheet.appendRow(['Timestamp', 'Evento', 'Nombre', 'Edad', 'Iglesia', 'Socket ID']);
+    sheet.appendRow(['Timestamp', 'Evento', 'Nombre', 'Edad', 'Iglesia', 'Tipo Asistencia', 'Comentario', 'Socket ID']);
   }
   
   sheet.appendRow([
@@ -91,8 +93,9 @@ function test() {
     "Test User", 
     "25", 
     "Test Church", 
+    "online",
+    "Comentario de prueba",
     "test-id"
   ]);
   Logger.log("Test completado exitosamente en pestaña Actividad");
 }
-
