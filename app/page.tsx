@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import io, { Socket } from 'socket.io-client';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -16,19 +15,9 @@ import { Share2, ChevronRight, MapPin, MessageCircle, Pencil } from 'lucide-reac
 import FullScreenModal from '../components/FullScreenModal';
 import YouTubePlayer from '../components/YouTubePlayer';
 import MediaDisplay from '../components/MediaDisplay';
+import { useSocket } from '../components/SocketProvider';
 
 dayjs.extend(customParseFormat);
-
-let socket: Socket;
-
-interface User {
-  id?: string;
-  name: string;
-  age: string;
-  church: string;
-  attendance?: 'online' | 'presencial';
-  comment?: string;
-}
 
 interface Message {
   hour: string;
@@ -40,46 +29,83 @@ interface Message {
 
 export default function Home() {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(true);
-  const [onlineUsers, setOnlineUsers] = useState(0);
-  const [userList, setUserList] = useState<User[]>([]);
+  const { socket, onlineUsers, userList, mySocketId } = useSocket();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState({ title: '', body: '', media: '', responsible: '' });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const messageRef = useRef({ title: '', body: '', media: '', responsible: '' });
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState('');
-  const [mySocketId, setMySocketId] = useState<string>('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const hasJoinedRef = useRef(false);
+
+  // Verificar si hay datos guardados válidos al cargar
+  useEffect(() => {
+    const checkSavedData = () => {
+      try {
+        const savedData = localStorage.getItem('oremos_user_data');
+        if (savedData) {
+          const { name, age, church, timestamp } = JSON.parse(savedData);
+          const hoursSinceSaved = (Date.now() - (timestamp || 0)) / (1000 * 60 * 60);
+          
+          // Si tiene datos válidos (menos de 4 horas) y tiene socket, no mostrar modal
+          if (hoursSinceSaved < 4 && name && age && church) {
+            return true;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking saved data:', error);
+      }
+      return false;
+    };
+
+    const hasValidData = checkSavedData();
+    setIsModalOpen(!hasValidData);
+  }, []);
+
+  // Auto-join cuando hay datos guardados y socket está conectado
+  useEffect(() => {
+    if (socket && !hasJoinedRef.current && !isModalOpen) {
+      try {
+        const savedData = localStorage.getItem('oremos_user_data');
+        const savedAttendance = localStorage.getItem('oremos_attendance_data');
+        
+        if (savedData) {
+          const { name, age, church, timestamp } = JSON.parse(savedData);
+          const hoursSinceSaved = (Date.now() - (timestamp || 0)) / (1000 * 60 * 60);
+          
+          let attendance = 'online';
+          if (savedAttendance) {
+            const { type, timestamp: attTimestamp } = JSON.parse(savedAttendance);
+            const hoursSinceAtt = (Date.now() - attTimestamp) / (1000 * 60 * 60);
+            if (hoursSinceAtt < 5) {
+              attendance = type;
+            }
+          }
+          
+          if (hoursSinceSaved < 4 && name && age && church) {
+            socket.emit('newUser', {
+              name: name.trim() || 'Anónimo',
+              age: age.trim() || 'N/A',
+              church: church.trim() || 'N/A',
+              attendance: attendance
+            });
+            hasJoinedRef.current = true;
+          }
+        }
+      } catch (error) {
+        console.error('Error auto-joining:', error);
+      }
+    }
+  }, [socket, isModalOpen]);
 
   useEffect(() => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
-    socket = io(socketUrl);
-
-    socket.on('connect', () => {
-      setMySocketId(socket.id || '');
-      console.log('Connected with socket ID:', socket.id);
-    });
-
-    socket.on('onlineUsers', ({ count, users }) => {
-      setOnlineUsers(count);
-      setUserList(users || []);
-      
-      // Update current comment if user's comment changed
-      const myUser = users?.find((u: User) => u.id === socket.id);
-      if (myUser) {
-        setCurrentComment(myUser.comment || '');
-      }
-    });
-
-    socket.on('newUser', ({ count, users }) => {
-      setOnlineUsers(count);
-      setUserList(users || []);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+    // Update current comment if user's comment changed
+    const myUser = userList?.find((u) => u.id === mySocketId);
+    if (myUser) {
+      setCurrentComment(myUser.comment || '');
+    }
+  }, [userList, mySocketId]);
 
   useEffect(() => {
     const fetchMessages = async (isInitial = false) => {
@@ -200,6 +226,7 @@ export default function Home() {
         church: church.trim() || 'N/A',
         attendance: attendance
       });
+      hasJoinedRef.current = true;
       setIsModalOpen(false);
     }
   };
