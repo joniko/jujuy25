@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Plus, Edit, Trash2, Pin, LogOut } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 interface FeedPost {
   titulo: string;
@@ -233,16 +234,22 @@ export default function AdminPage() {
         setFeedPosts(updatedPosts);
         setFeedDialogOpen(false);
         
-        alert(`✅ ${isEditing ? 'Actualizado' : 'Creado'} exitosamente en Google Sheets!`);
+        toast.success(isEditing ? 'Actualizado exitosamente' : 'Creado exitosamente', {
+          description: 'Los cambios se han guardado en Google Sheets'
+        });
         
         // NO recargar desde CSV - el estado local ya está actualizado
         // El CSV público puede tardar en actualizar, pero eso no importa en el admin
       } else {
-        alert(`❌ Error: ${response.data.error || 'No se pudo guardar'}`);
+        toast.error('Error al guardar', {
+          description: response.data.error || 'No se pudo guardar el post'
+        });
       }
     } catch (error) {
       console.error('Error saving feed:', error);
-      alert(`❌ Error al guardar: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      toast.error('Error al guardar', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
+      });
     }
   };
 
@@ -265,15 +272,21 @@ export default function AdminPage() {
         const updatedPosts = feedPosts.filter((_, i) => i !== index);
         setFeedPosts(updatedPosts);
         
-        alert('✅ Eliminado exitosamente de Google Sheets!');
+        toast.success('Eliminado exitosamente', {
+          description: 'El post ha sido eliminado de Google Sheets'
+        });
         
         // NO recargar desde CSV - el estado local ya está actualizado
       } else {
-        alert(`❌ Error: ${response.data.error || 'No se pudo eliminar'}`);
+        toast.error('Error al eliminar', {
+          description: response.data.error || 'No se pudo eliminar el post'
+        });
       }
     } catch (error) {
       console.error('Error deleting feed:', error);
-      alert(`❌ Error al eliminar: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      toast.error('Error al eliminar', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
+      });
     }
   };
 
@@ -324,15 +337,21 @@ export default function AdminPage() {
         setLibraryItems(updatedItems);
         setLibraryDialogOpen(false);
         
-        alert(`✅ ${isEditing ? 'Actualizado' : 'Creado'} exitosamente en Google Sheets!`);
+        toast.success(isEditing ? 'Actualizado exitosamente' : 'Creado exitosamente', {
+          description: 'Los cambios se han guardado en Google Sheets'
+        });
         
         // NO recargar desde CSV - el estado local ya está actualizado
       } else {
-        alert(`❌ Error: ${response.data.error || 'No se pudo guardar'}`);
+        toast.error('Error al guardar', {
+          description: response.data.error || 'No se pudo guardar el recurso'
+        });
       }
     } catch (error) {
       console.error('Error saving library:', error);
-      alert(`❌ Error al guardar: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      toast.error('Error al guardar', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
+      });
     }
   };
 
@@ -355,15 +374,21 @@ export default function AdminPage() {
         const updatedItems = libraryItems.filter((_, i) => i !== index);
         setLibraryItems(updatedItems);
         
-        alert('✅ Eliminado exitosamente de Google Sheets!');
+        toast.success('Eliminado exitosamente', {
+          description: 'El recurso ha sido eliminado de Google Sheets'
+        });
         
         // NO recargar desde CSV - el estado local ya está actualizado
       } else {
-        alert(`❌ Error: ${response.data.error || 'No se pudo eliminar'}`);
+        toast.error('Error al eliminar', {
+          description: response.data.error || 'No se pudo eliminar el recurso'
+        });
       }
     } catch (error) {
       console.error('Error deleting library:', error);
-      alert(`❌ Error al eliminar: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      toast.error('Error al eliminar', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
+      });
     }
   };
 

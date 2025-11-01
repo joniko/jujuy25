@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import TopNav from '../components/TopNav'
 import InstallBanner from '../components/InstallBanner'
 import { SocketProvider } from '../components/SocketProvider'
+import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -147,13 +148,14 @@ export default function RootLayout({
           href="/splash-screens/apple-splash-1488-2266.png"
         />
       </head>
-      <body className={inter.className}>
-        <SocketProvider>
-          <TopNav />
-          <InstallBanner />
-          {children}
-        </SocketProvider>
-      </body>
+    <body className={inter.className}>
+      <SocketProvider>
+        <TopNav />
+        <InstallBanner />
+        {children}
+        <Toaster />
+      </SocketProvider>
+    </body>
     </html>
   )
 }
