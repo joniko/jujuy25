@@ -16,6 +16,7 @@ interface FullScreenModalProps {
 const STORAGE_KEY = 'oremos_user_data';
 const ATTENDANCE_STORAGE_KEY = 'oremos_attendance_data';
 const ATTENDANCE_EXPIRY_HOURS = 5;
+const USER_DATA_EXPIRY_HOURS = 4;
 
 const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => {
   const [name, setName] = React.useState('');
@@ -34,10 +35,19 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => 
       try {
         const savedData = localStorage.getItem(STORAGE_KEY);
         if (savedData) {
-          const { name: savedName, age: savedAge, church: savedChurch } = JSON.parse(savedData);
-          setName(savedName || '');
-          setAge(savedAge || '');
-          setChurch(savedChurch || '');
+          const { name: savedName, age: savedAge, church: savedChurch, timestamp } = JSON.parse(savedData);
+          
+          // Verificar si los datos tienen menos de 4 horas
+          const hoursSinceSaved = (Date.now() - (timestamp || 0)) / (1000 * 60 * 60);
+          
+          if (hoursSinceSaved < USER_DATA_EXPIRY_HOURS) {
+            setName(savedName || '');
+            setAge(savedAge || '');
+            setChurch(savedChurch || '');
+          } else {
+            // Si pasaron más de 4 horas, limpiar datos
+            localStorage.removeItem(STORAGE_KEY);
+          }
         }
 
         // Cargar y validar attendance guardado
@@ -83,9 +93,14 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => 
       return;
     }
 
-    // Guardar datos en localStorage para la próxima vez
+    // Guardar datos en localStorage para la próxima vez con timestamp
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, age, church }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ 
+        name, 
+        age, 
+        church,
+        timestamp: Date.now()
+      }));
       localStorage.setItem(ATTENDANCE_STORAGE_KEY, JSON.stringify({ 
         type: attendance, 
         timestamp: Date.now() 

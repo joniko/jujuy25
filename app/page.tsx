@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Share2, ChevronRight, MapPin, MessageCircle } from 'lucide-react';
+import { Share2, ChevronRight, MapPin, MessageCircle, Pencil } from 'lucide-react';
 import FullScreenModal from '../components/FullScreenModal';
 import YouTubePlayer from '../components/YouTubePlayer';
 import MediaDisplay from '../components/MediaDisplay';
@@ -49,6 +49,7 @@ export default function Home() {
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState('');
   const [mySocketId, setMySocketId] = useState<string>('');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
@@ -272,6 +273,22 @@ export default function Home() {
     }
   };
 
+  const handleEditProfile = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateProfile = ({ name, age, church, attendance }: { name: string; age: string; church: string; attendance: 'online' | 'presencial' }) => {
+    if (socket) {
+      socket.emit('newUser', {
+        name: name.trim() || 'Anónimo',
+        age: age.trim() || 'N/A',
+        church: church.trim() || 'N/A',
+        attendance: attendance
+      });
+      setIsEditModalOpen(false);
+    }
+  };
+
   return (
     <>
       <main className="min-h-screen bg-background p-4 md:p-8">
@@ -377,14 +394,26 @@ export default function Home() {
                         )}
                       </div>
                       {isMyUser && !isModalOpen && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="shrink-0"
-                          onClick={handleOpenCommentDialog}
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="shrink-0"
+                            onClick={handleEditProfile}
+                            title="Editar perfil"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="shrink-0"
+                            onClick={handleOpenCommentDialog}
+                            title="Agregar comentario"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                          </Button>
+                        </div>
                       )}
                     </div>
                   );
@@ -399,6 +428,13 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onJoin={handleJoin}
+      />
+
+      {/* Edit Profile Modal */}
+      <FullScreenModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onJoin={handleUpdateProfile}
       />
 
       {/* Comment Dialog */}
