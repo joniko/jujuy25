@@ -116,6 +116,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({ isOpen, onJoin }) => 
     try {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(ATTENDANCE_STORAGE_KEY);
+      localStorage.removeItem('oremos_user_comment');
       setName('');
       setAge('');
       setChurch('');

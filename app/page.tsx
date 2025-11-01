@@ -69,6 +69,7 @@ export default function Home() {
       try {
         const savedData = localStorage.getItem('oremos_user_data');
         const savedAttendance = localStorage.getItem('oremos_attendance_data');
+        const savedComment = localStorage.getItem('oremos_user_comment');
         
         if (savedData) {
           const { name, age, church, timestamp } = JSON.parse(savedData);
@@ -90,6 +91,16 @@ export default function Home() {
               church: church.trim() || 'N/A',
               attendance: attendance
             });
+            
+            // Restaurar comentario si existe
+            if (savedComment && savedComment.trim()) {
+              setCurrentComment(savedComment);
+              // Esperar un momento para que el usuario se registre primero
+              setTimeout(() => {
+                socket.emit('updateComment', { comment: savedComment.trim() });
+              }, 500);
+            }
+            
             hasJoinedRef.current = true;
           }
         }
@@ -289,13 +300,36 @@ export default function Home() {
 
   const handleOpenCommentDialog = () => {
     const myUser = userList.find(u => u.id === mySocketId);
-    setCurrentComment(myUser?.comment || '');
+    const userComment = myUser?.comment || '';
+    
+    // Si no hay comentario en el servidor, intentar cargar desde localStorage
+    if (!userComment) {
+      try {
+        const savedComment = localStorage.getItem('oremos_user_comment');
+        if (savedComment) {
+          setCurrentComment(savedComment);
+        }
+      } catch (error) {
+        console.error('Error loading comment:', error);
+      }
+    } else {
+      setCurrentComment(userComment);
+    }
+    
     setCommentDialogOpen(true);
   };
 
   const handleSaveComment = () => {
     if (socket) {
       socket.emit('updateComment', { comment: currentComment.trim() });
+      
+      // Guardar comentario en localStorage para persistencia
+      try {
+        localStorage.setItem('oremos_user_comment', currentComment.trim());
+      } catch (error) {
+        console.error('Error saving comment:', error);
+      }
+      
       setCommentDialogOpen(false);
     }
   };
