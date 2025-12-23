@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -97,9 +98,11 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
           {/* Thumbnail */}
           {videoInfo?.thumbnail ? (
             <div className="relative w-12 h-12 shrink-0 rounded-md overflow-hidden bg-muted">
-              <img 
+              <Image 
                 src={videoInfo.thumbnail} 
                 alt={videoInfo.title}
+                width={48}
+                height={48}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/20 flex items-center justify-center">

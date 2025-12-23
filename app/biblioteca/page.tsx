@@ -7,7 +7,7 @@ import Papa from 'papaparse';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileText, FileSpreadsheet, Image, Video, Music, Folder, ExternalLink } from 'lucide-react';
+import { ArrowLeft, FileText, FileSpreadsheet, Image as ImageIcon, Video, Music, Folder, ExternalLink } from 'lucide-react';
 
 interface LibraryFile {
   nombre: string;
@@ -32,7 +32,7 @@ const getFileIcon = (tipo: string) => {
     return <FileSpreadsheet className="w-5 h-5" />;
   }
   if (tipoLower.includes('imagen') || tipoLower.includes('image') || tipoLower.includes('jpg') || tipoLower.includes('png')) {
-    return <Image className="w-5 h-5" />;
+    return <ImageIcon className="w-5 h-5" />;
   }
   if (tipoLower.includes('video') || tipoLower.includes('youtube')) {
     return <Video className="w-5 h-5" />;
