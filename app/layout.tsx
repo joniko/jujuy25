@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import TopNav from '../components/TopNav'
 import InstallBanner from '../components/InstallBanner'
-import { SocketProvider } from '../components/SocketProvider'
 import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({ subsets: ['latin'] })
@@ -149,12 +148,10 @@ export default function RootLayout({
         />
       </head>
     <body className={inter.className}>
-      <SocketProvider>
-        <TopNav />
-        <InstallBanner />
-        {children}
-        <Toaster />
-      </SocketProvider>
+      <TopNav />
+      <InstallBanner />
+      {children}
+      <Toaster />
     </body>
     </html>
   )
