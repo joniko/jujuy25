@@ -5,14 +5,16 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import Papa from 'papaparse';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Share2, ChevronRight } from 'lucide-react';
+import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight } from 'lucide-react';
 import MediaDisplay from '../components/MediaDisplay';
 
 dayjs.extend(customParseFormat);
+dayjs.extend(relativeTime);
 
 interface Message {
   hour: string;
@@ -24,9 +26,16 @@ interface Message {
 
 export default function Home() {
   const router = useRouter();
-  const [message, setMessage] = useState({ title: '', body: '', media: '', responsible: '' });
+  const [allMessages, setAllMessages] = useState<Message[]>([]);
+  const [currentMessage, setCurrentMessage] = useState<Message | null>(null);
+  const [nextMessage, setNextMessage] = useState<Message | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const messageRef = useRef({ title: '', body: '', media: '', responsible: '' });
+  const [countdown, setCountdown] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
+  const [hasStarted, setHasStarted] = useState(true);
+  const messagesRef = useRef<Message[]>([]);
+
+  // Fecha de inicio del programa (ajustar según corresponda)
+  const PROGRAM_START_DATE = dayjs('2025-01-24 05:00', 'YYYY-MM-DD HH:mm'); // Viernes 24 de enero 2025 a las 5:00 AM
 
   useEffect(() => {
     const fetchMessages = async (isInitial = false) => {
@@ -63,10 +72,43 @@ export default function Home() {
           };
         });
 
-        const currentTime = dayjs();
-        const currentHour = currentTime.format('h A');
+        const hasChanges = JSON.stringify(messages) !== JSON.stringify(messagesRef.current);
+        
+        if (hasChanges) {
+          messagesRef.current = messages;
+          setAllMessages(messages);
+        }
 
-        const currentMessage = messages.find((message: Message) => {
+        // Encontrar mensaje actual y próximo
+        const now = dayjs();
+        const currentHour = now.format('h A');
+        
+        // Ordenar mensajes por hora
+        const sortedMessages = [...messages].sort((a, b) => {
+          const cleanHourA = a.hour
+            .replace(/\s+/g, ' ')
+            .replace('a. m.', 'AM')
+            .replace('p. m.', 'PM')
+            .replace('a.m.', 'AM')
+            .replace('p.m.', 'PM')
+            .trim();
+          
+          const cleanHourB = b.hour
+            .replace(/\s+/g, ' ')
+            .replace('a. m.', 'AM')
+            .replace('p. m.', 'PM')
+            .replace('a.m.', 'AM')
+            .replace('p.m.', 'PM')
+            .trim();
+          
+          const timeA = dayjs(cleanHourA, 'h:mm A');
+          const timeB = dayjs(cleanHourB, 'h:mm A');
+          
+          return timeA.valueOf() - timeB.valueOf();
+        });
+
+        // Encontrar mensaje actual
+        const current = sortedMessages.find((message: Message) => {
           const cleanHour = message.hour
             .replace(/\s+/g, ' ')
             .replace('a. m.', 'AM')
@@ -79,21 +121,29 @@ export default function Home() {
           return currentHour === messageTime.format('h A');
         });
 
-        if (currentMessage) {
-          const newMessage = {
-            title: currentMessage.title,
-            body: currentMessage.body,
-            media: currentMessage.media,
-            responsible: currentMessage.responsible
-          };
-
-          const hasChanges = JSON.stringify(newMessage) !== JSON.stringify(messageRef.current);
-          
-          if (hasChanges) {
-            messageRef.current = newMessage;
-            setMessage(newMessage);
-          }
+        // Encontrar próximo mensaje
+        let next: Message | null = null;
+        if (current) {
+          const currentIndex = sortedMessages.indexOf(current);
+          next = sortedMessages[currentIndex + 1] || sortedMessages[0] || null;
+        } else {
+          // Si no hay mensaje actual, encontrar el próximo
+          next = sortedMessages.find((message: Message) => {
+            const cleanHour = message.hour
+              .replace(/\s+/g, ' ')
+              .replace('a. m.', 'AM')
+              .replace('p. m.', 'PM')
+              .replace('a.m.', 'AM')
+              .replace('p.m.', 'PM')
+              .trim();
+            
+            const messageTime = dayjs(cleanHour, 'h:mm A');
+            return messageTime.isAfter(now);
+          }) || sortedMessages[0] || null;
         }
+
+        setCurrentMessage(current || null);
+        setNextMessage(next);
       } catch (error) {
         console.error('Error fetching messages:', error);
       } finally {
@@ -114,7 +164,33 @@ export default function Home() {
     };
   }, []);
 
-  const handleShare = async () => {
+  // Countdown effect
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = dayjs();
+      const hasStarted = now.isAfter(PROGRAM_START_DATE) || now.isSame(PROGRAM_START_DATE);
+      setHasStarted(hasStarted);
+
+      if (!hasStarted) {
+        const diff = PROGRAM_START_DATE.diff(now);
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        setCountdown({ days, hours, minutes, seconds });
+      } else {
+        setCountdown(null);
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleShare = async (message: Message) => {
     const currentHour = new Date().getHours();
     
     if (!navigator.share) {
@@ -166,54 +242,194 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
+        {/* Countdown si aún no comenzó */}
+        {!hasStarted && countdown && (
+          <Card className="bg-primary/10 border-primary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-primary">
+                <Clock className="w-5 h-5" />
+                El programa comienza en:
+              </CardTitle>
+              <div className="flex items-center gap-4 pt-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary">{countdown.days}</div>
+                  <div className="text-xs text-muted-foreground uppercase">Días</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary">{countdown.hours}</div>
+                  <div className="text-xs text-muted-foreground uppercase">Horas</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary">{countdown.minutes}</div>
+                  <div className="text-xs text-muted-foreground uppercase">Minutos</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary">{countdown.seconds}</div>
+                  <div className="text-xs text-muted-foreground uppercase">Segundos</div>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        )}
+
+        {/* Lo que está pasando ahora */}
+        {currentMessage && (
+          <Card 
+            className="bg-primary/5 border-primary cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push('/cronograma')}
+          >
+            <CardHeader className="space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                  <CardTitle className="text-sm font-bold uppercase text-primary tracking-wide">Ahora</CardTitle>
+                </div>
+                <ChevronRight className="w-5 h-5 text-primary" />
+              </div>
+              {isInitialLoading ? (
+                <>
+                  <Skeleton className="h-10 w-3/4" />
+                  <Skeleton className="h-6 w-full" />
+                </>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      {currentMessage.hour}
+                    </div>
+                    <CardTitle className="text-2xl md:text-3xl md:leading-tight">{currentMessage.title}</CardTitle>
+                    <CardDescription className="text-lg text-muted-foreground">
+                      {currentMessage.body}
+                    </CardDescription>
+                  </div>
+
+                  {currentMessage.media && (
+                    <CardContent onClick={(e) => e.stopPropagation()} className="p-0">
+                      <MediaDisplay media={currentMessage.media} title={currentMessage.title} />
+                    </CardContent>
+                  )}
+                  
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShare(currentMessage);
+                    }}
+                    variant="outline"
+                    className="w-full sm:w-auto border-primary/20 hover:bg-primary/10"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Compartir
+                  </Button>
+                </>
+              )}
+            </CardHeader>
+          </Card>
+        )}
+
+        {/* Lo que viene */}
+        {nextMessage && (
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push('/cronograma')}
+          >
+            <CardHeader className="space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-bold uppercase text-muted-foreground tracking-wide">Próximo</CardTitle>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+              {isInitialLoading ? (
+                <>
+                  <Skeleton className="h-10 w-3/4" />
+                  <Skeleton className="h-6 w-full" />
+                </>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      {nextMessage.hour}
+                    </div>
+                    <CardTitle className="text-xl md:text-2xl">{nextMessage.title}</CardTitle>
+                    <CardDescription className="text-base text-muted-foreground line-clamp-2">
+                      {nextMessage.body}
+                    </CardDescription>
+                  </div>
+                </>
+              )}
+            </CardHeader>
+          </Card>
+        )}
+
+        {/* Ver programa completo */}
         <Card 
-          className="bg-primary/5 border-primary cursor-pointer hover:shadow-lg transition-shadow"
+          className="cursor-pointer hover:shadow-lg transition-shadow border-dashed"
           onClick={() => router.push('/cronograma')}
         >
-          <CardHeader className="space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                <CardTitle className="text-sm font-bold uppercase text-primary tracking-wide">Motivo de Oración</CardTitle>
-              </div>
-              <ChevronRight className="w-5 h-5 text-primary" />
-            </div>
-            {isInitialLoading ? (
-              <>
-                <Skeleton className="h-10 w-3/4" />
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-6 w-5/6" />
-              </>
-            ) : (
-              <>
-                <div className="space-y-4">
-                  <CardTitle className="text-2xl md:text-3xl md:leading-tight">{message.title}</CardTitle>
-                  <CardDescription className="text-lg text-muted-foreground">
-                    {message.body}
-                  </CardDescription>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-primary" />
+                <div>
+                  <CardTitle className="text-lg">Ver Programa Completo</CardTitle>
+                  <CardDescription>Ver todos los motivos de oración del día</CardDescription>
                 </div>
-
-                {!isInitialLoading && message.media && (
-                  <CardContent onClick={(e) => e.stopPropagation()} className="p-0">
-                    <MediaDisplay media={message.media} title={message.title} />
-                  </CardContent>
-                )}
-                
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleShare();
-                  }}
-                  variant="outline"
-                  className="w-full sm:w-auto border-primary/20 hover:bg-primary/10"
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Compartir
-                </Button>
-              </>
-            )}
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </div>
           </CardHeader>
         </Card>
+
+        {/* Links rápidos */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push('/cronograma')}
+          >
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Calendar className="w-6 h-6 text-primary" />
+                <div>
+                  <CardTitle className="text-lg">Programa</CardTitle>
+                  <CardDescription>Cronograma completo</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push('/participantes')}
+          >
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Users className="w-6 h-6 text-primary" />
+                <div>
+                  <CardTitle className="text-lg">Participantes</CardTitle>
+                  <CardDescription>Lista de participantes</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push('/destinos')}
+          >
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <MapPin className="w-6 h-6 text-primary" />
+                <div>
+                  <CardTitle className="text-lg">Destinos</CardTitle>
+                  <CardDescription>Lugares y direcciones</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
     </main>
   );
