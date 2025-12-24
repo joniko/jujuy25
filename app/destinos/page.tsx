@@ -33,6 +33,9 @@ export default function DestinosPage() {
         const baseUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
         const locationsGid = process.env.NEXT_PUBLIC_SHEETS_LOCATIONS_GID || '';
         
+        console.log('🔍 Debug - Base URL:', baseUrl);
+        console.log('🔍 Debug - Locations GID:', locationsGid);
+        
         if (!baseUrl) {
           const errorMsg = 'No hay URL de Google Sheets configurada. Verifica NEXT_PUBLIC_SHEETS_URL en .env.local';
           console.error('❌', errorMsg);
@@ -62,6 +65,8 @@ export default function DestinosPage() {
           sheetsUrl = baseUrl.replace('output=csv', `gid=${locationsGid}&single=true&output=csv`);
         }
 
+        console.log('🔍 Debug - Final Sheets URL:', sheetsUrl);
+
         // Usar cache offline si no hay conexión, o intentar fetch y cachear si hay conexión
         let csvData: string;
         const online = isOnline();
@@ -80,19 +85,43 @@ export default function DestinosPage() {
           csvData = await fetchWithOfflineFallback(sheetsUrl);
         }
         
+        console.log('📄 CSV Data length:', csvData?.length || 0);
         const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
 
-        const locationsData: Location[] = (parsedData.data as Array<{
-          nombre?: string;
-          direccion?: string;
-          link?: string;
-        }>)
-          .filter((row) => row.nombre && row.nombre.trim() !== '')
-          .map((row) => ({
-            nombre: row.nombre || '',
-            direccion: row.direccion || '',
-            link: row.link || ''
-          }));
+        console.log('📊 Parsed data rows:', parsedData.data.length);
+        console.log('📊 First row sample:', parsedData.data[0]);
+        console.log('📊 Available columns:', parsedData.meta?.fields || 'No fields detected');
+
+        // Función helper para obtener valor de columna con diferentes variantes
+        const getColumnValue = (row: any, possibleNames: string[]): string => {
+          for (const name of possibleNames) {
+            // Buscar exacto
+            if (row[name]) return row[name];
+            // Buscar case-insensitive
+            const found = Object.keys(row).find(
+              key => key.toLowerCase().trim() === name.toLowerCase().trim()
+            );
+            if (found) return row[found];
+          }
+          return '';
+        };
+
+        const locationsData: Location[] = (parsedData.data as Array<any>)
+          .map((row) => {
+            const nombre = getColumnValue(row, ['nombre', 'Nombre', 'NOMBRE', 'name', 'Name']);
+            const direccion = getColumnValue(row, ['direccion', 'Direccion', 'DIRECCION', 'dirección', 'Dirección', 'DIRECCIÓN', 'address', 'Address', 'dirección', 'Dirección']);
+            const link = getColumnValue(row, ['link', 'Link', 'LINK', 'url', 'Url', 'URL', 'maps', 'Maps', 'google maps', 'Google Maps']);
+            
+            return {
+              nombre: nombre || '',
+              direccion: direccion || '',
+              link: link || ''
+            };
+          })
+          .filter((location) => location.nombre && location.nombre.trim() !== '');
+
+        console.log('✅ Processed locations:', locationsData.length);
+        console.log('✅ First location:', locationsData[0]);
 
         // Comparar datos para detectar cambios
         const hasChanges = JSON.stringify(locationsData) !== JSON.stringify(locationsRef.current);
