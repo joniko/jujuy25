@@ -31,11 +31,6 @@ const navItems: NavItem[] = [
     label: 'Ubicaciones',
     icon: MapPin,
   },
-  {
-    href: '/proposito',
-    label: 'Propósito',
-    icon: Heart,
-  },
 ];
 
 export default function BottomNav() {
@@ -62,7 +57,7 @@ export default function BottomNav() {
                 }`}
               >
                 <Icon className={`w-6 h-6 md:w-5 md:h-5 ${isActive ? 'scale-110' : ''} transition-transform`} />
-                <span className="hidden md:inline text-xs font-medium">{item.label}</span>
+                <span className="text-xs font-medium">{item.label}</span>
               </Link>
             );
           })}
