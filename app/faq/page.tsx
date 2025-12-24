@@ -39,7 +39,7 @@ function FAQAccordion({ question, answer }: FAQItem) {
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-4 px-1 flex items-start justify-between gap-4 text-left hover:bg-muted/30 transition-colors rounded-lg"
       >
-        <span className="font-bold text-foreground text-sm md:text-base leading-tight flex-1">
+        <span className="font-semibold text-foreground text-sm md:text-base leading-tight flex-1">
           {question}
         </span>
         {isOpen ? (

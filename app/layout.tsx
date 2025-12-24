@@ -149,7 +149,7 @@ export default function RootLayout({
       </head>
     <body className={inter.className}>
       <InstallBanner />
-      <div className="pb-20 md:pb-16">
+      <div className="pb-24 md:pb-20">
         {children}
       </div>
       <BottomNav />

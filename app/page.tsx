@@ -596,7 +596,7 @@ export default function Home() {
                 </div>
               </div>
             </CardContent>
-            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 rounded-xl"></div>
+            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 rounded-xl pointer-events-none"></div>
           </Card>
         )}
 
@@ -604,8 +604,8 @@ export default function Home() {
         {(!hasStarted || isInitialLoading) && (
           <Card className="bg-primary/20 border-none shadow-md overflow-hidden relative text-left">
             {/* Círculos decorativos de fondo */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl pointer-events-none" />
             
             <CardHeader className="relative z-10 pb-2">
               <CardTitle className="flex items-center text-center gap-2 text-primary text-sm font-bold uppercase tracking-wider">
@@ -630,14 +630,14 @@ export default function Home() {
                 </div>
               )}
             </CardContent>
-            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 sm:rounded-xl lg:rounded-xl"></div>
+            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 sm:rounded-xl lg:rounded-xl pointer-events-none"></div>
           </Card>
         )}
 
         {/* Lo que está pasando ahora */}
         {(currentMessage || (isInitialLoading && hasStarted)) && (
           <Card 
-            className="border-primary/20 cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden group bg-gradient-to-b from-primary/[0.03] to-transparent"
+            className="border-primary/20 cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden group bg-gradient-to-b from-primary/[0.03] to-transparent relative z-10"
             onClick={() => !isInitialLoading && router.push('/cronograma')}
           >
             <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
@@ -731,7 +731,7 @@ export default function Home() {
         {/* Lo que viene */}
         {(nextMessage || (isInitialLoading && hasStarted)) && (
           <Card 
-            className="cursor-pointer hover:shadow-md transition-all duration-300 border-foreground/5 bg-muted/30 group"
+            className="cursor-pointer hover:shadow-md transition-all duration-300 border-foreground/5 bg-muted/30 group relative z-10"
             onClick={() => !isInitialLoading && router.push('/cronograma')}
           >
             <CardHeader className="p-6">
@@ -786,7 +786,7 @@ export default function Home() {
 
         {/* Propósito */}
         <Card 
-          className="cursor-pointer hover:shadow-md transition-all duration-300 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent group"
+          className="cursor-pointer hover:shadow-md transition-all duration-300 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent group relative z-10"
           onClick={() => router.push('/proposito')}
         >
           <CardHeader className="p-6">
