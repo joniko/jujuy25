@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Users, Search, Phone, MapPin, Plane, Bus, Car, Filter } from 'lucide-react';
+import { ArrowLeft, Users, Search, MessageCircle, MapPin, Plane, Bus, Car, Filter } from 'lucide-react';
 
 interface Participante {
   nombre: string;
@@ -488,7 +488,7 @@ export default function ParticipantesPage() {
                               className="h-8 w-8"
                               title="Contactar por WhatsApp"
                             >
-                              <Phone className="w-4 h-4" />
+                              <MessageCircle className="w-4 h-4" />
                             </Button>
                           ) : (
                             <span className="text-muted-foreground text-sm">-</span>
