@@ -49,7 +49,6 @@ export default function ParticipantesPage() {
   const [selectedGrupo, setSelectedGrupo] = useState<string>('all');
   const [selectedDestino, setSelectedDestino] = useState<string>('all');
   const [error, setError] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<{ url?: string; gid?: string; rows?: number } | null>(null);
   const participantesRef = useRef<Participante[]>([]);
 
   useEffect(() => {
@@ -66,11 +65,6 @@ export default function ParticipantesPage() {
         
         console.log('🔍 Debug - Base URL:', baseUrl);
         console.log('🔍 Debug - Participantes GID:', participantesGid);
-        
-        setDebugInfo({
-          url: baseUrl,
-          gid: participantesGid || 'No configurado'
-        });
         
         if (!baseUrl) {
           const errorMsg = 'No hay URL de Google Sheets configurada. Verifica NEXT_PUBLIC_SHEETS_URL en .env.local';
@@ -123,11 +117,6 @@ export default function ParticipantesPage() {
         console.log('📊 Parsed data rows:', parsedData.data.length);
         console.log('📊 First row sample:', parsedData.data[0]);
         console.log('📊 Available columns:', parsedData.meta?.fields || 'No fields detected');
-        
-        setDebugInfo(prev => ({
-          ...prev,
-          rows: parsedData.data.length
-        }));
 
         if (isInitial) {
           console.log('👥 Participantes CSV Data (first 3 rows):', parsedData.data.slice(0, 3));
@@ -308,31 +297,6 @@ export default function ParticipantesPage() {
             <p className="text-sm text-muted-foreground">Lista de participantes del viaje</p>
           </div>
         </div>
-
-        {/* Debug Info - Solo en desarrollo */}
-        {process.env.NODE_ENV === 'development' && debugInfo && (
-          <Card className="bg-yellow-50 border-yellow-200">
-            <CardHeader>
-              <CardTitle className="text-sm">🔍 Información de Debug</CardTitle>
-            </CardHeader>
-            <CardContent className="text-xs space-y-1">
-              <div><strong>Base URL:</strong> {debugInfo.url ? '✅ Configurada' : '❌ No configurada'}</div>
-              <div><strong>GID Participantes:</strong> {debugInfo.gid}</div>
-              {debugInfo.rows !== undefined && (
-                <div><strong>Filas encontradas:</strong> {debugInfo.rows}</div>
-              )}
-              {debugInfo.url && (
-                <div className="mt-2 p-2 bg-white rounded text-xs break-all">
-                  <strong>URL completa:</strong><br />
-                  {debugInfo.url.includes('gid=') 
-                    ? debugInfo.url.replace(/gid=\d+/, `gid=${debugInfo.gid}`)
-                    : `${debugInfo.url.replace('output=csv', `gid=${debugInfo.gid}&single=true&output=csv`)}`
-                  }
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
 
         {/* Error Message */}
         {error && (
