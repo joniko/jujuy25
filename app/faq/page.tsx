@@ -157,7 +157,6 @@ export default function FAQPage() {
         {/* Header */}
         <div className="text-center space-y-3 mb-8">
           <div className="flex items-center justify-center gap-3">
-            <HelpCircle className="w-8 h-8 text-primary" />
             <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
               Preguntas Frecuentes
             </h1>

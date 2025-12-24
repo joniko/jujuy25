@@ -15,12 +15,6 @@ export default function Proposito() {
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl text-balance">
             Viaje Misionero Jujuy 25
           </h1>
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
-            <MapPin className="w-5 h-5" />
-            <p className="text-lg">
-              Jóvenes de la iglesia El Encuentro de Luis Guillón, Buenos Aires
-            </p>
-          </div>
         </div>
 
         {/* Personal Message */}
