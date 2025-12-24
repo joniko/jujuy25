@@ -17,28 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Users, Search, MessageCircle, MapPin, Plane, Bus, Car, Filter } from 'lucide-react';
+import { ArrowLeft, Users, Search, MessageCircle, MapPin, Filter, Calendar, Clock } from 'lucide-react';
 
 interface Participante {
   nombre: string;
   grupo: string;
-  rol: string;
-  referentes: string;
   destino: string;
   whatsapp: string;
-  contacto: string;
-  medio_transporte: string;
-  vuelo_ida: string;
-  vuelo_vuelta: string;
-  hora_llegada: string;
-  hora_salida: string;
-  aeropuerto_llegada: string;
-  aeropuerto_salida: string;
-  escala_salta: string;
-  micro_salta_jujuy: string;
   dia_llegada: string;
-  estado: string;
-  notas: string;
+  hora_llegada: string;
 }
 
 export default function ParticipantesPage() {
@@ -135,23 +122,10 @@ export default function ParticipantesPage() {
         const rows = parsedData.data as Array<{
           nombre?: string;
           grupo?: string;
-          rol?: string;
-          referentes?: string;
           destino?: string;
           whatsapp?: string;
-          contacto?: string;
-          medio_transporte?: string;
-          vuelo_ida?: string;
-          vuelo_vuelta?: string;
-          hora_llegada?: string;
-          hora_salida?: string;
-          aeropuerto_llegada?: string;
-          aeropuerto_salida?: string;
-          escala_salta?: string;
-          micro_salta_jujuy?: string;
           dia_llegada?: string;
-          estado?: string;
-          notas?: string;
+          hora_llegada?: string;
         }>;
 
         const participantesData: Participante[] = rows
@@ -159,23 +133,10 @@ export default function ParticipantesPage() {
           .map(row => ({
             nombre: row.nombre || '',
             grupo: row.grupo || '',
-            rol: row.rol || '',
-            referentes: row.referentes || '',
             destino: row.destino || '',
             whatsapp: row.whatsapp || '',
-            contacto: row.contacto || '',
-            medio_transporte: row.medio_transporte || '',
-            vuelo_ida: row.vuelo_ida || '',
-            vuelo_vuelta: row.vuelo_vuelta || '',
-            hora_llegada: row.hora_llegada || '',
-            hora_salida: row.hora_salida || '',
-            aeropuerto_llegada: row.aeropuerto_llegada || '',
-            aeropuerto_salida: row.aeropuerto_salida || '',
-            escala_salta: row.escala_salta || '',
-            micro_salta_jujuy: row.micro_salta_jujuy || '',
             dia_llegada: row.dia_llegada || '',
-            estado: row.estado || 'Activo',
-            notas: row.notas || ''
+            hora_llegada: row.hora_llegada || ''
           }));
 
         const hasChanges = JSON.stringify(participantesData) !== JSON.stringify(participantesRef.current);
@@ -233,8 +194,7 @@ export default function ParticipantesPage() {
       filtered = filtered.filter(p => 
         p.nombre.toLowerCase().includes(query) ||
         p.grupo.includes(query) ||
-        p.destino.toLowerCase().includes(query) ||
-        p.referentes.toLowerCase().includes(query)
+        p.destino.toLowerCase().includes(query)
       );
     }
 
@@ -247,9 +207,6 @@ export default function ParticipantesPage() {
     if (selectedDestino !== 'all') {
       filtered = filtered.filter(p => p.destino.toLowerCase() === selectedDestino.toLowerCase());
     }
-
-    // Filtrar solo activos
-    filtered = filtered.filter(p => p.estado !== 'BAJA');
 
     setFilteredParticipantes(filtered);
   }, [participantes, searchQuery, selectedGrupo, selectedDestino]);
@@ -276,18 +233,6 @@ export default function ParticipantesPage() {
     window.open(`https://wa.me/${cleanNumber}`, '_blank');
   };
 
-  const getTransportIcon = (medio: string) => {
-    if (medio.toLowerCase().includes('avión') || medio.toLowerCase().includes('avion')) {
-      return <Plane className="w-4 h-4" />;
-    }
-    if (medio.toLowerCase().includes('micro') || medio.toLowerCase().includes('ómnibus') || medio.toLowerCase().includes('omnibus')) {
-      return <Bus className="w-4 h-4" />;
-    }
-    if (medio.toLowerCase().includes('auto')) {
-      return <Car className="w-4 h-4" />;
-    }
-    return null;
-  };
 
   return (
     <main className="min-h-screen bg-background p-4 md:p-8">
@@ -411,81 +356,47 @@ export default function ParticipantesPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="min-w-[180px]">Nombre</TableHead>
-                      <TableHead className="min-w-[100px]">Grupo / Destino</TableHead>
-                      <TableHead className="min-w-[140px]">Transporte / Vuelos</TableHead>
-                      <TableHead className="min-w-[100px]">Llegada / Escala</TableHead>
+                      <TableHead className="min-w-[100px]">Grupo</TableHead>
+                      <TableHead className="min-w-[120px]">Destino</TableHead>
+                      <TableHead className="min-w-[120px]">Llegada</TableHead>
                       <TableHead className="w-[60px] text-center">Contacto</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredParticipantes.map((participante, index) => (
-                      <TableRow 
-                        key={index}
-                        className={participante.rol === 'Líder' ? 'bg-primary/5' : ''}
-                      >
+                      <TableRow key={index}>
                         <TableCell>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-medium">{participante.nombre}</span>
+                          <span className="font-medium">{participante.nombre}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-semibold text-primary">G{participante.grupo}</span>
+                        </TableCell>
+                        <TableCell>
+                          {participante.destino ? (
+                            <div className="flex items-center gap-1 text-sm">
+                              <MapPin className="w-3 h-3 text-muted-foreground" />
+                              <span>{participante.destino}</span>
                             </div>
-                            {participante.micro_salta_jujuy && (
-                              <div className="text-xs text-muted-foreground">
-                                🚌 {participante.micro_salta_jujuy}
-                              </div>
-                            )}
-                            {participante.notas && (
-                              <div className="text-xs text-muted-foreground italic">
-                                📝 {participante.notas}
-                              </div>
-                            )}
-                          </div>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <div className="flex items-center gap-1">
-                              <span className="font-semibold text-primary">G{participante.grupo}</span>
-                            </div>
-                            {participante.destino && (
-                              <div className="flex items-center gap-1 text-xs">
-                                <MapPin className="w-3 h-3 text-muted-foreground" />
-                                <span className="text-muted-foreground">{participante.destino}</span>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            {participante.medio_transporte ? (
+                            {participante.dia_llegada && (
                               <div className="flex items-center gap-1 text-sm">
-                                {getTransportIcon(participante.medio_transporte)}
-                                <span>{participante.medio_transporte}</span>
+                                <Calendar className="w-3 h-3 text-muted-foreground" />
+                                <span>{participante.dia_llegada}</span>
                               </div>
-                            ) : (
-                              <span className="text-sm text-muted-foreground">-</span>
                             )}
-                            <div className="flex flex-col gap-0.5 text-xs">
-                              {participante.vuelo_ida && (
-                                <span className="font-mono text-muted-foreground">✈️ Ida: {participante.vuelo_ida}</span>
-                              )}
-                              {participante.vuelo_vuelta && (
-                                <span className="font-mono text-muted-foreground">✈️ Vuelta: {participante.vuelo_vuelta}</span>
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            {participante.hora_llegada ? (
-                              <div className="text-sm">
-                                🕐 {participante.hora_llegada}
+                            {participante.hora_llegada && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="w-3 h-3" />
+                                <span>{participante.hora_llegada}</span>
                               </div>
-                            ) : (
-                              <span className="text-sm text-muted-foreground">-</span>
                             )}
-                            {participante.escala_salta === 'Sí' && (
-                              <div className="text-xs font-semibold text-orange-600">
-                                ⚠️ Escala Salta
-                              </div>
+                            {!participante.dia_llegada && !participante.hora_llegada && (
+                              <span className="text-sm text-muted-foreground">-</span>
                             )}
                           </div>
                         </TableCell>
