@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
                 alignItems: 'center',
               }}
             >
-              Oremos 🙏
+              Viaje Misionero: Jujuy 25
             </div>
           </div>
 

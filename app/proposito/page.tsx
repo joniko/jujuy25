@@ -66,7 +66,7 @@ export default function Proposito() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed">
             <p>
-              <strong>Oremos</strong> nace del deseo de ver a nuestra comunidad transformada 
+              <strong>Viaje Misionero: Jujuy 25</strong> nace del deseo de ver a nuestra comunidad transformada 
               por el poder de la oración continua. Creemos que cuando nos unimos en oración, Dios se mueve 
               de maneras extraordinarias.
             </p>

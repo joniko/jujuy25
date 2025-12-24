@@ -357,7 +357,7 @@ export default function Home() {
 
     try {
       const shareData: ShareData = {
-        title: `Oremos - ${message.title}`,
+        title: `Viaje Misionero: Jujuy 25 - ${message.title}`,
         text: `🙏 ${message.title}\n\n${message.body}\n\nÚnete a orar con nosotros:`,
         url: 'https://oremos.app'
       };
@@ -369,7 +369,7 @@ export default function Home() {
           
           if (response.ok) {
             const blob = await response.blob();
-            const file = new File([blob], 'oremos-motivo.png', { type: 'image/png' });
+            const file = new File([blob], 'jujuy25-motivo.png', { type: 'image/png' });
             
             const dataWithFile = { ...shareData, files: [file] };
             if (navigator.canShare(dataWithFile)) {

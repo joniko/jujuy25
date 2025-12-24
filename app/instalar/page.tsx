@@ -22,7 +22,7 @@ export default function InstalarPage() {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Guarda Oremos en tu pantalla de inicio</h1>
+            <h1 className="text-2xl font-bold">Guarda Jujuy 25 en tu pantalla de inicio</h1>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export default function InstalarPage() {
                   1
                 </div>
                 <div className="flex-1 space-y-2">
-                  <p className="font-medium">Abre Oremos en Safari</p>
+                  <p className="font-medium">Abre Jujuy 25 en Safari</p>
                   <p className="text-sm text-muted-foreground">
                     Asegúrate de estar usando el navegador Safari (no Chrome ni otro navegador)
                   </p>
@@ -130,7 +130,7 @@ export default function InstalarPage() {
 
             <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
               <p className="text-sm text-blue-900">
-                <strong>💡 Tip:</strong> El ícono de Oremos aparecerá en tu pantalla de inicio junto a tus otras apps.
+                <strong>💡 Tip:</strong> El ícono de Jujuy 25 aparecerá en tu pantalla de inicio junto a tus otras apps.
               </p>
             </div>
           </CardContent>
@@ -158,7 +158,7 @@ export default function InstalarPage() {
                   1
                 </div>
                 <div className="flex-1 space-y-2">
-                  <p className="font-medium">Abre Oremos en Chrome</p>
+                  <p className="font-medium">Abre Jujuy 25 en Chrome</p>
                   <p className="text-sm text-muted-foreground">
                     Asegúrate de usar Google Chrome como navegador
                   </p>
