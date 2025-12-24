@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MapPin, Users, Heart } from "lucide-react";
+import { MapPin, Users, Heart, HandHeart, Sparkles } from "lucide-react";
 
 export const metadata = {
   title: 'Propósito',
@@ -23,20 +23,43 @@ export default function Proposito() {
           </div>
         </div>
 
-        {/* Introduction */}
-        <Card className="bg-primary/5 border-primary">
+        {/* Personal Message */}
+        <Card className="bg-primary/10 border-primary border-2">
           <CardHeader>
-            <CardTitle className="text-2xl">Nuestro Propósito</CardTitle>
-            <CardDescription className="text-base">
-              Un viaje misionero con tres objetivos fundamentales
-            </CardDescription>
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-6 h-6 text-primary" />
+              <CardTitle className="text-2xl">Una palabra para ti</CardTitle>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed">
-            <p>
-              Este es un viaje de los jóvenes de la iglesia <strong>El Encuentro</strong> de 
-              Luis Guillón, Buenos Aires. Nuestro corazón es ver a ambas iglesias unidas en un 
-              propósito común de activación espiritual, adoración e intercesión, y servicio misionero.
+            <p className="font-medium">
+              Hermano, hermana... este viaje no es casualidad.
             </p>
+            <p>
+              Cada uno de ustedes <strong className="text-primary">invirtió de su bolsillo</strong> para estar aquí. 
+              Ese sacrificio no es en vano. Dios tiene un propósito específico para cada uno en este viaje.
+            </p>
+            <p>
+              Queremos que lleguemos <strong className="text-primary">alineados</strong>. Con el mismo corazón, 
+              el mismo propósito, la misma pasión. No venimos como turistas, venimos como <strong>embajadores de Cristo</strong>.
+            </p>
+            <div className="bg-background p-4 rounded-lg border border-primary/20 mt-4">
+              <p className="font-semibold text-primary mb-2">Nuestro compromiso:</p>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span><strong>Servir</strong> con amor y humildad en cada momento</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span><strong>Dar testimonio</strong> con nuestras palabras y acciones</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span><strong>Mostrar a Jesús</strong> en todo lo que hagamos</span>
+                </li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
 
@@ -50,20 +73,28 @@ export default function Proposito() {
               <div>
                 <CardTitle className="text-2xl">1. Activación Espiritual de los Jóvenes</CardTitle>
                 <CardDescription className="text-base">
-                  Unión y activación de ambas iglesias
+                  Unidos en un mismo propósito
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-base leading-relaxed">
             <p>
-              Queremos ver, como ambas iglesias, no solo generan lazos espirituales, sino que también, 
+              Queremos ver, como ambas iglesias, no solo generan <strong>lazos espirituales</strong>, sino que también, 
               sean activadas en <strong>dones, llamados y propósitos</strong>.
             </p>
             <p className="text-muted-foreground">
-              Este viaje es una oportunidad para que los jóvenes descubran y activen los dones que 
-              Dios les ha dado, identifiquen su llamado y caminen en el propósito que Él tiene para sus vidas.
+              Este viaje es una oportunidad única para que descubras los dones que Dios te ha dado, 
+              identifiques tu llamado y camines en el propósito que Él tiene para tu vida. 
+              <strong className="text-foreground"> No estás aquí por casualidad.</strong>
             </p>
+            <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
+              <p className="text-sm italic text-muted-foreground">
+                &ldquo;Porque somos hechura suya, creados en Cristo Jesús para buenas obras, 
+                las cuales Dios preparó de antemano para que anduviésemos en ellas.&rdquo; 
+                <span className="font-semibold text-primary"> - Efesios 2:10</span>
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -77,7 +108,7 @@ export default function Proposito() {
               <div>
                 <CardTitle className="text-2xl">2. Altares de Adoración e Intercesión</CardTitle>
                 <CardDescription className="text-base">
-                  Adoración pública en lugares estratégicos
+                  Llevando el cielo a la tierra
                 </CardDescription>
               </div>
             </div>
@@ -92,8 +123,13 @@ export default function Proposito() {
               <li>Lugares de gobierno</li>
               <li>Y más espacios estratégicos</li>
             </ul>
-            <p className="text-muted-foreground mt-4">
-              Creemos que la adoración y la intercesión pública tienen un poder transformador 
+            <p className="mt-4">
+              Imagina el impacto: <strong className="text-primary">jóvenes adorando públicamente</strong>, 
+              intercediendo por la ciudad, declarando la gloria de Dios en lugares donde quizás nunca se ha hecho. 
+              Tu adoración puede cambiar la atmósfera espiritual de un lugar.
+            </p>
+            <p className="text-muted-foreground">
+              Creemos que la adoración y la intercesión pública tienen un <strong>poder transformador</strong> 
               sobre las ciudades y las naciones.
             </p>
           </CardContent>
@@ -104,30 +140,38 @@ export default function Proposito() {
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                <span className="text-2xl">📖</span>
+                <HandHeart className="w-6 h-6" />
               </div>
               <div>
                 <CardTitle className="text-2xl">3. Hechos 4 - Activación Misionera</CardTitle>
                 <CardDescription className="text-base">
-                  Salir con denuedo a compartir a Jesús y servir
+                  Mostrando a Jesús con nuestras vidas
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-base leading-relaxed">
             <p>
-              Salir con <strong>denuedo a compartir a Jesús y servir a la ciudad</strong>.
+              Salir con <strong>denuedo a compartir a Jesús y servir a la ciudad</strong>. 
+              Este es el corazón: <strong className="text-primary">mostrar a Jesús</strong> en cada momento, 
+              en cada lugar, con cada persona que encontremos.
             </p>
             <div className="space-y-3 mt-4">
               <p className="font-semibold text-primary">Cómo lo haremos:</p>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                <li><strong>Equipos en plazas:</strong> Compartiendo el evangelio en espacios públicos</li>
-                <li><strong>Equipos en hospitales:</strong> Llevando esperanza y oración a quienes lo necesitan</li>
-                <li><strong>Equipos en barrios:</strong> Visitando y sirviendo a las comunidades</li>
+              <ul className="list-disc list-inside space-y-2 ml-4">
+                <li><strong>Equipos en plazas:</strong> Compartiendo el evangelio con amor y respeto</li>
+                <li><strong>Equipos en hospitales:</strong> Llevando esperanza, oración y consuelo</li>
+                <li><strong>Equipos en barrios:</strong> Visitando, escuchando y sirviendo a las comunidades</li>
                 <li><strong>Ayuda práctica:</strong> Demostrando el amor de Dios a través de acciones concretas</li>
               </ul>
             </div>
             <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
+              <p className="text-sm font-semibold text-primary mb-2">Recuerda siempre:</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                No solo hablamos de Jesús, <strong className="text-foreground">mostramos a Jesús</strong>. 
+                Cada sonrisa, cada acto de servicio, cada palabra de aliento es una oportunidad para que 
+                otros vean el amor de Cristo en nosotros.
+              </p>
               <p className="text-sm font-semibold text-primary mb-2">Hechos 4:29-31</p>
               <p className="text-sm italic text-muted-foreground">
                 &ldquo;Y ahora, Señor, mira sus amenazas, y concede a tus siervos que hablen tu palabra 
@@ -138,14 +182,33 @@ export default function Proposito() {
           </CardContent>
         </Card>
 
-        {/* Call to Action */}
-        <Card className="bg-accent/10 border-accent">
-          <CardContent className="pt-6 text-center space-y-4">
-            <h3 className="text-2xl font-bold">Únete a este propósito</h3>
-            <p className="text-muted-foreground text-balance max-w-2xl mx-auto">
-              Cada oración, cada adoración, cada acto de servicio cuenta. 
-              Sé parte de este viaje misionero que transformará vidas y ciudades.
-            </p>
+        {/* Heart Message */}
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary border-2">
+          <CardContent className="pt-6 space-y-4">
+            <div className="text-center space-y-3">
+              <Heart className="w-8 h-8 text-primary mx-auto" />
+              <h3 className="text-2xl font-bold">Lleguemos alineados</h3>
+            </div>
+            <div className="space-y-3 text-base leading-relaxed">
+              <p>
+                Este viaje es más que un viaje. Es una <strong className="text-primary">oportunidad</strong> 
+                para que Dios use nuestras vidas de maneras que ni siquiera imaginamos.
+              </p>
+              <p>
+                Has invertido de tu bolsillo. Has hecho el sacrificio. Ahora, <strong>déjate usar por Dios</strong>. 
+                Permite que Él te sorprenda. Permite que tu vida sea un testimonio vivo de Su amor.
+              </p>
+              <div className="bg-background/80 p-4 rounded-lg border border-primary/20 mt-4">
+                <p className="font-semibold text-primary mb-2 text-center">Nuestro corazón:</p>
+                <p className="text-center text-sm italic text-muted-foreground">
+                  &ldquo;Que en todo momento, en todo lugar, con toda persona, 
+                  <strong className="text-foreground"> mostremos a Jesús</strong>. 
+                  Que nuestro testimonio hable más fuerte que nuestras palabras. 
+                  Que sirvamos con amor genuino. Que lleguemos alineados en un mismo propósito: 
+                  <strong className="text-foreground"> glorificar a Dios y ver vidas transformadas</strong>.&rdquo;
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
