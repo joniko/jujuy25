@@ -11,7 +11,7 @@ import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight } from 'lucide-react';
+import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight, Cloud, Droplets, Wind } from 'lucide-react';
 import MediaDisplay from '../components/MediaDisplay';
 
 dayjs.extend(customParseFormat);
@@ -38,6 +38,14 @@ export default function Home() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [countdown, setCountdown] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
   const [hasStarted, setHasStarted] = useState(true);
+  const [weather, setWeather] = useState<{
+    temp: number;
+    condition: string;
+    humidity: number;
+    windSpeed: number;
+    icon: string;
+  } | null>(null);
+  const [isLoadingWeather, setIsLoadingWeather] = useState(true);
   const messagesRef = useRef<Message[]>([]);
 
   useEffect(() => {
@@ -341,6 +349,42 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // Weather effect
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        setIsLoadingWeather(true);
+        // Usar wttr.in API gratuita
+        const response = await fetch('https://wttr.in/San+Salvador+de+Jujuy?format=j1&lang=es', {
+          cache: 'no-store',
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const current = data.current_condition[0];
+          
+          setWeather({
+            temp: parseInt(current.temp_C),
+            condition: current.lang_es?.[0]?.value || current.weatherDesc[0]?.value || 'Despejado',
+            humidity: parseInt(current.humidity),
+            windSpeed: parseInt(current.windspeedKmph),
+            icon: current.weatherCode,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching weather:', error);
+      } finally {
+        setIsLoadingWeather(false);
+      }
+    };
+
+    fetchWeather();
+    // Actualizar cada 30 minutos
+    const weatherInterval = setInterval(fetchWeather, 30 * 60 * 1000);
+
+    return () => clearInterval(weatherInterval);
+  }, []);
+
   const handleShare = async (message: Message) => {
     const currentHour = new Date().getHours();
     
@@ -393,6 +437,57 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
+        {/* Clima de San Salvador de Jujuy */}
+        {isLoadingWeather ? (
+          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-10 w-20" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-32" />
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : weather && (
+          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  <CardTitle className="text-lg">San Salvador de Jujuy</CardTitle>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Cloud className="w-6 h-6 text-primary" />
+                  <div className="text-3xl font-bold text-primary">{weather.temp}°</div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <p className="text-base text-muted-foreground capitalize">{weather.condition}</p>
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Droplets className="w-4 h-4" />
+                    <span>{weather.humidity}%</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Wind className="w-4 h-4" />
+                    <span>{weather.windSpeed} km/h</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Countdown si aún no comenzó */}
         {!hasStarted && countdown && (
           <Card className="bg-primary/10 border-primary">
@@ -515,72 +610,6 @@ export default function Home() {
           </Card>
         )}
 
-        {/* Ver programa completo */}
-        <Card 
-          className="cursor-pointer hover:shadow-lg transition-shadow border-dashed"
-          onClick={() => router.push('/cronograma')}
-        >
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-primary" />
-                <div>
-                  <CardTitle className="text-lg">Ver Programa Completo</CardTitle>
-                  <CardDescription>Ver todos los motivos de oración del día</CardDescription>
-                </div>
-              </div>
-              <ArrowRight className="w-5 h-5 text-muted-foreground" />
-            </div>
-          </CardHeader>
-        </Card>
-
-        {/* Links rápidos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => router.push('/cronograma')}
-          >
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Calendar className="w-6 h-6 text-primary" />
-                <div>
-                  <CardTitle className="text-lg">Programa</CardTitle>
-                  <CardDescription>Cronograma completo</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => router.push('/participantes')}
-          >
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Users className="w-6 h-6 text-primary" />
-                <div>
-                  <CardTitle className="text-lg">Participantes</CardTitle>
-                  <CardDescription>Lista de participantes</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => router.push('/destinos')}
-          >
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <MapPin className="w-6 h-6 text-primary" />
-                <div>
-                  <CardTitle className="text-lg">Destinos</CardTitle>
-                  <CardDescription>Lugares y direcciones</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        </div>
       </div>
     </main>
   );

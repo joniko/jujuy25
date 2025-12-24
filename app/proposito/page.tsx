@@ -24,10 +24,10 @@ export default function Proposito() {
         </div>
 
         {/* Personal Message */}
-        <Card className="bg-orange-500/10 border-orange-500 border-2">
+        <Card className="bg-primary/10 border-primary border-2">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <Sparkles className="w-6 h-6 text-orange-600" />
+              <Sparkles className="w-6 h-6 text-primary" />
               <CardTitle className="text-2xl">Lleguemos alineados</CardTitle>
             </div>
           </CardHeader>
@@ -36,26 +36,26 @@ export default function Proposito() {
               Hermano, hermana... este viaje no es casualidad.
             </p>
             <p>
-              Cada uno de ustedes <strong className="text-orange-600">invirtió de su bolsillo</strong> para estar aquí. 
+              Cada uno de ustedes <strong className="text-primary">invirtió de su bolsillo</strong> para estar aquí. 
               Ese sacrificio no es en vano. Dios tiene un propósito específico para cada uno en este viaje.
             </p>
             <p>
-              Queremos que lleguemos <strong className="text-orange-600">alineados</strong>. Con el mismo corazón, 
+              Queremos que lleguemos <strong className="text-primary">alineados</strong>. Con el mismo corazón, 
               el mismo propósito, la misma pasión. No venimos como turistas, venimos como <strong>embajadores de Cristo</strong>.
             </p>
-            <div className="bg-background p-4 rounded-lg border border-orange-500/20 mt-4">
-              <p className="font-semibold text-orange-600 mb-2">Nuestro compromiso:</p>
+            <div className="bg-background p-4 rounded-lg border border-primary/20 mt-4">
+              <p className="font-semibold text-primary mb-2">Nuestro compromiso:</p>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2">
-                  <span className="text-orange-600 mt-1">•</span>
+                  <span className="text-primary mt-1">•</span>
                   <span><strong>Servir</strong> con amor y humildad en cada momento</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-orange-600 mt-1">•</span>
+                  <span className="text-primary mt-1">•</span>
                   <span><strong>Dar testimonio</strong> con nuestras palabras y acciones</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-orange-600 mt-1">•</span>
+                  <span className="text-primary mt-1">•</span>
                   <span><strong>Mostrar a Jesús</strong> en todo lo que hagamos</span>
                 </li>
               </ul>
