@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Users, Search, Phone, MapPin, Plane, Bus, Car, User, Filter } from 'lucide-react';
+import { ArrowLeft, Users, Search, Phone, MapPin, Plane, Bus, Car, Filter } from 'lucide-react';
 
 interface Participante {
   nombre: string;
@@ -453,12 +453,6 @@ export default function ParticipantesPage() {
                           <div className="space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-medium">{participante.nombre}</span>
-                              {participante.rol === 'Líder' && (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-primary text-primary-foreground">
-                                  <User className="w-3 h-3" />
-                                  Líder
-                                </span>
-                              )}
                             </div>
                             {participante.micro_salta_jujuy && (
                               <div className="text-xs text-muted-foreground">
