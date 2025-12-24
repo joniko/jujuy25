@@ -277,16 +277,8 @@ export default function CronogramaPage() {
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => router.push('/')}
-            className="shrink-0"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
           <div>
-            <h1 className="text-2xl font-bold">Cronograma de Oración</h1>
+            <h1 className="text-2xl font-bold">Cronograma</h1>
           </div>
         </div>
 

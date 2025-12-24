@@ -18,7 +18,7 @@ const navItems: NavItem[] = [
   },
   {
     href: '/cronograma',
-    label: 'Programa',
+    label: 'Cronograma',
     icon: Calendar,
   },
   {
