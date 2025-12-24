@@ -85,7 +85,14 @@ export default function FAQPage() {
         }
 
         // Construir URL con GID
-        const sheetsUrl = baseUrl.replace(/gid=\d+/, `gid=${gid}`);
+        // Si la URL base no tiene gid, agregarlo. Si ya tiene uno, reemplazarlo
+        let sheetsUrl = baseUrl;
+        if (baseUrl.includes('gid=')) {
+          sheetsUrl = baseUrl.replace(/gid=\d+/, `gid=${gid}`);
+        } else {
+          // Agregar gid a la URL
+          sheetsUrl = baseUrl.replace(/output=csv/, `gid=${gid}&single=true&output=csv`);
+        }
         console.log('FAQ Sheets URL:', sheetsUrl);
 
         // Usar cache offline si no hay conexión
