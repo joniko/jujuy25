@@ -436,16 +436,11 @@ export default function ParticipantesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[200px]">Nombre</TableHead>
-                      <TableHead className="w-[80px]">Grupo</TableHead>
-                      <TableHead className="w-[100px]">Rol</TableHead>
-                      <TableHead className="w-[150px]">Destino</TableHead>
-                      <TableHead className="w-[120px]">Transporte</TableHead>
-                      <TableHead className="w-[100px]">Vuelo Ida</TableHead>
-                      <TableHead className="w-[100px]">Vuelo Vuelta</TableHead>
-                      <TableHead className="w-[100px]">Llegada</TableHead>
-                      <TableHead className="w-[100px]">Escala</TableHead>
-                      <TableHead className="w-[80px] text-center">Contacto</TableHead>
+                      <TableHead className="min-w-[180px]">Nombre</TableHead>
+                      <TableHead className="min-w-[100px]">Grupo / Destino</TableHead>
+                      <TableHead className="min-w-[140px]">Transporte / Vuelos</TableHead>
+                      <TableHead className="min-w-[100px]">Llegada / Escala</TableHead>
+                      <TableHead className="w-[60px] text-center">Contacto</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -454,69 +449,77 @@ export default function ParticipantesPage() {
                         key={index}
                         className={participante.rol === 'Líder' ? 'bg-primary/5' : ''}
                       >
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            {participante.nombre}
-                            {participante.rol === 'Líder' && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-primary text-primary-foreground">
-                                <User className="w-3 h-3" />
-                              </span>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-medium">{participante.nombre}</span>
+                              {participante.rol === 'Líder' && (
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-primary text-primary-foreground">
+                                  <User className="w-3 h-3" />
+                                  Líder
+                                </span>
+                              )}
+                            </div>
+                            {participante.micro_salta_jujuy && (
+                              <div className="text-xs text-muted-foreground">
+                                🚌 {participante.micro_salta_jujuy}
+                              </div>
+                            )}
+                            {participante.notas && (
+                              <div className="text-xs text-muted-foreground italic">
+                                📝 {participante.notas}
+                              </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span className="font-semibold text-primary">G{participante.grupo}</span>
-                        </TableCell>
-                        <TableCell>
-                          {participante.rol === 'Líder' ? (
-                            <span className="text-xs font-semibold text-primary">Líder</span>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-sm">{participante.destino || '-'}</span>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1">
+                              <span className="font-semibold text-primary">G{participante.grupo}</span>
+                            </div>
+                            {participante.destino && (
+                              <div className="flex items-center gap-1 text-xs">
+                                <MapPin className="w-3 h-3 text-muted-foreground" />
+                                <span className="text-muted-foreground">{participante.destino}</span>
+                              </div>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          {participante.medio_transporte ? (
-                            <div className="flex items-center gap-1">
-                              {getTransportIcon(participante.medio_transporte)}
-                              <span className="text-sm">{participante.medio_transporte}</span>
+                          <div className="space-y-1">
+                            {participante.medio_transporte ? (
+                              <div className="flex items-center gap-1 text-sm">
+                                {getTransportIcon(participante.medio_transporte)}
+                                <span>{participante.medio_transporte}</span>
+                              </div>
+                            ) : (
+                              <span className="text-sm text-muted-foreground">-</span>
+                            )}
+                            <div className="flex flex-col gap-0.5 text-xs">
+                              {participante.vuelo_ida && (
+                                <span className="font-mono text-muted-foreground">✈️ Ida: {participante.vuelo_ida}</span>
+                              )}
+                              {participante.vuelo_vuelta && (
+                                <span className="font-mono text-muted-foreground">✈️ Vuelta: {participante.vuelo_vuelta}</span>
+                              )}
                             </div>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
+                          </div>
                         </TableCell>
                         <TableCell>
-                          {participante.vuelo_ida ? (
-                            <span className="text-sm font-mono">{participante.vuelo_ida}</span>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {participante.vuelo_vuelta ? (
-                            <span className="text-sm font-mono">{participante.vuelo_vuelta}</span>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {participante.hora_llegada ? (
-                            <span className="text-sm">{participante.hora_llegada}</span>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {participante.escala_salta === 'Sí' ? (
-                            <span className="text-xs font-semibold text-orange-600">⚠️ Sí</span>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
+                          <div className="space-y-1">
+                            {participante.hora_llegada ? (
+                              <div className="text-sm">
+                                🕐 {participante.hora_llegada}
+                              </div>
+                            ) : (
+                              <span className="text-sm text-muted-foreground">-</span>
+                            )}
+                            {participante.escala_salta === 'Sí' && (
+                              <div className="text-xs font-semibold text-orange-600">
+                                ⚠️ Escala Salta
+                              </div>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-center">
                           {participante.whatsapp ? (
@@ -530,7 +533,7 @@ export default function ParticipantesPage() {
                               <Phone className="w-4 h-4" />
                             </Button>
                           ) : (
-                            <span className="text-muted-foreground">-</span>
+                            <span className="text-muted-foreground text-sm">-</span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -538,25 +541,6 @@ export default function ParticipantesPage() {
                   </TableBody>
                 </Table>
               </div>
-              
-              {/* Información adicional en cards colapsables o tooltips si es necesario */}
-              {filteredParticipantes.some(p => p.micro_salta_jujuy || p.notas) && (
-                <div className="mt-4 space-y-2">
-                  {filteredParticipantes
-                    .filter(p => p.micro_salta_jujuy || p.notas)
-                    .map((participante, index) => (
-                      <div key={index} className="text-xs text-muted-foreground p-2 bg-muted/50 rounded">
-                        <strong>{participante.nombre}:</strong>
-                        {participante.micro_salta_jujuy && (
-                          <span className="ml-2">🚌 {participante.micro_salta_jujuy}</span>
-                        )}
-                        {participante.notas && (
-                          <span className="ml-2">📝 {participante.notas}</span>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              )}
             </CardContent>
           </Card>
         )}
