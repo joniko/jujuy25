@@ -40,6 +40,8 @@ export default function ParticipantesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGrupo, setSelectedGrupo] = useState<string>('all');
   const [selectedDestino, setSelectedDestino] = useState<string>('all');
+  const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<{ url?: string; gid?: string; rows?: number } | null>(null);
   const participantesRef = useRef<Participante[]>([]);
 
   useEffect(() => {
@@ -52,13 +54,35 @@ export default function ParticipantesPage() {
         const baseUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
         const participantesGid = process.env.NEXT_PUBLIC_SHEETS_PARTICIPANTES_GID || '';
         
+        console.log('🔍 Debug - Base URL:', baseUrl);
+        console.log('🔍 Debug - Participantes GID:', participantesGid);
+        
+        setDebugInfo({
+          url: baseUrl,
+          gid: participantesGid || 'No configurado'
+        });
+        
         if (!baseUrl) {
-          console.error('No sheets URL configured');
+          const errorMsg = 'No hay URL de Google Sheets configurada. Verifica NEXT_PUBLIC_SHEETS_URL en .env.local';
+          console.error('❌', errorMsg);
+          setError(errorMsg);
           if (isInitial) {
             setIsInitialLoading(false);
           }
           return;
         }
+        
+        if (!participantesGid) {
+          const errorMsg = 'No hay GID de participantes configurado. Verifica NEXT_PUBLIC_SHEETS_PARTICIPANTES_GID en .env.local';
+          console.error('❌', errorMsg);
+          setError(errorMsg);
+          if (isInitial) {
+            setIsInitialLoading(false);
+          }
+          return;
+        }
+        
+        setError(null);
 
         let sheetsUrl = baseUrl;
         if (participantesGid) {
@@ -69,17 +93,34 @@ export default function ParticipantesPage() {
           }
         }
 
+        console.log('🔍 Debug - Final Sheets URL:', sheetsUrl);
+
         const cacheBuster = `&t=${Date.now()}`;
-        const response = await axios.get(sheetsUrl + cacheBuster, {
+        const finalUrl = sheetsUrl + (sheetsUrl.includes('?') ? '&' : '?') + cacheBuster.replace('&', '');
+        console.log('🔍 Debug - Final URL with cache buster:', finalUrl);
+        
+        const response = await axios.get(finalUrl, {
           headers: {
             'Cache-Control': 'no-cache',
           },
         });
         
+        console.log('✅ Response status:', response.status);
+        console.log('✅ Response data length:', response.data?.length || 0);
+        
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
+        console.log('📊 Parsed data rows:', parsedData.data.length);
+        console.log('📊 First row sample:', parsedData.data[0]);
+        console.log('📊 Available columns:', parsedData.meta?.fields || 'No fields detected');
+        
+        setDebugInfo(prev => ({
+          ...prev,
+          rows: parsedData.data.length
+        }));
+
         if (isInitial) {
-          console.log('👥 Participantes CSV Data:', parsedData.data);
+          console.log('👥 Participantes CSV Data (first 3 rows):', parsedData.data.slice(0, 3));
         }
 
         const rows = parsedData.data as Array<{
@@ -136,7 +177,25 @@ export default function ParticipantesPage() {
           setFilteredParticipantes(participantesData);
         }
       } catch (error) {
-        console.error('Error fetching participantes:', error);
+        console.error('❌ Error fetching participantes:', error);
+        let errorMsg = 'Error al cargar participantes';
+        
+        if (axios.isAxiosError(error)) {
+          console.error('❌ Error response:', error.response?.status, error.response?.statusText);
+          console.error('❌ Error URL:', error.config?.url);
+          
+          if (error.response?.status === 404) {
+            errorMsg = 'No se encontró la planilla. Verifica que el GID sea correcto y que la planilla esté publicada.';
+          } else if (error.response?.status === 403) {
+            errorMsg = 'Acceso denegado. Verifica que la planilla esté publicada como CSV.';
+          } else {
+            errorMsg = `Error ${error.response?.status}: ${error.response?.statusText || 'Error desconocido'}`;
+          }
+        } else if (error instanceof Error) {
+          errorMsg = error.message;
+        }
+        
+        setError(errorMsg);
       } finally {
         if (isInitial) {
           setIsInitialLoading(false);
@@ -239,6 +298,46 @@ export default function ParticipantesPage() {
             <p className="text-sm text-muted-foreground">Lista de participantes del viaje</p>
           </div>
         </div>
+
+        {/* Debug Info - Solo en desarrollo */}
+        {process.env.NODE_ENV === 'development' && debugInfo && (
+          <Card className="bg-yellow-50 border-yellow-200">
+            <CardHeader>
+              <CardTitle className="text-sm">🔍 Información de Debug</CardTitle>
+            </CardHeader>
+            <CardContent className="text-xs space-y-1">
+              <div><strong>Base URL:</strong> {debugInfo.url ? '✅ Configurada' : '❌ No configurada'}</div>
+              <div><strong>GID Participantes:</strong> {debugInfo.gid}</div>
+              {debugInfo.rows !== undefined && (
+                <div><strong>Filas encontradas:</strong> {debugInfo.rows}</div>
+              )}
+              {debugInfo.url && (
+                <div className="mt-2 p-2 bg-white rounded text-xs break-all">
+                  <strong>URL completa:</strong><br />
+                  {debugInfo.url.includes('gid=') 
+                    ? debugInfo.url.replace(/gid=\d+/, `gid=${debugInfo.gid}`)
+                    : `${debugInfo.url.replace('output=csv', `gid=${debugInfo.gid}&single=true&output=csv`)}`
+                  }
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <Card className="bg-red-50 border-red-200">
+            <CardHeader>
+              <CardTitle className="text-red-800">❌ Error</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-red-700">{error}</p>
+              <p className="text-sm text-red-600 mt-2">
+                Abre la consola del navegador (F12) para ver más detalles.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Filtros y búsqueda */}
         <Card>
