@@ -11,7 +11,7 @@ import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight, Cloud, Droplets, Wind, Sun, CloudRain, CloudSnow, CloudLightning, CloudDrizzle, Eye } from 'lucide-react';
+import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight, Cloud, Droplets, Wind, Sun, CloudRain, CloudSnow, CloudLightning, CloudDrizzle, Eye, HelpCircle } from 'lucide-react';
 import MediaDisplay from '../components/MediaDisplay';
 
 dayjs.extend(customParseFormat);
@@ -783,6 +783,31 @@ export default function Home() {
             </CardHeader>
           </Card>
         )}
+
+        {/* Preguntas Frecuentes */}
+        <Card 
+          className="cursor-pointer hover:shadow-md transition-all duration-300 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent group"
+          onClick={() => router.push('/faq')}
+        >
+          <CardHeader className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <HelpCircle className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-bold text-foreground">
+                    Preguntas Frecuentes
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Logística, costos, salud y más
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-primary/60 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            </div>
+          </CardHeader>
+        </Card>
 
       </div>
     </main>
