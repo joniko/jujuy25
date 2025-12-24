@@ -52,7 +52,9 @@ export default function ParticipantesPage() {
         }
 
         const baseUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
-        const participantesGid = process.env.NEXT_PUBLIC_SHEETS_PARTICIPANTES_GID || '';
+        // Intentar ambas variantes del nombre de la variable
+        const participantesGid = process.env.NEXT_PUBLIC_SHEETS_PARTICIPANTS || 
+                                  process.env.NEXT_PUBLIC_SHEETS_PARTICIPANTES_GID || '';
         
         console.log('🔍 Debug - Base URL:', baseUrl);
         console.log('🔍 Debug - Participantes GID:', participantesGid);
@@ -73,7 +75,7 @@ export default function ParticipantesPage() {
         }
         
         if (!participantesGid) {
-          const errorMsg = 'No hay GID de participantes configurado. Verifica NEXT_PUBLIC_SHEETS_PARTICIPANTES_GID en .env.local';
+          const errorMsg = 'No hay GID de participantes configurado. Verifica NEXT_PUBLIC_SHEETS_PARTICIPANTS en .env.local';
           console.error('❌', errorMsg);
           setError(errorMsg);
           if (isInitial) {
