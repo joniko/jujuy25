@@ -118,20 +118,18 @@ export default function Proposito() {
               Estableceremos <strong className="text-primary">altares de adoración e intercesión pública</strong> 
               en lugares estratégicos de la ciudad.
             </p>
-            <div className="space-y-3">
-              <p className="font-semibold text-foreground">Dónde lo haremos:</p>
-              <ul className="list-disc list-inside space-y-2 ml-4">
-                <li className="text-muted-foreground"><strong className="text-foreground">Plazas públicas:</strong> Donde la comunidad se reúne</li>
-                <li className="text-muted-foreground"><strong className="text-foreground">Hospitales:</strong> Llevando esperanza y oración</li>
-                <li className="text-muted-foreground"><strong className="text-foreground">Lugares de gobierno:</strong> Intercediendo por las autoridades</li>
-                <li className="text-muted-foreground"><strong className="text-foreground">Y más espacios estratégicos:</strong> Donde Dios nos guíe</li>
-              </ul>
-            </div>
-            <p className="mt-4">
+            <p>
               Creemos que la adoración y la intercesión pública tienen un <strong className="text-primary">poder transformador</strong> 
               sobre las ciudades y las naciones. Cuando adoramos públicamente, declaramos la soberanía de Dios. 
               Cuando intercedemos, cambiamos la atmósfera espiritual.
             </p>
+            <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
+              <p className="text-sm italic text-muted-foreground">
+                &ldquo;Pero recibiréis poder, cuando haya venido sobre vosotros el Espíritu Santo, 
+                y me seréis testigos en Jerusalén, en toda Judea, en Samaria, y hasta lo último de la tierra.&rdquo; 
+                <span className="font-semibold text-primary"> - Hechos 1:8</span>
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -160,19 +158,19 @@ export default function Proposito() {
               a través de nosotros.
             </p>
             <div className="space-y-3 mt-4">
-              <p className="font-semibold text-foreground">Cómo lo haremos:</p>
+              <p className="font-semibold text-foreground">Dónde y cómo lo haremos:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li className="text-muted-foreground">
-                  <strong className="text-foreground">Equipos en plazas:</strong> Compartiendo el evangelio con amor y respeto
+                  <strong className="text-foreground">Plazas públicas:</strong> Adoración, intercesión y compartiendo el evangelio con amor
                 </li>
                 <li className="text-muted-foreground">
-                  <strong className="text-foreground">Equipos en hospitales:</strong> Llevando esperanza, oración y consuelo
+                  <strong className="text-foreground">Hospitales:</strong> Oración, esperanza y consuelo para enfermos y familias
                 </li>
                 <li className="text-muted-foreground">
-                  <strong className="text-foreground">Equipos en barrios:</strong> Visitando, escuchando y sirviendo a las comunidades
+                  <strong className="text-foreground">Barrios y comunidades:</strong> Visitando, escuchando y sirviendo con amor práctico
                 </li>
                 <li className="text-muted-foreground">
-                  <strong className="text-foreground">Ayuda práctica:</strong> Demostrando el amor de Dios a través de acciones concretas
+                  <strong className="text-foreground">Lugares estratégicos:</strong> Intercesión por autoridades y la ciudad donde Dios nos guíe
                 </li>
               </ul>
             </div>
