@@ -9,7 +9,7 @@ import Papa from 'papaparse';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock, User, Calendar } from 'lucide-react';
+import { ArrowLeft, Clock, User, Calendar, WifiOff, RefreshCw } from 'lucide-react';
 import MediaDisplay from '../../components/MediaDisplay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -29,6 +29,8 @@ export default function CronogramaPage() {
   const [scheduleItems, setScheduleItems] = useState<PrayerScheduleItem[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [currentHour, setCurrentHour] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
   const scheduleItemsRef = useRef<PrayerScheduleItem[]>([]);
 
   useEffect(() => {
@@ -37,15 +39,21 @@ export default function CronogramaPage() {
         // Solo mostrar loading en el fetch inicial
         if (isInitial) {
           setIsInitialLoading(true);
+          setError(null);
         }
 
         const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
+        if (!sheetsUrl) {
+          throw new Error('URL de Google Sheets no configurada');
+        }
+
         // Agregar timestamp para evitar cache del navegador
         const cacheBuster = `&t=${Date.now()}`;
         const response = await axios.get(sheetsUrl + cacheBuster, {
           headers: {
             'Cache-Control': 'no-cache',
           },
+          timeout: 10000, // 10 segundos de timeout
         });
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
@@ -77,6 +85,7 @@ export default function CronogramaPage() {
           }
           scheduleItemsRef.current = items;
           setScheduleItems(items);
+          setError(null); // Limpiar error si la carga fue exitosa
         } else if (!isInitial) {
           console.log('ℹ️ Sin cambios en el cronograma');
         }
@@ -87,9 +96,34 @@ export default function CronogramaPage() {
         setCurrentHour(formattedHour);
       } catch (error) {
         console.error('Error fetching schedule:', error);
+        
+        // Determinar el tipo de error
+        let errorMessage = 'Error al cargar el cronograma';
+        if (axios.isAxiosError(error)) {
+          if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+            errorMessage = 'Tiempo de espera agotado. Verifica tu conexión a internet.';
+          } else if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+            errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+          } else if (error.response) {
+            errorMessage = `Error del servidor: ${error.response.status}`;
+          } else {
+            errorMessage = 'Error de conexión. Intenta nuevamente.';
+          }
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        
+        // Solo mostrar error en el fetch inicial o si no hay datos previos
+        if (isInitial || scheduleItems.length === 0) {
+          setError(errorMessage);
+        } else {
+          // En refreshes automáticos, solo loguear el error sin mostrar al usuario
+          console.warn('Error en refresh automático (manteniendo datos previos):', errorMessage);
+        }
       } finally {
         if (isInitial) {
           setIsInitialLoading(false);
+          setIsRetrying(false);
         }
       }
     };
@@ -108,6 +142,68 @@ export default function CronogramaPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    setError(null);
+    const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
+    const cacheBuster = `&t=${Date.now()}`;
+    
+    try {
+      const response = await axios.get(sheetsUrl + cacheBuster, {
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+        timeout: 10000,
+      });
+      const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
+
+      const items: PrayerScheduleItem[] = (parsedData.data as Array<{
+        dia?: string;
+        hora: string;
+        titulo?: string;
+        titutlo?: string;
+        bajada: string;
+        responsable?: string;
+        'Video o imagen'?: string;
+        'video/imagen'?: string;
+        media?: string;
+      }>).map((row) => ({
+        day: row.dia || '',
+        hour: row.hora,
+        title: row.titulo || row.titutlo || '',
+        body: row.bajada,
+        responsible: row.responsable || '',
+        media: row['Video o imagen'] || row['video/imagen'] || row.media || ''
+      }));
+
+      scheduleItemsRef.current = items;
+      setScheduleItems(items);
+      setError(null);
+      
+      const now = dayjs();
+      const formattedHour = now.format('h A');
+      setCurrentHour(formattedHour);
+    } catch (error) {
+      let errorMessage = 'Error al cargar el cronograma';
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+          errorMessage = 'Tiempo de espera agotado. Verifica tu conexión a internet.';
+        } else if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+          errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+        } else if (error.response) {
+          errorMessage = `Error del servidor: ${error.response.status}`;
+        } else {
+          errorMessage = 'Error de conexión. Intenta nuevamente.';
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      setError(errorMessage);
+    } finally {
+      setIsRetrying(false);
+    }
+  };
 
   const isCurrentHour = (hour: string, day?: string): boolean => {
     if (!hour || !currentHour) return false;
@@ -330,8 +426,45 @@ export default function CronogramaPage() {
           </div>
         )}
 
-        {/* Empty State */}
-        {!isInitialLoading && scheduleItems.length === 0 && (
+        {/* Error State */}
+        {error && (
+          <Card className="border-destructive">
+            <CardContent className="text-center py-12">
+              <div className="flex flex-col items-center gap-4">
+                <WifiOff className="w-12 h-12 text-destructive" />
+                <div className="space-y-2">
+                  <p className="text-lg font-semibold text-destructive">
+                    Error de conexión
+                  </p>
+                  <p className="text-muted-foreground max-w-md">
+                    {error}
+                  </p>
+                </div>
+                <Button
+                  onClick={handleRetry}
+                  disabled={isRetrying}
+                  variant="outline"
+                  className="mt-2"
+                >
+                  {isRetrying ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Reintentando...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Reintentar
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Empty State - Solo mostrar si no hay error */}
+        {!isInitialLoading && !error && scheduleItems.length === 0 && (
           <Card>
             <CardContent className="text-center py-12">
               <p className="text-muted-foreground">
