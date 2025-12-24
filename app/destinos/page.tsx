@@ -252,26 +252,6 @@ export default function DestinosPage() {
                     )}
                   </div>
                 </CardHeader>
-                {location.link && (
-                  <CardContent className="pt-0">
-                    <Button
-                      variant="default"
-                      className="w-full"
-                      asChild
-                    >
-                      <a
-                        href={location.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2"
-                      >
-                        <MapPin className="w-4 h-4" />
-                        Abrir en Google Maps
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
-                  </CardContent>
-                )}
               </Card>
             ))}
           </div>
