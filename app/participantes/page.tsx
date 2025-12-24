@@ -17,12 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Users, Search, MessageCircle, MapPin, Filter, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Users, Search, MessageCircle, Filter, Calendar, Clock } from 'lucide-react';
 
 interface Participante {
   nombre: string;
+  apellido: string;
   grupo: string;
-  destino: string;
   whatsapp: string;
   dia_llegada: string;
   hora_llegada: string;
@@ -35,7 +35,6 @@ export default function ParticipantesPage() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGrupo, setSelectedGrupo] = useState<string>('all');
-  const [selectedDestino, setSelectedDestino] = useState<string>('all');
   const [error, setError] = useState<string | null>(null);
   const participantesRef = useRef<Participante[]>([]);
 
@@ -121,8 +120,8 @@ export default function ParticipantesPage() {
 
         const rows = parsedData.data as Array<{
           nombre?: string;
+          apellido?: string;
           grupo?: string;
-          destino?: string;
           whatsapp?: string;
           dia_llegada?: string;
           hora_llegada?: string;
@@ -132,8 +131,8 @@ export default function ParticipantesPage() {
           .filter(row => row.nombre && row.nombre.trim() !== '')
           .map(row => ({
             nombre: row.nombre || '',
+            apellido: row.apellido || '',
             grupo: row.grupo || '',
-            destino: row.destino || '',
             whatsapp: row.whatsapp || '',
             dia_llegada: row.dia_llegada || '',
             hora_llegada: row.hora_llegada || ''
@@ -193,8 +192,8 @@ export default function ParticipantesPage() {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(p => 
         p.nombre.toLowerCase().includes(query) ||
-        p.grupo.includes(query) ||
-        p.destino.toLowerCase().includes(query)
+        p.apellido.toLowerCase().includes(query) ||
+        p.grupo.includes(query)
       );
     }
 
@@ -203,13 +202,8 @@ export default function ParticipantesPage() {
       filtered = filtered.filter(p => p.grupo === selectedGrupo);
     }
 
-    // Filtrar por destino
-    if (selectedDestino !== 'all') {
-      filtered = filtered.filter(p => p.destino.toLowerCase() === selectedDestino.toLowerCase());
-    }
-
     setFilteredParticipantes(filtered);
-  }, [participantes, searchQuery, selectedGrupo, selectedDestino]);
+  }, [participantes, searchQuery, selectedGrupo]);
 
   // Agrupar por grupo
   const participantesPorGrupo = filteredParticipantes.reduce((acc, p) => {
@@ -271,40 +265,24 @@ export default function ParticipantesPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por nombre, grupo, destino..."
+                placeholder="Buscar por nombre, apellido, grupo..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Grupo</label>
-                <select
-                  value={selectedGrupo}
-                  onChange={(e) => setSelectedGrupo(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md bg-background"
-                >
-                  <option value="all">Todos los grupos</option>
-                  {[1, 2, 3, 4, 5, 6].map(g => (
-                    <option key={g} value={g.toString()}>Grupo {g}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Destino</label>
-                <select
-                  value={selectedDestino}
-                  onChange={(e) => setSelectedDestino(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md bg-background"
-                >
-                  <option value="all">Todos los destinos</option>
-                  <option value="Humahuaca">Humahuaca</option>
-                  <option value="Abra Pampa">Abra Pampa</option>
-                  <option value="La Quiaca">La Quiaca</option>
-                  <option value="Jujuy Capital">Jujuy Capital</option>
-                </select>
-              </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Grupo</label>
+              <select
+                value={selectedGrupo}
+                onChange={(e) => setSelectedGrupo(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md bg-background"
+              >
+                <option value="all">Todos los grupos</option>
+                {[1, 2, 3, 4, 5, 6].map(g => (
+                  <option key={g} value={g.toString()}>Grupo {g}</option>
+                ))}
+              </select>
             </div>
           </CardContent>
         </Card>
@@ -346,9 +324,8 @@ export default function ParticipantesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="min-w-[180px]">Nombre</TableHead>
+                      <TableHead className="min-w-[200px]">Nombre</TableHead>
                       <TableHead className="min-w-[100px]">Grupo</TableHead>
-                      <TableHead className="min-w-[120px]">Destino</TableHead>
                       <TableHead className="min-w-[120px]">Llegada</TableHead>
                       <TableHead className="w-[60px] text-center">Contacto</TableHead>
                     </TableRow>
@@ -357,20 +334,15 @@ export default function ParticipantesPage() {
                     {filteredParticipantes.map((participante, index) => (
                       <TableRow key={index}>
                         <TableCell>
-                          <span className="font-medium">{participante.nombre}</span>
+                          <div className="space-y-0.5">
+                            <span className="font-medium">{participante.nombre}</span>
+                            {participante.apellido && (
+                              <span className="font-medium"> {participante.apellido}</span>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <span className="font-semibold text-primary">G{participante.grupo}</span>
-                        </TableCell>
-                        <TableCell>
-                          {participante.destino ? (
-                            <div className="flex items-center gap-1 text-sm">
-                              <MapPin className="w-3 h-3 text-muted-foreground" />
-                              <span>{participante.destino}</span>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1">

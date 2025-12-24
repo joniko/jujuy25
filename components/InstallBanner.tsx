@@ -33,7 +33,7 @@ export default function InstallBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="sticky top-16 z-40 bg-primary text-primary-foreground border-b border-primary-foreground/20">
+    <div className="sticky top-0 z-40 bg-primary text-primary-foreground border-b border-primary-foreground/20">
       <div className="max-w-2xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <Smartphone className="w-4 h-4 shrink-0" />
