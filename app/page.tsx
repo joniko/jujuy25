@@ -47,7 +47,7 @@ const getWeatherTheme = (weatherCode: string) => {
   if (code >= 116 && code <= 122) return {
     icon: Cloud,
     gradient: "from-blue-400/10 via-slate-400/5 to-background",
-    borderColor: "border-slate-200/50",
+    borderColor: "border-slate-300/50",
     iconColor: "text-slate-500",
     textColor: "text-slate-700"
   };
@@ -98,7 +98,7 @@ const getWeatherTheme = (weatherCode: string) => {
 };
 
 const CountdownBox = ({ value, label }: { value: number, label: string }) => (
-  <div className="flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm rounded-2xl p-3 min-w-[72px] border border-primary/10 shadow-sm">
+  <div className="flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm rounded-2xl p-3 min-w-[80px] border border-primary/10 shadow-sm">
     <span className="text-3xl font-bold font-mono tracking-tighter text-primary">
       {value.toString().padStart(2, '0')}
     </span>
@@ -535,7 +535,7 @@ export default function Home() {
             </CardContent>
           </Card>
         ) : weather && (
-          <Card className={`bg-gradient-to-br ${getWeatherTheme(weather.icon).gradient} ${getWeatherTheme(weather.icon).borderColor} border-2 overflow-hidden transition-all duration-500 shadow-md text-left`}>
+          <Card className={`bg-gradient-to-br ${getWeatherTheme(weather.icon).gradient} ${getWeatherTheme(weather.icon).borderColor} overflow-hidden transition-all duration-500 shadow-xl text-left`}>
             <CardContent className="p-6">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
@@ -579,20 +579,21 @@ export default function Home() {
                 </div>
               </div>
             </CardContent>
+            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 rounded-xl"></div>
           </Card>
         )}
 
         {/* Countdown si aún no comenzó */}
         {!hasStarted && countdown && (
-          <Card className="bg-primary border-none shadow-xl overflow-hidden relative text-left">
+          <Card className="bg-primary/20 border-none shadow-xl overflow-hidden relative text-left">
             {/* Círculos decorativos de fondo */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl" />
             
             <CardHeader className="relative z-10 pb-2">
-              <CardTitle className="flex items-center gap-2 text-primary-foreground/90 text-sm font-bold uppercase tracking-[0.2em]">
+              <CardTitle className="flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-[0.2em]">
                 <Clock className="w-4 h-4" />
-                Faltan:
+                Falta para el inicio del viaje misionero:
               </CardTitle>
             </CardHeader>
             <CardContent className="relative z-10 pt-2 pb-6">
@@ -602,10 +603,8 @@ export default function Home() {
                 <CountdownBox value={countdown.minutes} label="Minutos" />
                 <CountdownBox value={countdown.seconds} label="Segundos" />
               </div>
-              <p className="text-center text-primary-foreground/60 text-[10px] mt-4 font-medium uppercase tracking-widest">
-                Para el inicio del viaje misionero
-              </p>
             </CardContent>
+            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 sm:rounded-xl lg:rounded-xl"></div>
           </Card>
         )}
 
