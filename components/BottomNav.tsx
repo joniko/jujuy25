@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Calendar, Users, MapPin } from 'lucide-react';
+import { Home, Calendar, Users, MapPin, Heart } from 'lucide-react';
 
 interface NavItem {
   href: string;
@@ -30,6 +30,11 @@ const navItems: NavItem[] = [
     href: '/destinos',
     label: 'Ubicaciones',
     icon: MapPin,
+  },
+  {
+    href: '/proposito',
+    label: 'Propósito',
+    icon: Heart,
   },
 ];
 

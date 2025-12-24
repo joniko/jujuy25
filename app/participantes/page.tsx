@@ -236,20 +236,11 @@ export default function ParticipantesPage() {
 
   return (
     <main className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => router.push('/')}
-            className="shrink-0"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold">Participantes</h1>
-            <p className="text-sm text-muted-foreground">Lista de participantes del viaje</p>
           </div>
         </div>
 
