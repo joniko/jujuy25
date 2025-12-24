@@ -535,7 +535,7 @@ export default function Home() {
             </CardContent>
           </Card>
         ) : weather && (
-          <Card className={`bg-gradient-to-br ${getWeatherTheme(weather.icon).gradient} ${getWeatherTheme(weather.icon).borderColor} overflow-hidden transition-all duration-500 shadow-xl text-left`}>
+          <Card className={`bg-gradient-to-br ${getWeatherTheme(weather.icon).gradient} ${getWeatherTheme(weather.icon).borderColor} overflow-hidden transition-all duration-500 shadow-md text-left`}>
             <CardContent className="p-6">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
@@ -585,7 +585,7 @@ export default function Home() {
 
         {/* Countdown si aún no comenzó */}
         {!hasStarted && countdown && (
-          <Card className="bg-primary/20 border-none shadow-xl overflow-hidden relative text-left">
+          <Card className="bg-primary/20 border-none shadow-md overflow-hidden relative text-left">
             {/* Círculos decorativos de fondo */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl" />
@@ -611,7 +611,7 @@ export default function Home() {
         {/* Lo que está pasando ahora */}
         {currentMessage && (
           <Card 
-            className="border-primary/20 cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden group bg-gradient-to-b from-primary/[0.03] to-transparent"
+            className="border-primary/20 cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden group bg-gradient-to-b from-primary/[0.03] to-transparent"
             onClick={() => router.push('/cronograma')}
           >
             <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
@@ -686,7 +686,7 @@ export default function Home() {
         {/* Lo que viene */}
         {nextMessage && (
           <Card 
-            className="cursor-pointer hover:shadow-lg transition-all duration-300 border-foreground/5 bg-muted/30 group"
+            className="cursor-pointer hover:shadow-md transition-all duration-300 border-foreground/5 bg-muted/30 group"
             onClick={() => router.push('/cronograma')}
           >
             <CardHeader className="p-6">
