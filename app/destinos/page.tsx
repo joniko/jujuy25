@@ -108,8 +108,8 @@ export default function DestinosPage() {
 
         const locationsData: Location[] = (parsedData.data as Array<any>)
           .map((row) => {
-            const nombre = getColumnValue(row, ['nombre', 'Nombre', 'NOMBRE', 'name', 'Name']);
-            const direccion = getColumnValue(row, ['direccion', 'Direccion', 'DIRECCION', 'dirección', 'Dirección', 'DIRECCIÓN', 'address', 'Address', 'dirección', 'Dirección']);
+            const nombre = getColumnValue(row, ['lugar', 'Lugar', 'LUGAR', 'nombre', 'Nombre', 'NOMBRE', 'name', 'Name']);
+            const direccion = getColumnValue(row, ['dirección', 'Dirección', 'DIRECCIÓN', 'direccion', 'Direccion', 'DIRECCION', 'address', 'Address']);
             const link = getColumnValue(row, ['link', 'Link', 'LINK', 'url', 'Url', 'URL', 'maps', 'Maps', 'google maps', 'Google Maps']);
             
             return {
