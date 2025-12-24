@@ -19,7 +19,45 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: defaultCache,
+  runtimeCaching: [
+    // Cachear Google Sheets con estrategia NetworkFirst (intenta red primero, luego cache)
+    {
+      matcher: ({ url }) => {
+        return url.href.includes('docs.google.com/spreadsheets') || 
+               url.href.includes('drive.google.com') ||
+               url.href.includes('googleusercontent.com');
+      },
+      handler: {
+        handle: async ({ request }) => {
+          const cache = await caches.open('google-sheets-cache');
+          try {
+            // Intentar fetch primero
+            const response = await fetch(request);
+            if (response && response.status === 200) {
+              // Cachear respuesta exitosa
+              await cache.put(request, response.clone());
+              return response;
+            }
+            // Si falla, intentar cache
+            const cachedResponse = await cache.match(request);
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            throw new Error('No response available');
+          } catch (error) {
+            // Si falla el fetch, usar cache
+            const cachedResponse = await cache.match(request);
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            throw error;
+          }
+        },
+      },
+    },
+    // Mantener el cache por defecto para otros recursos
+    ...defaultCache,
+  ],
 });
 
 serwist.addEventListeners();

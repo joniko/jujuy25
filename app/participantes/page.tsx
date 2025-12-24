@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Papa from 'papaparse';
+import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -99,20 +100,29 @@ export default function ParticipantesPage() {
 
         console.log('🔍 Debug - Final Sheets URL:', sheetsUrl);
 
-        const cacheBuster = `&t=${Date.now()}`;
-        const finalUrl = sheetsUrl + (sheetsUrl.includes('?') ? '&' : '?') + cacheBuster.replace('&', '');
-        console.log('🔍 Debug - Final URL with cache buster:', finalUrl);
+        // Usar cache offline si no hay conexión, o intentar fetch y cachear si hay conexión
+        let csvData: string;
+        const online = isOnline();
         
-        const response = await axios.get(finalUrl, {
-          headers: {
-            'Cache-Control': 'no-cache',
-          },
-        });
+        if (online) {
+          // Si hay conexión, intentar fetch con cache buster
+          const cacheBuster = `&t=${Date.now()}`;
+          const finalUrl = sheetsUrl + (sheetsUrl.includes('?') ? '&' : '?') + cacheBuster.replace('&', '');
+          console.log('🔍 Debug - Final URL with cache buster:', finalUrl);
+          try {
+            csvData = await fetchWithOfflineFallback(finalUrl);
+          } catch (error) {
+            // Si falla, intentar sin cache buster (usar cache)
+            csvData = await fetchWithOfflineFallback(sheetsUrl);
+          }
+        } else {
+          // Sin conexión, usar cache directamente
+          csvData = await fetchWithOfflineFallback(sheetsUrl);
+        }
         
-        console.log('✅ Response status:', response.status);
-        console.log('✅ Response data length:', response.data?.length || 0);
+        console.log('✅ CSV data length:', csvData?.length || 0);
         
-        const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
+        const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
 
         console.log('📊 Parsed data rows:', parsedData.data.length);
         console.log('📊 First row sample:', parsedData.data[0]);
@@ -179,22 +189,22 @@ export default function ParticipantesPage() {
         console.error('❌ Error fetching participantes:', error);
         let errorMsg = 'Error al cargar participantes';
         
-        if (axios.isAxiosError(error)) {
-          console.error('❌ Error response:', error.response?.status, error.response?.statusText);
-          console.error('❌ Error URL:', error.config?.url);
-          
-          if (error.response?.status === 404) {
-            errorMsg = 'No se encontró la planilla. Verifica que el GID sea correcto y que la planilla esté publicada.';
-          } else if (error.response?.status === 403) {
-            errorMsg = 'Acceso denegado. Verifica que la planilla esté publicada como CSV.';
+        if (error instanceof Error) {
+          if (error.message.includes('No internet connection')) {
+            errorMsg = 'Sin conexión a internet. Mostrando datos guardados anteriormente.';
+          } else if (error.message.includes('no cached data')) {
+            errorMsg = 'Sin conexión y sin datos guardados. Conecta a internet para cargar los participantes.';
           } else {
-            errorMsg = `Error ${error.response?.status}: ${error.response?.statusText || 'Error desconocido'}`;
+            errorMsg = error.message;
           }
-        } else if (error instanceof Error) {
-          errorMsg = error.message;
         }
         
-        setError(errorMsg);
+        // Solo mostrar error si es el fetch inicial o no hay datos previos
+        if (isInitial || participantes.length === 0) {
+          setError(errorMsg);
+        } else {
+          console.warn('Error en refresh automático (manteniendo datos previos):', errorMsg);
+        }
       } finally {
         if (isInitial) {
           setIsInitialLoading(false);

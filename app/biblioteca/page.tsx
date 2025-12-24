@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Papa from 'papaparse';
+import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -105,15 +106,25 @@ export default function BibliotecaPage() {
           }
         }
 
-        // Agregar timestamp para evitar cache del navegador
-        const cacheBuster = `&t=${Date.now()}`;
-        const response = await axios.get(sheetsUrl + cacheBuster, {
-          headers: {
-            'Cache-Control': 'no-cache',
-          },
-        });
+        // Usar cache offline si no hay conexión, o intentar fetch y cachear si hay conexión
+        let csvData: string;
+        const online = isOnline();
         
-        const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
+        if (online) {
+          // Si hay conexión, intentar fetch con cache buster
+          const cacheBuster = `&t=${Date.now()}`;
+          try {
+            csvData = await fetchWithOfflineFallback(sheetsUrl + cacheBuster);
+          } catch (error) {
+            // Si falla, intentar sin cache buster (usar cache)
+            csvData = await fetchWithOfflineFallback(sheetsUrl);
+          }
+        } else {
+          // Sin conexión, usar cache directamente
+          csvData = await fetchWithOfflineFallback(sheetsUrl);
+        }
+        
+        const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
 
         if (isInitial) {
           console.log('📚 Biblioteca CSV Data:', parsedData.data);

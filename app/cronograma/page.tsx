@@ -6,6 +6,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Papa from 'papaparse';
+import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -47,15 +48,25 @@ export default function CronogramaPage() {
           throw new Error('URL de Google Sheets no configurada');
         }
 
-        // Agregar timestamp para evitar cache del navegador
-        const cacheBuster = `&t=${Date.now()}`;
-        const response = await axios.get(sheetsUrl + cacheBuster, {
-          headers: {
-            'Cache-Control': 'no-cache',
-          },
-          timeout: 10000, // 10 segundos de timeout
-        });
-        const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
+        // Usar cache offline si no hay conexión, o intentar fetch y cachear si hay conexión
+        let csvData: string;
+        const online = isOnline();
+        
+        if (online) {
+          // Si hay conexión, intentar fetch con cache buster
+          const cacheBuster = `&t=${Date.now()}`;
+          try {
+            csvData = await fetchWithOfflineFallback(sheetsUrl + cacheBuster);
+          } catch (error) {
+            // Si falla, intentar sin cache buster (usar cache)
+            csvData = await fetchWithOfflineFallback(sheetsUrl);
+          }
+        } else {
+          // Sin conexión, usar cache directamente
+          csvData = await fetchWithOfflineFallback(sheetsUrl);
+        }
+        
+        const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
 
         const items: PrayerScheduleItem[] = (parsedData.data as Array<{
           dia?: string;
@@ -99,18 +110,16 @@ export default function CronogramaPage() {
         
         // Determinar el tipo de error
         let errorMessage = 'Error al cargar el cronograma';
-        if (axios.isAxiosError(error)) {
-          if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-            errorMessage = 'Tiempo de espera agotado. Verifica tu conexión a internet.';
-          } else if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
-            errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
-          } else if (error.response) {
-            errorMessage = `Error del servidor: ${error.response.status}`;
+        const online = isOnline();
+        
+        if (error instanceof Error) {
+          if (error.message.includes('No internet connection')) {
+            errorMessage = 'Sin conexión a internet. Mostrando datos guardados anteriormente.';
+          } else if (error.message.includes('no cached data')) {
+            errorMessage = 'Sin conexión y sin datos guardados. Conecta a internet para cargar el cronograma.';
           } else {
-            errorMessage = 'Error de conexión. Intenta nuevamente.';
+            errorMessage = error.message;
           }
-        } else if (error instanceof Error) {
-          errorMessage = error.message;
         }
         
         // Solo mostrar error en el fetch inicial o si no hay datos previos
@@ -147,16 +156,19 @@ export default function CronogramaPage() {
     setIsRetrying(true);
     setError(null);
     const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
-    const cacheBuster = `&t=${Date.now()}`;
     
     try {
-      const response = await axios.get(sheetsUrl + cacheBuster, {
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-        timeout: 10000,
-      });
-      const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
+      const online = isOnline();
+      let csvData: string;
+      
+      if (online) {
+        const cacheBuster = `&t=${Date.now()}`;
+        csvData = await fetchWithOfflineFallback(sheetsUrl + cacheBuster);
+      } else {
+        csvData = await fetchWithOfflineFallback(sheetsUrl);
+      }
+      
+      const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
 
       const items: PrayerScheduleItem[] = (parsedData.data as Array<{
         dia?: string;
@@ -186,18 +198,14 @@ export default function CronogramaPage() {
       setCurrentHour(formattedHour);
     } catch (error) {
       let errorMessage = 'Error al cargar el cronograma';
-      if (axios.isAxiosError(error)) {
-        if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-          errorMessage = 'Tiempo de espera agotado. Verifica tu conexión a internet.';
-        } else if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
-          errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
-        } else if (error.response) {
-          errorMessage = `Error del servidor: ${error.response.status}`;
+      if (error instanceof Error) {
+        if (error.message.includes('No internet connection')) {
+          errorMessage = 'Sin conexión a internet. Mostrando datos guardados anteriormente.';
+        } else if (error.message.includes('no cached data')) {
+          errorMessage = 'Sin conexión y sin datos guardados. Conecta a internet para cargar el cronograma.';
         } else {
-          errorMessage = 'Error de conexión. Intenta nuevamente.';
+          errorMessage = error.message;
         }
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
       }
       setError(errorMessage);
     } finally {
