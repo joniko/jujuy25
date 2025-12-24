@@ -28,7 +28,7 @@ export default function Proposito() {
           <CardHeader>
             <div className="flex items-center gap-3">
               <Sparkles className="w-6 h-6 text-primary" />
-              <CardTitle className="text-2xl">Una palabra para ti</CardTitle>
+              <CardTitle className="text-2xl">Lleguemos alineados</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed">
@@ -113,9 +113,9 @@ export default function Proposito() {
                 <Heart className="w-6 h-6" />
               </div>
               <div>
-                <CardTitle className="text-2xl">2. Altares de Adoración e Intercesión</CardTitle>
+                <CardTitle className="text-2xl">2. Activación de Adoración e Intercesión</CardTitle>
                 <CardDescription className="text-base">
-                  Adoración e intercesión pública
+                  Altares públicos en lugares estratégicos
                 </CardDescription>
               </div>
             </div>
@@ -199,32 +199,21 @@ export default function Proposito() {
           </CardContent>
         </Card>
 
-        {/* Heart Message */}
+        {/* Closing Message */}
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary border-2">
           <CardContent className="pt-6 space-y-4">
             <div className="text-center space-y-3">
               <Heart className="w-8 h-8 text-primary mx-auto" />
-              <h3 className="text-2xl font-bold">Lleguemos alineados</h3>
+              <h3 className="text-2xl font-bold">Nuestro corazón</h3>
             </div>
             <div className="space-y-3 text-base leading-relaxed">
-              <p>
-                Este viaje es más que un viaje. Es una <strong className="text-primary">oportunidad</strong> 
-                para que Dios use nuestras vidas de maneras que ni siquiera imaginamos.
+              <p className="text-center italic text-muted-foreground">
+                Que en todo momento, en todo lugar, con toda persona, 
+                <strong className="text-foreground"> mostremos a Jesús</strong>. 
+                Que nuestro testimonio hable más fuerte que nuestras palabras. 
+                Que sirvamos con amor genuino. Que lleguemos alineados en un mismo propósito: 
+                <strong className="text-foreground"> glorificar a Dios y ver vidas transformadas</strong>.
               </p>
-              <p>
-                Has invertido de tu bolsillo. Has hecho el sacrificio. Ahora, <strong>déjate usar por Dios</strong>. 
-                Permite que Él te sorprenda. Permite que tu vida sea un testimonio vivo de Su amor.
-              </p>
-              <div className="bg-background/80 p-4 rounded-lg border border-primary/20 mt-4">
-                <p className="font-semibold text-primary mb-2 text-center">Nuestro corazón:</p>
-                <p className="text-center text-sm italic text-muted-foreground">
-                  &ldquo;Que en todo momento, en todo lugar, con toda persona, 
-                  <strong className="text-foreground"> mostremos a Jesús</strong>. 
-                  Que nuestro testimonio hable más fuerte que nuestras palabras. 
-                  Que sirvamos con amor genuino. Que lleguemos alineados en un mismo propósito: 
-                  <strong className="text-foreground"> glorificar a Dios y ver vidas transformadas</strong>.&rdquo;
-                </p>
-              </div>
             </div>
           </CardContent>
         </Card>
