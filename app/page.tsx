@@ -517,19 +517,36 @@ export default function Home() {
       <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
         {/* Clima de San Salvador de Jujuy */}
         {isLoadingWeather ? (
-          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 overflow-hidden text-left">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-10 w-20" />
+          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 overflow-hidden text-left shadow-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-1.5">
+                    <Skeleton className="h-3 w-3 mr-1" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <Skeleton className="h-12 w-20" />
+                  </div>
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-14 w-14 rounded-2xl" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 text-left">
-                <Skeleton className="h-4 w-40" />
-                <div className="flex gap-4">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-16" />
+              
+              <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-foreground/5">
+                <div className="flex items-center gap-2.5">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-2 w-10" />
+                    <Skeleton className="h-3 w-8" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-2 w-10" />
+                    <Skeleton className="h-3 w-8" />
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -584,7 +601,7 @@ export default function Home() {
         )}
 
         {/* Countdown si aún no comenzó */}
-        {!hasStarted && countdown && (
+        {(!hasStarted || isInitialLoading) && (
           <Card className="bg-primary/20 border-none shadow-md overflow-hidden relative text-left">
             {/* Círculos decorativos de fondo */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
@@ -597,22 +614,31 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
             <CardContent className="relative z-10 pt-2 pb-6">
-              <div className="flex items-center justify-between gap-2">
-                <CountdownBox value={countdown.days} label="Días" />
-                <CountdownBox value={countdown.hours} label="Horas" />
-                <CountdownBox value={countdown.minutes} label="Minutos" />
-                <CountdownBox value={countdown.seconds} label="Segundos" />
-              </div>
+              {isInitialLoading ? (
+                <div className="flex items-center justify-between gap-2">
+                  <Skeleton className="h-[76px] w-[80px] rounded-2xl" />
+                  <Skeleton className="h-[76px] w-[80px] rounded-2xl" />
+                  <Skeleton className="h-[76px] w-[80px] rounded-2xl" />
+                  <Skeleton className="h-[76px] w-[80px] rounded-2xl" />
+                </div>
+              ) : countdown && (
+                <div className="flex items-center justify-between gap-2">
+                  <CountdownBox value={countdown.days} label="Días" />
+                  <CountdownBox value={countdown.hours} label="Horas" />
+                  <CountdownBox value={countdown.minutes} label="Minutos" />
+                  <CountdownBox value={countdown.seconds} label="Segundos" />
+                </div>
+              )}
             </CardContent>
             <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 sm:rounded-xl lg:rounded-xl"></div>
           </Card>
         )}
 
         {/* Lo que está pasando ahora */}
-        {currentMessage && (
+        {(currentMessage || (isInitialLoading && hasStarted)) && (
           <Card 
             className="border-primary/20 cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden group bg-gradient-to-b from-primary/[0.03] to-transparent"
-            onClick={() => router.push('/cronograma')}
+            onClick={() => !isInitialLoading && router.push('/cronograma')}
           >
             <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
             <CardHeader className="space-y-4 p-6">
@@ -624,18 +650,37 @@ export default function Home() {
                   </div>
                   <CardTitle className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">En este momento</CardTitle>
                 </div>
-                <div className="p-2 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
-                  <ChevronRight className="w-4 h-4 text-primary" />
-                </div>
+                {!isInitialLoading && (
+                  <div className="p-2 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
+                    <ChevronRight className="w-4 h-4 text-primary" />
+                  </div>
+                )}
               </div>
 
               {isInitialLoading ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-8 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-3 w-3" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-8 w-5/6" />
+                    <Skeleton className="h-8 w-3/4" />
+                  </div>
+                  <div className="space-y-2 pt-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-11/12" />
+                    <Skeleton className="h-4 w-4/5" />
+                  </div>
+                  <div className="pt-4 flex items-center justify-between">
+                    <Skeleton className="h-9 w-32 rounded-full" />
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-3 w-3 rounded-full" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
                 </div>
-              ) : (
+              ) : currentMessage && (
                 <>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/60">
@@ -684,10 +729,10 @@ export default function Home() {
         )}
 
         {/* Lo que viene */}
-        {nextMessage && (
+        {(nextMessage || (isInitialLoading && hasStarted)) && (
           <Card 
             className="cursor-pointer hover:shadow-md transition-all duration-300 border-foreground/5 bg-muted/30 group"
-            onClick={() => router.push('/cronograma')}
+            onClick={() => !isInitialLoading && router.push('/cronograma')}
           >
             <CardHeader className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -697,15 +742,26 @@ export default function Home() {
                   </div>
                   <CardTitle className="text-[10px] font-bold uppercase text-muted-foreground tracking-[0.2em]">Próximo evento</CardTitle>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
+                {!isInitialLoading && (
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
+                )}
               </div>
 
               {isInitialLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-1/2" />
-                  <Skeleton className="h-4 w-full" />
+                <div className="grid grid-cols-[1fr_auto] gap-4 items-end">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-3 w-3" />
+                      <Skeleton className="h-3 w-16" />
+                    </div>
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                  <div className="pb-1">
+                    <Skeleton className="h-6 w-12 rounded-full" />
+                  </div>
                 </div>
-              ) : (
+              ) : nextMessage && (
                 <div className="grid grid-cols-[1fr_auto] gap-4 items-end">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/50">
