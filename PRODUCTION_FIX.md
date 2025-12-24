@@ -91,7 +91,7 @@ Para probar en tu computadora Y celular con 4G:
    ```
 
 ### Producción
-1. Abre `https://oremos.app` en incógnito
+1. Abre `https://ejovs.com` en incógnito
 2. Deberías ver:
    - ✅ El motivo de oración actual (cargado del Google Sheet)
    - ✅ Información del video de YouTube
@@ -160,7 +160,7 @@ git push origin main
   - [ ] `NEXT_PUBLIC_SOCKET_URL`
   - [ ] `NEXT_PUBLIC_SHEETS_URL`
 - [ ] Redeploy ejecutado en Vercel
-- [ ] Probado en `https://oremos.app`
+- [ ] Probado en `https://ejovs.com`
 - [ ] Datos del Google Sheet aparecen
 - [ ] Info del video de YouTube aparece
 - [ ] Usuarios conectados aparecen

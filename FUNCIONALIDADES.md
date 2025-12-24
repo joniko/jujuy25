@@ -236,7 +236,7 @@ git push origin main
 
 ## 📞 URLs de Producción
 
-- **Frontend**: https://oremos.app
+- **Frontend**: https://ejovs.com
 - **Backend Socket.IO**: https://oremosapp.fly.dev
 
 ---

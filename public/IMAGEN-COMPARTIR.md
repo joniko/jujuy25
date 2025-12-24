@@ -63,14 +63,14 @@ La imagen debería incluir:
 
 ### Facebook Debugger:
 https://developers.facebook.com/tools/debug/
-- Pega: https://oremos.app
+- Pega: https://ejovs.com
 - Click en "Scrape Again"
 
 ### Twitter Card Validator:
 https://cards-dev.twitter.com/validator
-- Pega: https://oremos.app
+- Pega: https://ejovs.com
 
 ### LinkedIn Post Inspector:
 https://www.linkedin.com/post-inspector/
-- Pega: https://oremos.app
+- Pega: https://ejovs.com
 

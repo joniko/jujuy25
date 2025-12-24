@@ -74,7 +74,7 @@ git push origin main
 Después de hacer el cambio:
 
 1. **Limpia el cache del navegador** (importante!)
-2. **Abre tu app** en: https://oremos.app
+2. **Abre tu app** en: https://ejovs.com
 3. **Verifica el favicon** en la pestaña del navegador
 4. **Inspecciona** con DevTools:
    ```

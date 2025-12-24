@@ -11,7 +11,7 @@ import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight, Cloud, Droplets, Wind } from 'lucide-react';
+import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight, Cloud, Droplets, Wind, Sun, CloudRain, CloudSnow, CloudLightning, CloudDrizzle, Eye } from 'lucide-react';
 import MediaDisplay from '../components/MediaDisplay';
 
 dayjs.extend(customParseFormat);
@@ -29,6 +29,77 @@ interface Message {
 // Fecha de inicio del programa: Viernes 26 de diciembre 2025 a las 5:00 AM
 // Mover fuera del componente para evitar recreación en cada render
 const PROGRAM_START_DATE = dayjs('2025-12-26 05:00', 'YYYY-MM-DD HH:mm');
+
+// Función para obtener el icono del clima basado en el código
+const getWeatherIcon = (weatherCode: string): React.ComponentType<{ className?: string }> => {
+  const code = parseInt(weatherCode);
+  
+  // Códigos de wttr.in basados en WorldWeatherOnline
+  // 113: Despejado/Soleado
+  // 116: Parcialmente nublado
+  // 119: Nublado
+  // 122: Muy nublado
+  // 143: Niebla
+  // 176: Lluvia ligera
+  // 179: Nieve ligera
+  // 182: Aguanieve
+  // 185: Lluvia helada
+  // 200: Tormenta con lluvia ligera
+  // 227: Nieve
+  // 230: Tormenta de nieve
+  // 248: Niebla
+  // 260: Niebla helada
+  // 263: Lluvia ligera
+  // 266: Lluvia ligera
+  // 281: Lluvia helada
+  // 284: Lluvia helada
+  // 293: Lluvia ligera
+  // 296: Lluvia ligera
+  // 299: Lluvia moderada
+  // 302: Lluvia intensa
+  // 305: Lluvia intensa
+  // 308: Lluvia intensa
+  // 311: Lluvia helada
+  // 314: Lluvia helada
+  // 317: Aguanieve
+  // 320: Aguanieve
+  // 323: Nieve ligera
+  // 326: Nieve ligera
+  // 329: Nieve intensa
+  // 332: Nieve intensa
+  // 335: Nieve intensa
+  // 338: Nieve intensa
+  // 350: Aguanieve
+  // 353: Lluvia ligera
+  // 356: Lluvia moderada
+  // 359: Lluvia intensa
+  // 362: Aguanieve
+  // 365: Aguanieve
+  // 368: Nieve ligera
+  // 371: Nieve intensa
+  // 374: Aguanieve
+  // 377: Lluvia helada
+  // 386: Tormenta
+  // 389: Tormenta
+  // 392: Tormenta de nieve
+  // 395: Tormenta de nieve
+  
+  if (code === 113) return Sun;
+  if (code === 116) return Cloud;
+  if (code >= 119 && code <= 122) return Cloud;
+  if (code === 143 || code === 248 || code === 260) return Eye; // Niebla
+  if (code >= 176 && code <= 185) return CloudDrizzle;
+  if (code >= 200 && code <= 202) return CloudLightning;
+  if (code >= 227 && code <= 230) return CloudSnow;
+  if (code >= 263 && code <= 308) return CloudRain;
+  if (code >= 311 && code <= 320) return CloudDrizzle;
+  if (code >= 323 && code <= 338) return CloudSnow;
+  if (code >= 350 && code <= 377) return CloudRain;
+  if (code >= 386 && code <= 395) return CloudLightning;
+  
+  // Por defecto, nublado
+  return Cloud;
+};
 
 export default function Home() {
   const router = useRouter();
@@ -389,7 +460,7 @@ export default function Home() {
     const currentHour = new Date().getHours();
     
     if (!navigator.share) {
-      const shareText = `🙏 Únete a orar con nosotros\n\n${message.title}\n${message.body}\n\n👉 https://oremos.app`;
+      const shareText = `🙏 Únete a orar con nosotros\n\n${message.title}\n${message.body}\n\n👉 https://ejovs.com`;
       try {
         await navigator.clipboard.writeText(shareText);
         alert('¡Texto copiado! Ahora puedes pegarlo donde quieras.');
@@ -403,7 +474,7 @@ export default function Home() {
       const shareData: ShareData = {
         title: `Viaje Misionero: Jujuy 25 - ${message.title}`,
         text: `🙏 ${message.title}\n\n${message.body}\n\nÚnete a orar con nosotros:`,
-        url: 'https://oremos.app'
+        url: 'https://ejovs.com'
       };
 
       if (navigator.canShare) {
@@ -465,7 +536,10 @@ export default function Home() {
                   <CardTitle className="text-lg">San Salvador de Jujuy</CardTitle>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Cloud className="w-6 h-6 text-primary" />
+                  {(() => {
+                    const WeatherIcon = getWeatherIcon(weather.icon);
+                    return <WeatherIcon className="w-6 h-6 text-primary" />;
+                  })()}
                   <div className="text-3xl font-bold text-primary">{weather.temp}°</div>
                 </div>
               </div>

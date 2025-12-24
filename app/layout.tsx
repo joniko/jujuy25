@@ -8,17 +8,17 @@ import { Toaster } from "@/components/ui/sonner"
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://oremos.app'),
+  metadataBase: new URL('https://ejovs.com'),
   title: 'Viaje Misionero: Jujuy 25',
   description: 'Únete a la cadena de oración. Ora junto a la comunidad en tiempo real.',
   openGraph: {
     title: 'Viaje Misionero: Jujuy 25',
     description: 'Únete a la cadena de oración. Ora junto a la comunidad en tiempo real.',
-    url: 'https://oremos.app',
+    url: 'https://ejovs.com',
     siteName: 'Viaje Misionero: Jujuy 25',
     images: [
       {
-        url: 'https://oremos.app/api/og',
+        url: 'https://ejovs.com/api/og',
         width: 1200,
         height: 630,
         alt: 'Viaje Misionero: Jujuy 25',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Viaje Misionero: Jujuy 25',
     description: 'Únete a la cadena de oración. Ora junto a la comunidad en tiempo real.',
-    images: ['https://oremos.app/api/og'],
+    images: ['https://ejovs.com/api/og'],
   },
 }
 
