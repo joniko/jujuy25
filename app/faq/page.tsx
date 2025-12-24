@@ -76,10 +76,8 @@ export default function FAQPage() {
         const baseUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
         const gid = process.env.NEXT_PUBLIC_SHEETS_FAQS_GID || '';
         
-        console.log('FAQ Config:', { baseUrl, gid });
-        
         if (!baseUrl || !gid) {
-          console.error('FAQ Sheets URL or GID not configured', { baseUrl, gid });
+          console.error('FAQ Sheets URL or GID not configured');
           setIsLoading(false);
           return;
         }
@@ -93,7 +91,6 @@ export default function FAQPage() {
           // Agregar gid a la URL
           sheetsUrl = baseUrl.replace(/output=csv/, `gid=${gid}&single=true&output=csv`);
         }
-        console.log('FAQ Sheets URL:', sheetsUrl);
 
         // Usar cache offline si no hay conexión
         let csvData: string;
@@ -110,11 +107,7 @@ export default function FAQPage() {
           csvData = await fetchWithOfflineFallback(sheetsUrl);
         }
         
-        console.log('CSV Data length:', csvData.length);
-        console.log('CSV Data preview:', csvData.substring(0, 200));
-        
         const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
-        console.log('Parsed data:', parsedData.data);
 
         // Agrupar por categoría
         const groupedData: Record<string, FAQItem[]> = {};
@@ -124,15 +117,11 @@ export default function FAQPage() {
           respuesta: string; 
           categoria: string;
         }>).forEach((row) => {
-          console.log('Processing row:', row);
           const category = row.categoria?.trim() || 'General';
           const question = row.pregunta?.trim() || '';
           const answer = row.respuesta?.trim() || '';
           
-          if (!question || !answer) {
-            console.log('Skipping row - missing data:', { question, answer });
-            return;
-          }
+          if (!question || !answer) return;
           
           if (!groupedData[category]) {
             groupedData[category] = [];
@@ -144,8 +133,6 @@ export default function FAQPage() {
           });
         });
 
-        console.log('Grouped data:', groupedData);
-
         // Convertir a array de secciones
         const sections: FAQSection[] = Object.entries(groupedData).map(([category, questions]) => ({
           title: category.toUpperCase(),
@@ -153,7 +140,6 @@ export default function FAQPage() {
           questions
         }));
 
-        console.log('Final sections:', sections);
         setFaqData(sections);
       } catch (error) {
         console.error('Error fetching FAQs:', error);
