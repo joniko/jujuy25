@@ -1,7 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import TopNav from '../components/TopNav'
+import BottomNav from '../components/BottomNav'
 import InstallBanner from '../components/InstallBanner'
 import { Toaster } from "@/components/ui/sonner"
 
@@ -148,9 +148,11 @@ export default function RootLayout({
         />
       </head>
     <body className={inter.className}>
-      <TopNav />
       <InstallBanner />
-      {children}
+      <div className="pb-20 md:pb-16">
+        {children}
+      </div>
+      <BottomNav />
       <Toaster />
     </body>
     </html>

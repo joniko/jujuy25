@@ -216,3 +216,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Safe area support for iOS bottom navigation */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
