@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import Papa from 'papaparse';
+import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -46,13 +47,26 @@ export default function Home() {
         }
 
         const sheetsUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
-        const cacheBuster = `&t=${Date.now()}`;
-        const response = await axios.get(sheetsUrl + cacheBuster, {
-          headers: {
-            'Cache-Control': 'no-cache',
-          },
-        });
-        const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
+        
+        // Usar cache offline si no hay conexión, o intentar fetch y cachear si hay conexión
+        let csvData: string;
+        const online = isOnline();
+        
+        if (online) {
+          // Si hay conexión, intentar fetch con cache buster
+          const cacheBuster = `&t=${Date.now()}`;
+          try {
+            csvData = await fetchWithOfflineFallback(sheetsUrl + cacheBuster);
+          } catch (error) {
+            // Si falla, intentar sin cache buster (usar cache)
+            csvData = await fetchWithOfflineFallback(sheetsUrl);
+          }
+        } else {
+          // Sin conexión, usar cache directamente
+          csvData = await fetchWithOfflineFallback(sheetsUrl);
+        }
+        
+        const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
 
         const messages: Message[] = (parsedData.data as Array<{ 
           dia?: string;
@@ -82,12 +96,74 @@ export default function Home() {
           setAllMessages(messages);
         }
 
-        // Encontrar mensaje actual y próximo
+        // Verificar si el programa ya comenzó
         const now = dayjs();
-        const currentHour = now.format('h A');
+        const programHasStarted = now.isAfter(PROGRAM_START_DATE) || now.isSame(PROGRAM_START_DATE);
         
-        // Ordenar mensajes por hora
-        const sortedMessages = [...messages].sort((a, b) => {
+        // Mapeo de días
+        const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+        const dayMap: Record<string, string> = {
+          'viernes': 'viernes',
+          'sábado': 'sábado',
+          'domingo': 'domingo',
+          'friday': 'viernes',
+          'saturday': 'sábado',
+          'sunday': 'domingo'
+        };
+        
+        // Filtrar mensajes según el día actual si el programa ya comenzó
+        let relevantMessages = messages;
+        if (programHasStarted) {
+          const currentDayName = dayNames[now.day()].toLowerCase();
+          const currentDayIndex = now.day();
+          
+          // Determinar qué días son relevantes (día actual y siguientes días del programa)
+          const programDays = ['viernes', 'sábado', 'domingo'];
+          const currentDayIndexInProgram = programDays.indexOf(currentDayName);
+          
+          if (currentDayIndexInProgram >= 0) {
+            // Estamos en un día del programa, mostrar solo eventos de hoy en adelante
+            relevantMessages = messages.filter((message: Message) => {
+              if (!message.day) return true; // Si no tiene día, incluirlo
+              
+              const messageDay = dayMap[message.day.toLowerCase()];
+              if (!messageDay) return true;
+              
+              const messageDayIndex = programDays.indexOf(messageDay);
+              if (messageDayIndex === -1) return false; // No es un día del programa
+              
+              // Incluir si es el día actual o un día futuro del programa
+              return messageDayIndex >= currentDayIndexInProgram;
+            });
+          } else {
+            // No estamos en un día del programa, no mostrar eventos actuales
+            relevantMessages = [];
+          }
+        } else {
+          // El programa no ha comenzado, mostrar solo eventos del viernes
+          relevantMessages = messages.filter((message: Message) => {
+            if (!message.day) return true; // Si no tiene día, incluirlo
+            const messageDay = dayMap[message.day.toLowerCase()];
+            return messageDay === 'viernes';
+          });
+        }
+        
+        // Ordenar mensajes por día y hora
+        const sortedMessages = [...relevantMessages].sort((a, b) => {
+          // Primero ordenar por día
+          const dayOrder = ['viernes', 'sábado', 'domingo'];
+          const dayA = a.day ? (dayMap[a.day.toLowerCase()] || '') : '';
+          const dayB = b.day ? (dayMap[b.day.toLowerCase()] || '') : '';
+          const dayIndexA = dayOrder.indexOf(dayA);
+          const dayIndexB = dayOrder.indexOf(dayB);
+          
+          if (dayIndexA !== dayIndexB) {
+            if (dayIndexA === -1) return 1;
+            if (dayIndexB === -1) return -1;
+            return dayIndexA - dayIndexB;
+          }
+          
+          // Si es el mismo día, ordenar por hora
           const cleanHourA = a.hour
             .replace(/\s+/g, ' ')
             .replace('a. m.', 'AM')
@@ -110,73 +186,18 @@ export default function Home() {
           return timeA.valueOf() - timeB.valueOf();
         });
 
-        // Encontrar mensaje actual (considerando el día si está disponible)
-        const today = dayjs();
-        const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-        const currentDayName = dayNames[today.day()].toLowerCase();
-        
-        const current = sortedMessages.find((message: Message) => {
-          // Si el mensaje tiene día, verificar que coincida
-          if (message.day) {
-            const dayMap: Record<string, string> = {
-              'viernes': 'viernes',
-              'sábado': 'sábado',
-              'domingo': 'domingo',
-              'friday': 'viernes',
-              'saturday': 'sábado',
-              'sunday': 'domingo'
-            };
-            const messageDay = dayMap[message.day.toLowerCase()];
-            if (messageDay && messageDay !== currentDayName) {
-              return false;
-            }
-          }
+        // Encontrar mensaje actual (solo si el programa ya comenzó)
+        let current: Message | null = null;
+        if (programHasStarted && sortedMessages.length > 0) {
+          const currentDayName = dayNames[now.day()].toLowerCase();
+          const currentHour = now.format('h A');
           
-          const cleanHour = message.hour
-            .replace(/\s+/g, ' ')
-            .replace('a. m.', 'AM')
-            .replace('p. m.', 'PM')
-            .replace('a.m.', 'AM')
-            .replace('p.m.', 'PM')
-            .trim();
-          
-          const messageTime = dayjs(cleanHour, 'h:mm A');
-          return currentHour === messageTime.format('h A');
-        });
-
-        // Encontrar próximo mensaje
-        let next: Message | null = null;
-        if (current) {
-          const currentIndex = sortedMessages.indexOf(current);
-          // Buscar el siguiente mensaje del mismo día o del día siguiente
-          next = sortedMessages.slice(currentIndex + 1).find((message: Message) => {
-            // Si el mensaje actual tiene día, priorizar mensajes del mismo día
-            if (current.day && message.day) {
-              return message.day === current.day;
-            }
-            return true;
-          }) || sortedMessages[currentIndex + 1] || sortedMessages[0] || null;
-        } else {
-          // Si no hay mensaje actual, encontrar el próximo del día actual o siguiente
-          next = sortedMessages.find((message: Message) => {
-            // Si tiene día, verificar que sea del día actual o siguiente
+          current = sortedMessages.find((message: Message) => {
+            // Verificar que sea del día actual
             if (message.day) {
-              const dayMap: Record<string, string> = {
-                'viernes': 'viernes',
-                'sábado': 'sábado',
-                'domingo': 'domingo',
-                'friday': 'viernes',
-                'saturday': 'sábado',
-                'sunday': 'domingo'
-              };
               const messageDay = dayMap[message.day.toLowerCase()];
-              // Aceptar mensajes del día actual o siguiente
               if (messageDay && messageDay !== currentDayName) {
-                const nextDayIndex = (today.day() + 1) % 7;
-                const nextDayName = dayNames[nextDayIndex];
-                if (messageDay !== nextDayName) {
-                  return false;
-                }
+                return false;
               }
             }
             
@@ -189,8 +210,86 @@ export default function Home() {
               .trim();
             
             const messageTime = dayjs(cleanHour, 'h:mm A');
-            return messageTime.isAfter(now);
-          }) || sortedMessages[0] || null;
+            return currentHour === messageTime.format('h A');
+          }) || null;
+        }
+
+        // Encontrar próximo mensaje
+        let next: Message | null = null;
+        if (programHasStarted && sortedMessages.length > 0) {
+          if (current) {
+            const currentIndex = sortedMessages.indexOf(current);
+            // Buscar el siguiente mensaje del mismo día o del día siguiente
+            next = sortedMessages.slice(currentIndex + 1).find((message: Message) => {
+              if (current.day && message.day) {
+                return message.day === current.day;
+              }
+              return true;
+            }) || sortedMessages[currentIndex + 1] || null;
+            
+            // Si no hay siguiente en el mismo día, buscar en el siguiente día del programa
+            if (!next && current.day) {
+              const programDays = ['viernes', 'sábado', 'domingo'];
+              const currentDayIndex = programDays.indexOf(dayMap[current.day.toLowerCase()] || '');
+              if (currentDayIndex >= 0 && currentDayIndex < programDays.length - 1) {
+                const nextProgramDay = programDays[currentDayIndex + 1];
+                next = sortedMessages.find((message: Message) => {
+                  if (!message.day) return false;
+                  return dayMap[message.day.toLowerCase()] === nextProgramDay;
+                }) || null;
+              }
+            }
+          } else {
+            // No hay mensaje actual, encontrar el próximo del día actual o siguiente
+            const currentDayName = dayNames[now.day()].toLowerCase();
+            next = sortedMessages.find((message: Message) => {
+              if (message.day) {
+                const messageDay = dayMap[message.day.toLowerCase()];
+                if (!messageDay) return false;
+                
+                // Si es del día actual, verificar que la hora sea futura
+                if (messageDay === currentDayName) {
+                  const cleanHour = message.hour
+                    .replace(/\s+/g, ' ')
+                    .replace('a. m.', 'AM')
+                    .replace('p. m.', 'PM')
+                    .replace('a.m.', 'AM')
+                    .replace('p.m.', 'PM')
+                    .trim();
+                  
+                  const messageTime = dayjs(cleanHour, 'h:mm A');
+                  const messageDateTime = now.hour(messageTime.hour()).minute(messageTime.minute());
+                  return messageDateTime.isAfter(now);
+                }
+                
+                // Si es de un día futuro del programa, incluirlo
+                const programDays = ['viernes', 'sábado', 'domingo'];
+                const currentDayIndex = programDays.indexOf(currentDayName);
+                const messageDayIndex = programDays.indexOf(messageDay);
+                if (currentDayIndex >= 0 && messageDayIndex > currentDayIndex) {
+                  return true;
+                }
+                
+                return false;
+              }
+              
+              // Si no tiene día, verificar que la hora sea futura
+              const cleanHour = message.hour
+                .replace(/\s+/g, ' ')
+                .replace('a. m.', 'AM')
+                .replace('p. m.', 'PM')
+                .replace('a.m.', 'AM')
+                .replace('p.m.', 'PM')
+                .trim();
+              
+              const messageTime = dayjs(cleanHour, 'h:mm A');
+              const messageDateTime = now.hour(messageTime.hour()).minute(messageTime.minute());
+              return messageDateTime.isAfter(now);
+            }) || sortedMessages[0] || null;
+          }
+        } else if (!programHasStarted && sortedMessages.length > 0) {
+          // El programa no ha comenzado, mostrar el primer evento del viernes
+          next = sortedMessages[0] || null;
         }
 
         setCurrentMessage(current || null);
@@ -239,7 +338,7 @@ export default function Home() {
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [PROGRAM_START_DATE]);
 
   const handleShare = async (message: Message) => {
     const currentHour = new Date().getHours();
