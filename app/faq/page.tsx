@@ -73,13 +73,17 @@ export default function FAQPage() {
     const fetchFAQs = async () => {
       try {
         setIsLoading(true);
-        const sheetsUrl = process.env.NEXT_PUBLIC_FAQ_SHEETS_URL || '';
+        const baseUrl = process.env.NEXT_PUBLIC_SHEETS_URL || '';
+        const gid = process.env.NEXT_PUBLIC_SHEETS_FAQS_GID || '';
         
-        if (!sheetsUrl) {
-          console.error('FAQ Sheets URL not configured');
+        if (!baseUrl || !gid) {
+          console.error('FAQ Sheets URL or GID not configured');
           setIsLoading(false);
           return;
         }
+
+        // Construir URL con GID
+        const sheetsUrl = baseUrl.replace(/gid=\d+/, `gid=${gid}`);
 
         // Usar cache offline si no hay conexión
         let csvData: string;

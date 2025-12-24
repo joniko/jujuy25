@@ -34,18 +34,20 @@ pregunta,respuesta,categoria
 
 ## Configuración en Google Sheets
 
-1. **Crea una nueva pestaña** llamada "FAQ" en tu Google Sheet
+1. **Crea una nueva pestaña** llamada "FAQ" en tu Google Sheet principal
 2. **Copia el contenido** del archivo `EJEMPLO_PESTANA_FAQ.csv`
-3. **Publica la pestaña**:
-   - Archivo → Compartir → Publicar en la web
-   - Selecciona la pestaña "FAQ"
-   - Tipo: Valores separados por comas (.csv)
-   - Copia la URL generada
+3. **Obtén el GID** de la pestaña:
+   - Abre la pestaña "FAQ" en tu navegador
+   - Busca en la URL el número después de `gid=`
+   - Ejemplo: `https://docs.google.com/spreadsheets/d/.../edit#gid=1634858451`
+   - El GID sería: `1634858451`
 
-4. **Agrega la URL** a tu archivo `.env.local`:
+4. **Agrega el GID** a tu archivo `.env.local`:
    ```bash
-   NEXT_PUBLIC_FAQ_SHEETS_URL=https://docs.google.com/spreadsheets/d/e/TU_ID/pub?gid=TU_GID&single=true&output=csv
+   NEXT_PUBLIC_SHEETS_FAQS_GID=1634858451
    ```
+
+**Nota**: No necesitas publicar la pestaña por separado, usa el mismo Google Sheet que el resto de la app.
 
 ## Formato de Respuestas
 
@@ -71,9 +73,10 @@ Los cambios que hagas en Google Sheets se reflejarán automáticamente en la app
 ## Troubleshooting
 
 ### Las FAQs no se muestran
-1. Verifica que `NEXT_PUBLIC_FAQ_SHEETS_URL` esté configurada
-2. Asegúrate de que la URL sea pública y termine en `output=csv`
+1. Verifica que `NEXT_PUBLIC_SHEETS_URL` y `NEXT_PUBLIC_SHEETS_FAQS_GID` estén configuradas
+2. Asegúrate de que el GID corresponda a la pestaña "FAQ"
 3. Verifica que las columnas tengan exactamente estos nombres: `pregunta`, `respuesta`, `categoria`
+4. Verifica que el Google Sheet esté publicado (Archivo → Compartir → Publicar en la web)
 
 ### Las categorías no tienen íconos
 - Verifica que el nombre de la categoría coincida exactamente con: "Logística General", "Alimentación", "Costos", o "Salud y Seguridad"
