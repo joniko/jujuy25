@@ -11,7 +11,7 @@ import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight, Cloud, Droplets, Wind, Sun, CloudRain, CloudSnow, CloudLightning, CloudDrizzle, Eye, HelpCircle, Heart } from 'lucide-react';
+import { Share2, ChevronRight, Clock, Calendar, Users, MapPin, ArrowRight, Cloud, Sun, CloudRain, CloudSnow, CloudLightning, CloudDrizzle, Eye, HelpCircle, Heart } from 'lucide-react';
 import MediaDisplay from '../components/MediaDisplay';
 
 dayjs.extend(customParseFormat);
@@ -532,23 +532,6 @@ export default function Home() {
                 </div>
                 <Skeleton className="h-14 w-14 rounded-2xl" />
               </div>
-              
-              <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-foreground/5">
-                <div className="flex items-center gap-2.5">
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <div className="space-y-1">
-                    <Skeleton className="h-2 w-10" />
-                    <Skeleton className="h-3 w-8" />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <div className="space-y-1">
-                    <Skeleton className="h-2 w-10" />
-                    <Skeleton className="h-3 w-8" />
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
         ) : weather && (
@@ -575,26 +558,6 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-foreground/5">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-full bg-background/30">
-                    <Droplets className="w-4 h-4 text-blue-500" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold opacity-50">Humedad</span>
-                    <span className="text-sm font-bold">{weather.humidity}%</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-full bg-background/30">
-                    <Wind className="w-4 h-4 text-slate-500" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold opacity-50">Viento</span>
-                    <span className="text-sm font-bold">{weather.windSpeed} km/h</span>
-                  </div>
-                </div>
-              </div>
             </CardContent>
             <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 rounded-xl pointer-events-none"></div>
           </Card>

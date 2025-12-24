@@ -308,7 +308,7 @@ export default function ParticipantesPage() {
           </Card>
         ) : (
           /* Tabla de participantes */
-          <div className="rounded-md border overflow-x-auto">
+          <div className="rounded-md border overflow-x-auto bg-white shadow rounded-xl">
             <Table>
               <TableBody>
                 {filteredParticipantes.map((participante, index) => (
