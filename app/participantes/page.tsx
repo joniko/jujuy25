@@ -13,8 +13,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Users, Search, MessageCircle, Filter, Calendar, Clock } from 'lucide-react';
@@ -310,81 +308,61 @@ export default function ParticipantesPage() {
           </Card>
         ) : (
           /* Tabla de participantes */
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Lista de Participantes</CardTitle>
-                <span className="text-sm text-muted-foreground">
-                  {filteredParticipantes.length} participante{filteredParticipantes.length !== 1 ? 's' : ''}
-                </span>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="min-w-[200px]">Nombre</TableHead>
-                      <TableHead className="min-w-[100px]">Grupo</TableHead>
-                      <TableHead className="min-w-[120px]">Llegada</TableHead>
-                      <TableHead className="w-[60px] text-center">Contacto</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredParticipantes.map((participante, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          <div className="space-y-0.5">
-                            <span className="font-medium">{participante.nombre}</span>
-                            {participante.apellido && (
-                              <span className="font-medium"> {participante.apellido}</span>
-                            )}
+          <div className="rounded-md border overflow-x-auto">
+            <Table>
+              <TableBody>
+                {filteredParticipantes.map((participante, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <div className="space-y-0.5">
+                        <span className="font-medium">{participante.nombre}</span>
+                        {participante.apellido && (
+                          <span className="font-medium"> {participante.apellido}</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-semibold text-primary">Grupo {participante.grupo}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {participante.dia_llegada && (
+                          <div className="flex items-center gap-1 text-sm">
+                            <Calendar className="w-3 h-3 text-muted-foreground" />
+                            <span>{participante.dia_llegada}</span>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="font-semibold text-primary">G{participante.grupo}</span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            {participante.dia_llegada && (
-                              <div className="flex items-center gap-1 text-sm">
-                                <Calendar className="w-3 h-3 text-muted-foreground" />
-                                <span>{participante.dia_llegada}</span>
-                              </div>
-                            )}
-                            {participante.hora_llegada && (
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Clock className="w-3 h-3" />
-                                <span>{participante.hora_llegada}</span>
-                              </div>
-                            )}
-                            {!participante.dia_llegada && !participante.hora_llegada && (
-                              <span className="text-sm text-muted-foreground">-</span>
-                            )}
+                        )}
+                        {participante.hora_llegada && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="w-3 h-3" />
+                            <span>{participante.hora_llegada}</span>
                           </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {participante.whatsapp ? (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleWhatsApp(participante.whatsapp)}
-                              className="h-8 w-8"
-                              title="Contactar por WhatsApp"
-                            >
-                              <MessageCircle className="w-4 h-4" />
-                            </Button>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">-</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+                        )}
+                        {!participante.dia_llegada && !participante.hora_llegada && (
+                          <span className="text-sm text-muted-foreground">-</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {participante.whatsapp ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleWhatsApp(participante.whatsapp)}
+                          className="h-8 w-8"
+                          title="Contactar por WhatsApp"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </Button>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </div>
     </main>

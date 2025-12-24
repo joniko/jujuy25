@@ -33,7 +33,7 @@ export default function Proposito() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed"> 
             <p>
-              Queremos que lleguemos <strong className="text-primary">alineados</strong>. Con el mismo corazón, 
+              Lleguemos <strong className="text-primary">alineados</strong>. Con el mismo corazón, 
               el mismo propósito, la misma pasión. No venimos como turistas, venimos como <strong>embajadores de Cristo</strong>.
             </p>
             <div className="bg-background p-4 rounded-lg border border-primary/20 mt-4">
