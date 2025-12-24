@@ -31,14 +31,7 @@ export default function Proposito() {
               <CardTitle className="text-2xl">Lleguemos alineados</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 text-base leading-relaxed">
-            <p className="font-medium">
-              Hermano, hermana... este viaje no es casualidad.
-            </p>
-            <p>
-              Cada uno de ustedes <strong className="text-primary">invirtió de su bolsillo</strong> para estar aquí. 
-              Ese sacrificio no es en vano. Dios tiene un propósito específico para cada uno en este viaje.
-            </p>
+          <CardContent className="space-y-4 text-base leading-relaxed"> 
             <p>
               Queremos que lleguemos <strong className="text-primary">alineados</strong>. Con el mismo corazón, 
               el mismo propósito, la misma pasión. No venimos como turistas, venimos como <strong>embajadores de Cristo</strong>.
@@ -189,11 +182,6 @@ export default function Proposito() {
                 &ldquo;Y ahora, Señor, mira sus amenazas, y concede a tus siervos que hablen tu palabra 
                 con toda confianza... Y cuando hubieron orado, el lugar en que estaban congregados tembló; 
                 y todos fueron llenos del Espíritu Santo, y hablaban con denuedo la palabra de Dios.&rdquo;
-              </p>
-              <p className="text-sm text-muted-foreground">
-                <strong className="text-foreground">Recuerda:</strong> No solo hablamos de Jesús, 
-                <strong className="text-primary"> mostramos a Jesús</strong>. Cada sonrisa, cada acto de servicio, 
-                cada palabra de aliento es una oportunidad para que otros vean el amor de Cristo en nosotros.
               </p>
             </div>
           </CardContent>
