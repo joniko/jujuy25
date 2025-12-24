@@ -558,7 +558,7 @@ export default function Home() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 opacity-70">
                     <MapPin className="w-4 h-4" />
-                    <span className="text-xs font-bold uppercase tracking-wider">Jujuy, Argentina</span>
+                    <span className="text-sm font-bold uppercase tracking-wider">Jujuy, Argentina</span>
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-5xl font-black tracking-tighter text-foreground">{weather.temp}°</span>
@@ -608,9 +608,9 @@ export default function Home() {
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl" />
             
             <CardHeader className="relative z-10 pb-2">
-              <CardTitle className="flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-[0.2em]">
+              <CardTitle className="flex items-center text-center gap-2 text-primary text-sm font-bold uppercase tracking-wider">
                 <Clock className="w-4 h-4" />
-                Falta para el inicio del viaje misionero:
+                El viaje misionero comienza en:
               </CardTitle>
             </CardHeader>
             <CardContent className="relative z-10 pt-2 pb-6">
