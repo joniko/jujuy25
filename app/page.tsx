@@ -30,76 +30,83 @@ interface Message {
 // Mover fuera del componente para evitar recreación en cada render
 const PROGRAM_START_DATE = dayjs('2025-12-26 05:00', 'YYYY-MM-DD HH:mm');
 
-// Función para obtener el icono del clima basado en el código
-const getWeatherIcon = (weatherCode: string): React.ComponentType<{ className?: string }> => {
+// Configuración de tema del clima basado en el código
+const getWeatherTheme = (weatherCode: string) => {
   const code = parseInt(weatherCode);
   
-  // Códigos de wttr.in basados en WorldWeatherOnline
-  // 113: Despejado/Soleado
-  // 116: Parcialmente nublado
-  // 119: Nublado
-  // 122: Muy nublado
-  // 143: Niebla
-  // 176: Lluvia ligera
-  // 179: Nieve ligera
-  // 182: Aguanieve
-  // 185: Lluvia helada
-  // 200: Tormenta con lluvia ligera
-  // 227: Nieve
-  // 230: Tormenta de nieve
-  // 248: Niebla
-  // 260: Niebla helada
-  // 263: Lluvia ligera
-  // 266: Lluvia ligera
-  // 281: Lluvia helada
-  // 284: Lluvia helada
-  // 293: Lluvia ligera
-  // 296: Lluvia ligera
-  // 299: Lluvia moderada
-  // 302: Lluvia intensa
-  // 305: Lluvia intensa
-  // 308: Lluvia intensa
-  // 311: Lluvia helada
-  // 314: Lluvia helada
-  // 317: Aguanieve
-  // 320: Aguanieve
-  // 323: Nieve ligera
-  // 326: Nieve ligera
-  // 329: Nieve intensa
-  // 332: Nieve intensa
-  // 335: Nieve intensa
-  // 338: Nieve intensa
-  // 350: Aguanieve
-  // 353: Lluvia ligera
-  // 356: Lluvia moderada
-  // 359: Lluvia intensa
-  // 362: Aguanieve
-  // 365: Aguanieve
-  // 368: Nieve ligera
-  // 371: Nieve intensa
-  // 374: Aguanieve
-  // 377: Lluvia helada
-  // 386: Tormenta
-  // 389: Tormenta
-  // 392: Tormenta de nieve
-  // 395: Tormenta de nieve
+  // Soleado / Despejado
+  if (code === 113) return { 
+    icon: Sun, 
+    gradient: "from-orange-400/20 via-amber-200/10 to-background", 
+    borderColor: "border-orange-200/50",
+    iconColor: "text-orange-500",
+    textColor: "text-orange-700"
+  };
   
-  if (code === 113) return Sun;
-  if (code === 116) return Cloud;
-  if (code >= 119 && code <= 122) return Cloud;
-  if (code === 143 || code === 248 || code === 260) return Eye; // Niebla
-  if (code >= 176 && code <= 185) return CloudDrizzle;
-  if (code >= 200 && code <= 202) return CloudLightning;
-  if (code >= 227 && code <= 230) return CloudSnow;
-  if (code >= 263 && code <= 308) return CloudRain;
-  if (code >= 311 && code <= 320) return CloudDrizzle;
-  if (code >= 323 && code <= 338) return CloudSnow;
-  if (code >= 350 && code <= 377) return CloudRain;
-  if (code >= 386 && code <= 395) return CloudLightning;
+  // Nublado
+  if (code >= 116 && code <= 122) return {
+    icon: Cloud,
+    gradient: "from-blue-400/10 via-slate-400/5 to-background",
+    borderColor: "border-slate-200/50",
+    iconColor: "text-slate-500",
+    textColor: "text-slate-700"
+  };
+
+  // Lluvia / Drizzle
+  if ((code >= 176 && code <= 185) || (code >= 263 && code <= 308) || (code >= 350 && code <= 377)) return {
+    icon: CloudRain,
+    gradient: "from-blue-400/20 via-cyan-200/10 to-background",
+    borderColor: "border-blue-200/50",
+    iconColor: "text-blue-500",
+    textColor: "text-blue-700"
+  };
+
+  // Tormenta
+  if ((code >= 200 && code <= 202) || (code >= 386 && code <= 395)) return {
+    icon: CloudLightning,
+    gradient: "from-purple-400/20 via-slate-400/10 to-background",
+    borderColor: "border-purple-200/50",
+    iconColor: "text-purple-500",
+    textColor: "text-purple-700"
+  };
+
+  // Nieve
+  if ((code >= 227 && code <= 230) || (code >= 323 && code <= 338)) return {
+    icon: CloudSnow,
+    gradient: "from-slate-100/50 via-blue-50/20 to-background",
+    borderColor: "border-slate-200/50",
+    iconColor: "text-slate-400",
+    textColor: "text-slate-600"
+  };
+
+  // Niebla
+  if (code === 143 || code === 248 || code === 260) return {
+    icon: Eye,
+    gradient: "from-gray-300/20 via-gray-100/10 to-background",
+    borderColor: "border-gray-200/50",
+    iconColor: "text-gray-500",
+    textColor: "text-gray-700"
+  };
   
-  // Por defecto, nublado
-  return Cloud;
+  return {
+    icon: Cloud,
+    gradient: "from-primary/5 via-primary/2 to-background",
+    borderColor: "border-primary/10",
+    iconColor: "text-primary/60",
+    textColor: "text-primary"
+  };
 };
+
+const CountdownBox = ({ value, label }: { value: number, label: string }) => (
+  <div className="flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm rounded-2xl p-3 min-w-[72px] border border-primary/10 shadow-sm">
+    <span className="text-3xl font-bold font-mono tracking-tighter text-primary">
+      {value.toString().padStart(2, '0')}
+    </span>
+    <span className="text-[10px] font-bold uppercase tracking-wider text-primary/60 mt-1">
+      {label}
+    </span>
+  </div>
+);
 
 export default function Home() {
   const router = useRouter();
@@ -510,17 +517,17 @@ export default function Home() {
       <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
         {/* Clima de San Salvador de Jujuy */}
         {isLoadingWeather ? (
-          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <CardHeader>
+          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 overflow-hidden text-left">
+            <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-6 w-32" />
                 <Skeleton className="h-10 w-20" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <Skeleton className="h-5 w-32" />
-                <div className="flex items-center gap-4">
+              <div className="space-y-4 text-left">
+                <Skeleton className="h-4 w-40" />
+                <div className="flex gap-4">
                   <Skeleton className="h-4 w-16" />
                   <Skeleton className="h-4 w-16" />
                 </div>
@@ -528,33 +535,46 @@ export default function Home() {
             </CardContent>
           </Card>
         ) : weather && (
-          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-lg">San Salvador de Jujuy</CardTitle>
+          <Card className={`bg-gradient-to-br ${getWeatherTheme(weather.icon).gradient} ${getWeatherTheme(weather.icon).borderColor} border-2 overflow-hidden transition-all duration-500 shadow-md text-left`}>
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 opacity-70">
+                    <MapPin className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Jujuy, Argentina</span>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black tracking-tighter text-foreground">{weather.temp}°</span>
+                    <span className="text-xl font-bold opacity-40">C</span>
+                  </div>
+                  <p className="text-sm font-medium capitalize opacity-80">{weather.condition}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="bg-background/40 backdrop-blur-md p-3 rounded-2xl border border-white/20 shadow-sm">
                   {(() => {
-                    const WeatherIcon = getWeatherIcon(weather.icon);
-                    return <WeatherIcon className="w-6 h-6 text-primary" />;
+                    const theme = getWeatherTheme(weather.icon);
+                    const WeatherIcon = theme.icon;
+                    return <WeatherIcon className={`w-8 h-8 ${theme.iconColor}`} />;
                   })()}
-                  <div className="text-3xl font-bold text-primary">{weather.temp}°</div>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <p className="text-base text-muted-foreground capitalize">{weather.condition}</p>
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Droplets className="w-4 h-4" />
-                    <span>{weather.humidity}%</span>
+              
+              <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-foreground/5">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-full bg-background/30">
+                    <Droplets className="w-4 h-4 text-blue-500" />
                   </div>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Wind className="w-4 h-4" />
-                    <span>{weather.windSpeed} km/h</span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold opacity-50">Humedad</span>
+                    <span className="text-sm font-bold">{weather.humidity}%</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-full bg-background/30">
+                    <Wind className="w-4 h-4 text-slate-500" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold opacity-50">Viento</span>
+                    <span className="text-sm font-bold">{weather.windSpeed} km/h</span>
                   </div>
                 </div>
               </div>
@@ -564,83 +584,100 @@ export default function Home() {
 
         {/* Countdown si aún no comenzó */}
         {!hasStarted && countdown && (
-          <Card className="bg-primary/10 border-primary">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-primary">
-                <Clock className="w-5 h-5" />
-                El programa comienza en:
+          <Card className="bg-primary border-none shadow-xl overflow-hidden relative text-left">
+            {/* Círculos decorativos de fondo */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl" />
+            
+            <CardHeader className="relative z-10 pb-2">
+              <CardTitle className="flex items-center gap-2 text-primary-foreground/90 text-sm font-bold uppercase tracking-[0.2em]">
+                <Clock className="w-4 h-4" />
+                Faltan:
               </CardTitle>
-              <div className="flex items-center gap-4 pt-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">{countdown.days}</div>
-                  <div className="text-xs text-muted-foreground uppercase">Días</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">{countdown.hours}</div>
-                  <div className="text-xs text-muted-foreground uppercase">Horas</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">{countdown.minutes}</div>
-                  <div className="text-xs text-muted-foreground uppercase">Minutos</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">{countdown.seconds}</div>
-                  <div className="text-xs text-muted-foreground uppercase">Segundos</div>
-                </div>
-              </div>
             </CardHeader>
+            <CardContent className="relative z-10 pt-2 pb-6">
+              <div className="flex items-center justify-between gap-2">
+                <CountdownBox value={countdown.days} label="Días" />
+                <CountdownBox value={countdown.hours} label="Horas" />
+                <CountdownBox value={countdown.minutes} label="Minutos" />
+                <CountdownBox value={countdown.seconds} label="Segundos" />
+              </div>
+              <p className="text-center text-primary-foreground/60 text-[10px] mt-4 font-medium uppercase tracking-widest">
+                Para el inicio del viaje misionero
+              </p>
+            </CardContent>
           </Card>
         )}
 
         {/* Lo que está pasando ahora */}
         {currentMessage && (
           <Card 
-            className="bg-primary/5 border-primary cursor-pointer hover:shadow-lg transition-shadow"
+            className="border-primary/20 cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden group bg-gradient-to-b from-primary/[0.03] to-transparent"
             onClick={() => router.push('/cronograma')}
           >
-            <CardHeader className="space-y-4">
+            <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+            <CardHeader className="space-y-4 p-6">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                  <CardTitle className="text-sm font-bold uppercase text-primary tracking-wide">Ahora</CardTitle>
+                  <div className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </div>
+                  <CardTitle className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">En este momento</CardTitle>
                 </div>
-                <ChevronRight className="w-5 h-5 text-primary" />
+                <div className="p-2 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-primary" />
+                </div>
               </div>
+
               {isInitialLoading ? (
-                <>
-                  <Skeleton className="h-10 w-3/4" />
-                  <Skeleton className="h-6 w-full" />
-                </>
+                <div className="space-y-3">
+                  <Skeleton className="h-8 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                </div>
               ) : (
                 <>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4" />
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/60">
+                      <Clock className="w-3.5 h-3.5" />
                       {currentMessage.hour}
                     </div>
-                    <CardTitle className="text-2xl md:text-3xl md:leading-tight">{currentMessage.title}</CardTitle>
-                    <CardDescription className="text-lg text-muted-foreground">
+                    <CardTitle className="text-2xl md:text-3xl font-black leading-tight tracking-tight text-foreground">
+                      {currentMessage.title}
+                    </CardTitle>
+                    <CardDescription className="text-base md:text-lg text-muted-foreground/80 leading-relaxed">
                       {currentMessage.body}
                     </CardDescription>
                   </div>
 
                   {currentMessage.media && (
-                    <CardContent onClick={(e) => e.stopPropagation()} className="p-0">
+                    <div onClick={(e) => e.stopPropagation()} className="mt-4 rounded-2xl overflow-hidden border border-foreground/5 shadow-inner">
                       <MediaDisplay media={currentMessage.media} title={currentMessage.title} />
-                    </CardContent>
+                    </div>
                   )}
                   
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleShare(currentMessage);
-                    }}
-                    variant="outline"
-                    className="w-full sm:w-auto border-primary/20 hover:bg-primary/10"
-                  >
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Compartir
-                  </Button>
+                  <div className="pt-2 flex items-center justify-between gap-4">
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShare(currentMessage);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-bold px-6"
+                    >
+                      <Share2 className="w-3.5 h-3.5 mr-2" />
+                      Compartir
+                    </Button>
+                    
+                    {currentMessage.responsible && (
+                      <div className="flex items-center gap-2 opacity-60">
+                        <Users className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">{currentMessage.responsible}</span>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </CardHeader>
@@ -650,35 +687,43 @@ export default function Home() {
         {/* Lo que viene */}
         {nextMessage && (
           <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
+            className="cursor-pointer hover:shadow-lg transition-all duration-300 border-foreground/5 bg-muted/30 group"
             onClick={() => router.push('/cronograma')}
           >
-            <CardHeader className="space-y-4">
-              <div className="flex items-center justify-between gap-2">
+            <CardHeader className="p-6">
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <CardTitle className="text-sm font-bold uppercase text-muted-foreground tracking-wide">Próximo</CardTitle>
+                  <div className="p-1.5 rounded-lg bg-foreground/5">
+                    <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                  </div>
+                  <CardTitle className="text-[10px] font-bold uppercase text-muted-foreground tracking-[0.2em]">Próximo evento</CardTitle>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
               </div>
+
               {isInitialLoading ? (
-                <>
-                  <Skeleton className="h-10 w-3/4" />
-                  <Skeleton className="h-6 w-full" />
-                </>
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-1/2" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
               ) : (
-                <>
+                <div className="grid grid-cols-[1fr_auto] gap-4 items-end">
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4" />
+                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/50">
+                      <Clock className="w-3.5 h-3.5" />
                       {nextMessage.hour}
                     </div>
-                    <CardTitle className="text-xl md:text-2xl">{nextMessage.title}</CardTitle>
-                    <CardDescription className="text-base text-muted-foreground line-clamp-2">
+                    <CardTitle className="text-xl font-bold tracking-tight text-foreground/90">{nextMessage.title}</CardTitle>
+                    <CardDescription className="text-sm text-muted-foreground line-clamp-1 italic">
                       {nextMessage.body}
                     </CardDescription>
                   </div>
-                </>
+                  <div className="pb-1">
+                    <div className="bg-foreground/5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                      {nextMessage.hour.split(' ')[1] || '---'}
+                    </div>
+                  </div>
+                </div>
               )}
             </CardHeader>
           </Card>
