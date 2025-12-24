@@ -71,22 +71,11 @@ export default function Proposito() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 text-base leading-relaxed">
-            <p className="text-lg font-medium">
+          <CardContent className="text-base leading-relaxed">
+            <p>
               Queremos ver cómo ambas iglesias no solo generan <strong className="text-primary">lazos espirituales</strong>, 
               sino que también sean activadas en <strong className="text-primary">dones, llamados y propósitos</strong>.
             </p>
-            <p className="text-muted-foreground">
-              Este viaje es un momento de activación donde los jóvenes de ambas iglesias se unen para descubrir 
-              y activar lo que Dios ha puesto en cada uno.
-            </p>
-            <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
-              <p className="text-sm italic text-muted-foreground">
-                &ldquo;Porque somos hechura suya, creados en Cristo Jesús para buenas obras, 
-                las cuales Dios preparó de antemano para que anduviésemos en ellas.&rdquo; 
-                <span className="font-semibold text-primary"> - Efesios 2:10</span>
-              </p>
-            </div>
           </CardContent>
         </Card>
 
@@ -105,22 +94,11 @@ export default function Proposito() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 text-base leading-relaxed">
-            <p className="text-lg font-medium">
+          <CardContent className="text-base leading-relaxed">
+            <p>
               Estableceremos <strong className="text-primary">altares de adoración e intercesión pública</strong> 
               en plazas, hospitales, lugares de gobierno y más.
             </p>
-            <p className="text-muted-foreground">
-              Cuando adoramos públicamente, declaramos la soberanía de Dios. Cuando intercedemos, 
-              cambiamos la atmósfera espiritual de la ciudad.
-            </p>
-            <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
-              <p className="text-sm italic text-muted-foreground">
-                &ldquo;Pero recibiréis poder, cuando haya venido sobre vosotros el Espíritu Santo, 
-                y me seréis testigos en Jerusalén, en toda Judea, en Samaria, y hasta lo último de la tierra.&rdquo; 
-                <span className="font-semibold text-primary"> - Hechos 1:8</span>
-              </p>
-            </div>
           </CardContent>
         </Card>
 
@@ -139,23 +117,12 @@ export default function Proposito() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 text-base leading-relaxed">
-            <p className="text-lg font-medium">
-              Salir con <strong className="text-primary">denuedo a compartir a Jesús y servir a la ciudad</strong>.
-            </p>
-            <p className="text-muted-foreground">
+          <CardContent className="text-base leading-relaxed">
+            <p>
+              Salir con <strong className="text-primary">denuedo a compartir a Jesús y servir a la ciudad</strong>. 
               Equipos evangelísticos en plazas, equipos de oración en hospitales, 
-              equipos de servicio en barrios y ayuda práctica. Cada acción es una oportunidad 
-              para que otros vean a Cristo en nosotros.
+              equipos de servicio en barrios y ayuda práctica.
             </p>
-            <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
-              <p className="text-sm font-semibold text-primary mb-2">Hechos 4:29-31</p>
-              <p className="text-sm italic text-muted-foreground">
-                &ldquo;Y ahora, Señor, concede a tus siervos que hablen tu palabra 
-                con toda confianza... Y cuando hubieron orado, el lugar tembló; 
-                y todos fueron llenos del Espíritu Santo, y hablaban con denuedo la palabra de Dios.&rdquo;
-              </p>
-            </div>
           </CardContent>
         </Card>
 
