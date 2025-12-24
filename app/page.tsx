@@ -26,6 +26,10 @@ interface Message {
   media: string;
 }
 
+// Fecha de inicio del programa: Viernes 26 de diciembre 2025 a las 5:00 AM
+// Mover fuera del componente para evitar recreación en cada render
+const PROGRAM_START_DATE = dayjs('2025-12-26 05:00', 'YYYY-MM-DD HH:mm');
+
 export default function Home() {
   const router = useRouter();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
@@ -35,9 +39,6 @@ export default function Home() {
   const [countdown, setCountdown] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
   const [hasStarted, setHasStarted] = useState(true);
   const messagesRef = useRef<Message[]>([]);
-
-  // Fecha de inicio del programa: Viernes 26 de diciembre 2025 a las 5:00 AM
-  const PROGRAM_START_DATE = dayjs('2025-12-26 05:00', 'YYYY-MM-DD HH:mm');
 
   useEffect(() => {
     const fetchMessages = async (isInitial = false) => {
@@ -338,7 +339,7 @@ export default function Home() {
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [PROGRAM_START_DATE]);
+  }, []);
 
   const handleShare = async (message: Message) => {
     const currentHour = new Date().getHours();
