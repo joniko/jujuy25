@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ArrowLeft, Users, Search, Phone, MapPin, Plane, Bus, Car, User, Filter } from 'lucide-react';
 
 interface Participante {
@@ -413,115 +421,144 @@ export default function ParticipantesPage() {
             </CardContent>
           </Card>
         ) : (
-          /* Participantes agrupados por grupo */
-          <div className="space-y-6">
-            {gruposOrdenados.map((grupo) => {
-              const grupoParticipantes = participantesPorGrupo[grupo];
-              const referentes = grupoParticipantes[0]?.referentes || '';
-              const destino = grupoParticipantes[0]?.destino || '';
-              const lideres = grupoParticipantes.filter(p => p.rol === 'Líder');
-              
-              return (
-                <Card key={grupo}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <CardTitle className="text-xl">Grupo {grupo}</CardTitle>
-                        {referentes && (
-                          <CardDescription className="mt-1">
-                            Referentes: {referentes}
-                          </CardDescription>
-                        )}
-                        {destino && (
-                          <div className="flex items-center gap-1 mt-2">
-                            <MapPin className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">Destino: {destino}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-primary">{grupoParticipantes.length}</div>
-                        <div className="text-xs text-muted-foreground">participantes</div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {grupoParticipantes.map((participante, index) => (
-                        <div
-                          key={index}
-                          className={`p-4 rounded-lg border ${
-                            participante.rol === 'Líder'
-                              ? 'bg-primary/5 border-primary/20'
-                              : 'bg-muted/30 border-border'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 space-y-2">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-semibold">{participante.nombre}</span>
-                                {participante.rol === 'Líder' && (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground">
-                                    <User className="w-3 h-3" />
-                                    Líder
-                                  </span>
-                                )}
-                                {participante.medio_transporte && (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                    {getTransportIcon(participante.medio_transporte)}
-                                    {participante.medio_transporte}
-                                  </span>
-                                )}
-                              </div>
-                              
-                              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                                {participante.vuelo_ida && (
-                                  <span>✈️ Ida: {participante.vuelo_ida}</span>
-                                )}
-                                {participante.vuelo_vuelta && (
-                                  <span>✈️ Vuelta: {participante.vuelo_vuelta}</span>
-                                )}
-                                {participante.hora_llegada && (
-                                  <span>🕐 Llegada: {participante.hora_llegada}</span>
-                                )}
-                                {participante.escala_salta === 'Sí' && (
-                                  <span className="text-orange-600">⚠️ Escala en Salta</span>
-                                )}
-                              </div>
-
-                              {participante.micro_salta_jujuy && (
-                                <p className="text-sm text-muted-foreground">
-                                  🚌 {participante.micro_salta_jujuy}
-                                </p>
-                              )}
-
-                              {participante.notas && (
-                                <p className="text-sm text-muted-foreground italic">
-                                  📝 {participante.notas}
-                                </p>
-                              )}
-                            </div>
-
-                            {participante.whatsapp && (
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => handleWhatsApp(participante.whatsapp)}
-                                className="shrink-0"
-                                title="Contactar por WhatsApp"
-                              >
-                                <Phone className="w-4 h-4" />
-                              </Button>
+          /* Tabla de participantes */
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Lista de Participantes</CardTitle>
+                <span className="text-sm text-muted-foreground">
+                  {filteredParticipantes.length} participante{filteredParticipantes.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[200px]">Nombre</TableHead>
+                      <TableHead className="w-[80px]">Grupo</TableHead>
+                      <TableHead className="w-[100px]">Rol</TableHead>
+                      <TableHead className="w-[150px]">Destino</TableHead>
+                      <TableHead className="w-[120px]">Transporte</TableHead>
+                      <TableHead className="w-[100px]">Vuelo Ida</TableHead>
+                      <TableHead className="w-[100px]">Vuelo Vuelta</TableHead>
+                      <TableHead className="w-[100px]">Llegada</TableHead>
+                      <TableHead className="w-[100px]">Escala</TableHead>
+                      <TableHead className="w-[80px] text-center">Contacto</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredParticipantes.map((participante, index) => (
+                      <TableRow 
+                        key={index}
+                        className={participante.rol === 'Líder' ? 'bg-primary/5' : ''}
+                      >
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            {participante.nombre}
+                            {participante.rol === 'Líder' && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-primary text-primary-foreground">
+                                <User className="w-3 h-3" />
+                              </span>
                             )}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-semibold text-primary">G{participante.grupo}</span>
+                        </TableCell>
+                        <TableCell>
+                          {participante.rol === 'Líder' ? (
+                            <span className="text-xs font-semibold text-primary">Líder</span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3 text-muted-foreground" />
+                            <span className="text-sm">{participante.destino || '-'}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {participante.medio_transporte ? (
+                            <div className="flex items-center gap-1">
+                              {getTransportIcon(participante.medio_transporte)}
+                              <span className="text-sm">{participante.medio_transporte}</span>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {participante.vuelo_ida ? (
+                            <span className="text-sm font-mono">{participante.vuelo_ida}</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {participante.vuelo_vuelta ? (
+                            <span className="text-sm font-mono">{participante.vuelo_vuelta}</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {participante.hora_llegada ? (
+                            <span className="text-sm">{participante.hora_llegada}</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {participante.escala_salta === 'Sí' ? (
+                            <span className="text-xs font-semibold text-orange-600">⚠️ Sí</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {participante.whatsapp ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleWhatsApp(participante.whatsapp)}
+                              className="h-8 w-8"
+                              title="Contactar por WhatsApp"
+                            >
+                              <Phone className="w-4 h-4" />
+                            </Button>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              {/* Información adicional en cards colapsables o tooltips si es necesario */}
+              {filteredParticipantes.some(p => p.micro_salta_jujuy || p.notas) && (
+                <div className="mt-4 space-y-2">
+                  {filteredParticipantes
+                    .filter(p => p.micro_salta_jujuy || p.notas)
+                    .map((participante, index) => (
+                      <div key={index} className="text-xs text-muted-foreground p-2 bg-muted/50 rounded">
+                        <strong>{participante.nombre}:</strong>
+                        {participante.micro_salta_jujuy && (
+                          <span className="ml-2">🚌 {participante.micro_salta_jujuy}</span>
+                        )}
+                        {participante.notas && (
+                          <span className="ml-2">📝 {participante.notas}</span>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
       </div>
     </main>
