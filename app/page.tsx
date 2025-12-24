@@ -17,6 +17,7 @@ dayjs.extend(customParseFormat);
 dayjs.extend(relativeTime);
 
 interface Message {
+  day: string;
   hour: string;
   title: string;
   body: string;
@@ -34,8 +35,8 @@ export default function Home() {
   const [hasStarted, setHasStarted] = useState(true);
   const messagesRef = useRef<Message[]>([]);
 
-  // Fecha de inicio del programa (ajustar según corresponda)
-  const PROGRAM_START_DATE = dayjs('2025-01-24 05:00', 'YYYY-MM-DD HH:mm'); // Viernes 24 de enero 2025 a las 5:00 AM
+  // Fecha de inicio del programa: Viernes 26 de diciembre 2025 a las 5:00 AM
+  const PROGRAM_START_DATE = dayjs('2025-12-26 05:00', 'YYYY-MM-DD HH:mm');
 
   useEffect(() => {
     const fetchMessages = async (isInitial = false) => {
@@ -54,6 +55,7 @@ export default function Home() {
         const parsedData = Papa.parse(response.data, { header: true, skipEmptyLines: true });
 
         const messages: Message[] = (parsedData.data as Array<{ 
+          dia?: string;
           hora: string; 
           titulo?: string; 
           titutlo?: string; 
@@ -64,6 +66,7 @@ export default function Home() {
           media?: string;
         }>).map((row) => {
           return {
+            day: row.dia || '',
             hour: row.hora,
             title: row.titulo || row.titutlo || '',
             body: row.bajada,
@@ -107,8 +110,28 @@ export default function Home() {
           return timeA.valueOf() - timeB.valueOf();
         });
 
-        // Encontrar mensaje actual
+        // Encontrar mensaje actual (considerando el día si está disponible)
+        const today = dayjs();
+        const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+        const currentDayName = dayNames[today.day()].toLowerCase();
+        
         const current = sortedMessages.find((message: Message) => {
+          // Si el mensaje tiene día, verificar que coincida
+          if (message.day) {
+            const dayMap: Record<string, string> = {
+              'viernes': 'viernes',
+              'sábado': 'sábado',
+              'domingo': 'domingo',
+              'friday': 'viernes',
+              'saturday': 'sábado',
+              'sunday': 'domingo'
+            };
+            const messageDay = dayMap[message.day.toLowerCase()];
+            if (messageDay && messageDay !== currentDayName) {
+              return false;
+            }
+          }
+          
           const cleanHour = message.hour
             .replace(/\s+/g, ' ')
             .replace('a. m.', 'AM')
@@ -125,10 +148,38 @@ export default function Home() {
         let next: Message | null = null;
         if (current) {
           const currentIndex = sortedMessages.indexOf(current);
-          next = sortedMessages[currentIndex + 1] || sortedMessages[0] || null;
+          // Buscar el siguiente mensaje del mismo día o del día siguiente
+          next = sortedMessages.slice(currentIndex + 1).find((message: Message) => {
+            // Si el mensaje actual tiene día, priorizar mensajes del mismo día
+            if (current.day && message.day) {
+              return message.day === current.day;
+            }
+            return true;
+          }) || sortedMessages[currentIndex + 1] || sortedMessages[0] || null;
         } else {
-          // Si no hay mensaje actual, encontrar el próximo
+          // Si no hay mensaje actual, encontrar el próximo del día actual o siguiente
           next = sortedMessages.find((message: Message) => {
+            // Si tiene día, verificar que sea del día actual o siguiente
+            if (message.day) {
+              const dayMap: Record<string, string> = {
+                'viernes': 'viernes',
+                'sábado': 'sábado',
+                'domingo': 'domingo',
+                'friday': 'viernes',
+                'saturday': 'sábado',
+                'sunday': 'domingo'
+              };
+              const messageDay = dayMap[message.day.toLowerCase()];
+              // Aceptar mensajes del día actual o siguiente
+              if (messageDay && messageDay !== currentDayName) {
+                const nextDayIndex = (today.day() + 1) % 7;
+                const nextDayName = dayNames[nextDayIndex];
+                if (messageDay !== nextDayName) {
+                  return false;
+                }
+              }
+            }
+            
             const cleanHour = message.hour
               .replace(/\s+/g, ' ')
               .replace('a. m.', 'AM')
