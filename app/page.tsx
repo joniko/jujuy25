@@ -559,7 +559,6 @@ export default function Home() {
               </div>
               
             </CardContent>
-            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 rounded-xl pointer-events-none"></div>
           </Card>
         )}
 
