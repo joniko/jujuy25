@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Users, Search, MessageCircle, Filter, Calendar, Clock } from 'lucide-react';
+import OfflineMessage, { getOfflineErrorMessage } from '../../components/OfflineMessage';
 
 interface Participante {
   nombre: string;
@@ -145,23 +146,13 @@ export default function ParticipantesPage() {
         }
       } catch (error) {
         console.error('❌ Error fetching participantes:', error);
-        let errorMsg = 'Error al cargar participantes';
-        
-        if (error instanceof Error) {
-          if (error.message.includes('No internet connection')) {
-            errorMsg = 'Sin conexión a internet. Mostrando datos guardados anteriormente.';
-          } else if (error.message.includes('no cached data')) {
-            errorMsg = 'Sin conexión y sin datos guardados. Conecta a internet para cargar los participantes.';
-          } else {
-            errorMsg = error.message;
-          }
-        }
+        const { hasCachedData, message } = getOfflineErrorMessage(error);
         
         // Solo mostrar error si es el fetch inicial o no hay datos previos
         if (isInitial || participantes.length === 0) {
-          setError(errorMsg);
+          setError(message);
         } else {
-          console.warn('Error en refresh automático (manteniendo datos previos):', errorMsg);
+          console.warn('Error en refresh automático (manteniendo datos previos):', message);
         }
       } finally {
         if (isInitial) {
@@ -238,17 +229,9 @@ export default function ParticipantesPage() {
 
         {/* Error Message */}
         {error && (
-          <Card className="bg-red-50 border-red-200">
-            <CardHeader>
-              <CardTitle className="text-red-800">❌ Error</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-red-700">{error}</p>
-              <p className="text-sm text-red-600 mt-2">
-                Abre la consola del navegador (F12) para ver más detalles.
-              </p>
-            </CardContent>
-          </Card>
+          <OfflineMessage 
+            hasCachedData={error.includes('Mostrando datos guardados anteriormente')}
+          />
         )}
 
         {/* Filtros y búsqueda */}

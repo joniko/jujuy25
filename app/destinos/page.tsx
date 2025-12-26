@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, MapPin, ExternalLink } from 'lucide-react';
 import Papa from 'papaparse';
 import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
+import OfflineMessage, { getOfflineErrorMessage } from '../../components/OfflineMessage';
 
 interface Location {
   nombre: string;
@@ -138,23 +139,13 @@ export default function DestinosPage() {
         }
       } catch (error) {
         console.error('❌ Error fetching locations:', error);
-        let errorMsg = 'Error al cargar ubicaciones';
-        
-        if (error instanceof Error) {
-          if (error.message.includes('No internet connection')) {
-            errorMsg = 'Sin conexión a internet. Mostrando datos guardados anteriormente.';
-          } else if (error.message.includes('no cached data')) {
-            errorMsg = 'Sin conexión y sin datos guardados. Conecta a internet para cargar las ubicaciones.';
-          } else {
-            errorMsg = error.message;
-          }
-        }
+        const { hasCachedData, message } = getOfflineErrorMessage(error);
         
         // Solo mostrar error si es el fetch inicial o no hay datos previos
         if (isInitial || locations.length === 0) {
-          setError(errorMsg);
+          setError(message);
         } else {
-          console.warn('Error en refresh automático (manteniendo datos previos):', errorMsg);
+          console.warn('Error en refresh automático (manteniendo datos previos):', message);
         }
       } finally {
         if (isInitial) {
@@ -188,11 +179,9 @@ export default function DestinosPage() {
 
         {/* Error State */}
         {error && (
-          <Card className="border-destructive">
-            <CardContent className="text-center py-8">
-              <p className="text-destructive">{error}</p>
-            </CardContent>
-          </Card>
+          <OfflineMessage 
+            hasCachedData={error.includes('Mostrando datos guardados anteriormente')}
+          />
         )}
 
         {/* Loading State */}

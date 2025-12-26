@@ -10,9 +10,10 @@ import { fetchWithOfflineFallback, isOnline } from '@/lib/offline-cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock, User, Calendar, WifiOff, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Clock, User, Calendar, RefreshCw } from 'lucide-react';
 import MediaDisplay from '../../components/MediaDisplay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import OfflineMessage, { getOfflineErrorMessage } from '../../components/OfflineMessage';
 
 dayjs.extend(customParseFormat);
 
@@ -108,26 +109,15 @@ export default function CronogramaPage() {
       } catch (error) {
         console.error('Error fetching schedule:', error);
         
-        // Determinar el tipo de error
-        let errorMessage = 'Error al cargar el cronograma';
-        const online = isOnline();
-        
-        if (error instanceof Error) {
-          if (error.message.includes('No internet connection')) {
-            errorMessage = 'Sin conexión a internet. Mostrando datos guardados anteriormente.';
-          } else if (error.message.includes('no cached data')) {
-            errorMessage = 'Sin conexión y sin datos guardados. Conecta a internet para cargar el cronograma.';
-          } else {
-            errorMessage = error.message;
-          }
-        }
+        // Determinar el tipo de error usando la función unificada
+        const { hasCachedData, message } = getOfflineErrorMessage(error);
         
         // Solo mostrar error en el fetch inicial o si no hay datos previos
         if (isInitial || scheduleItems.length === 0) {
-          setError(errorMessage);
+          setError(message);
         } else {
           // En refreshes automáticos, solo loguear el error sin mostrar al usuario
-          console.warn('Error en refresh automático (manteniendo datos previos):', errorMessage);
+          console.warn('Error en refresh automático (manteniendo datos previos):', message);
         }
       } finally {
         if (isInitial) {
@@ -197,17 +187,8 @@ export default function CronogramaPage() {
       const formattedHour = now.format('h A');
       setCurrentHour(formattedHour);
     } catch (error) {
-      let errorMessage = 'Error al cargar el cronograma';
-      if (error instanceof Error) {
-        if (error.message.includes('No internet connection')) {
-          errorMessage = 'Sin conexión a internet. Mostrando datos guardados anteriormente.';
-        } else if (error.message.includes('no cached data')) {
-          errorMessage = 'Sin conexión y sin datos guardados. Conecta a internet para cargar el cronograma.';
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      setError(errorMessage);
+      const { message } = getOfflineErrorMessage(error);
+      setError(message);
     } finally {
       setIsRetrying(false);
     }
@@ -428,39 +409,30 @@ export default function CronogramaPage() {
 
         {/* Error State */}
         {error && (
-          <Card className="border-destructive">
-            <CardContent className="text-center py-12">
-              <div className="flex flex-col items-center gap-4">
-                <WifiOff className="w-12 h-12 text-destructive" />
-                <div className="space-y-2">
-                  <p className="text-lg font-semibold text-destructive">
-                    Error de conexión
-                  </p>
-                  <p className="text-muted-foreground max-w-md">
-                    {error}
-                  </p>
-                </div>
-                <Button
-                  onClick={handleRetry}
-                  disabled={isRetrying}
-                  variant="outline"
-                  className="mt-2"
-                >
-                  {isRetrying ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      Reintentando...
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Reintentar
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-4">
+            <OfflineMessage 
+              hasCachedData={error.includes('Mostrando datos guardados anteriormente')}
+            />
+            <div className="flex justify-center">
+              <Button
+                onClick={handleRetry}
+                disabled={isRetrying}
+                variant="outline"
+              >
+                {isRetrying ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Reintentando...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Reintentar
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         )}
 
         {/* Empty State - Solo mostrar si no hay error */}
