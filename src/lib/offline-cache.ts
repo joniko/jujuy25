@@ -2,8 +2,8 @@
  * Utility para manejar cacheo offline de datos usando IndexedDB
  */
 
-const DB_NAME = 'oremos-offline-cache';
-const DB_VERSION = 1;
+const DB_NAME = 'jujuy25-offline-cache';
+const DB_VERSION = 2; // Incrementar versión para forzar actualización
 const STORE_NAME = 'sheets-data';
 
 interface CachedData {
@@ -13,6 +13,29 @@ interface CachedData {
 }
 
 let dbInstance: IDBDatabase | null = null;
+
+/**
+ * Normaliza la URL eliminando parámetros de cache busting (t=timestamp)
+ * para que siempre se use la misma clave en el cache
+ */
+function normalizeUrl(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    // Eliminar parámetros de cache busting
+    urlObj.searchParams.delete('t');
+    urlObj.searchParams.delete('_');
+    urlObj.searchParams.delete('cache');
+    urlObj.searchParams.delete('timestamp');
+    return urlObj.toString();
+  } catch {
+    // Si no es una URL válida, intentar eliminar manualmente
+    return url
+      .replace(/[&?]t=\d+/g, '')
+      .replace(/[&?]_=\d+/g, '')
+      .replace(/[&?]cache=\d+/g, '')
+      .replace(/[&?]timestamp=\d+/g, '');
+  }
+}
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -41,20 +64,23 @@ function openDB(): Promise<IDBDatabase> {
 
 /**
  * Guarda datos en el cache offline
+ * Normaliza la URL para que siempre se use la misma clave
  */
 export async function saveToCache(url: string, data: string): Promise<void> {
   try {
+    const normalizedUrl = normalizeUrl(url);
     const db = await openDB();
     const transaction = db.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
     
     const cachedData: CachedData = {
-      url,
+      url: normalizedUrl,
       data,
       timestamp: Date.now(),
     };
     
-    await store.put(cachedData);
+    store.put(cachedData);
+    console.log('💾 Datos guardados en cache para:', normalizedUrl.substring(0, 80) + '...');
   } catch (error) {
     console.error('Error saving to cache:', error);
   }
@@ -62,14 +88,16 @@ export async function saveToCache(url: string, data: string): Promise<void> {
 
 /**
  * Obtiene datos del cache offline
+ * Normaliza la URL para buscar con la misma clave con que se guardó
  */
 export async function getFromCache(url: string): Promise<string | null> {
   try {
+    const normalizedUrl = normalizeUrl(url);
     const db = await openDB();
     const transaction = db.transaction([STORE_NAME], 'readonly');
     const store = transaction.objectStore(STORE_NAME);
     
-    const request = store.get(url);
+    const request = store.get(normalizedUrl);
     
     return new Promise((resolve) => {
       request.onsuccess = () => {
@@ -80,13 +108,16 @@ export async function getFromCache(url: string): Promise<string | null> {
           const age = Date.now() - result.timestamp;
           
           if (age < maxAge) {
+            console.log('📦 Datos recuperados del cache para:', normalizedUrl.substring(0, 80) + '...');
             resolve(result.data);
           } else {
             // Cache expirado, eliminarlo
-            deleteFromCache(url);
+            console.log('⏰ Cache expirado para:', normalizedUrl.substring(0, 80) + '...');
+            deleteFromCache(normalizedUrl);
             resolve(null);
           }
         } else {
+          console.log('❌ No hay datos en cache para:', normalizedUrl.substring(0, 80) + '...');
           resolve(null);
         }
       };
